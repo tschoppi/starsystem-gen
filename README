@@ -1,0 +1,24 @@
+GURPS4e Star System Generator
+=============================
+
+Welcome!
+Here lives the automated star system generator for the GURPS Roleplaying frame-
+work. I'm not far yet, but many features are to come.
+
+Up until here (the initial commit) we have:
+ - GURPS Dice Roller
+ - GURPS Stars, with
+ 	* Mass
+	* Spectral Type
+ - GURPS Star Systems, with
+ 	* Age
+	* Location (e.g. are we in an open cluster or not)
+
+Planned is the following:
+ - Completion of the Star System Generation as described in the rulebook
+ - Making output to a .tex document available, for quick and easy generation of
+   a Star System Dossier, containing tables with all information that might be
+   relevant to the GM.
+
+You may fork this project and make it better!
+

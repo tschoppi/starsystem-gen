@@ -56,6 +56,45 @@ StEvoTable = {
               0.2, 0.2, 0.2, 0.1, 0.1]
     }
 
+# The purpose of IndexTable is to facilitate lookups in StEvoTable.
+# The contents of IndexTable are the indices of the respective entries in
+# StEvoTable
+IndexTable = [
+None, None, None, # Indices 0, 1, and 2 are not used
+    # Index 3
+    [None, None, None, 33, 33, 33, 33, 33, 33, 33, 33, 32, 32, 32, 32, 32,
+     32, 32, 32],
+    # Index 4
+    [None, None, None, 31, 31, 31, 31, 31, 31, 30, 30, 30, 29, 29, 29, 29,
+     29, 29, 29],
+    # Index 5
+    [None, None, None, 28, 28, 28, 28, 28, 27, 27, 27, 26, 26, 25, 25, 25,
+     25, 25, 25],
+    # Index 6
+    [None, None, None, 24, 24, 24, 24, 24, 23, 23, 22, 21, 21, 20, 20, 20,
+     20, 20, 20],
+    # Index 7
+    [None, None, None, 19, 19, 19, 19, 19, 18, 18, 17, 16, 16, 15, 15, 15,
+     15, 15, 15],
+    # Index 8
+    [None, None, None, 14, 14, 14, 14, 14, 13, 13, 12, 11, 11, 10, 10, 10,
+     10, 10, 10],
+    # Index 9
+    [None, None, None,  9,  9,  9,  9,  9,  9,  8,  8,  8,  7,  7,  7,  7,
+      7,  7,  7],
+    # Index 10
+    [None, None, None,  6,  6,  6,  6,  6,  6,  5,  5,  5,  4,  4,  4,  4,
+      4,  4,  4],
+    # Index 11
+    [3] * 19,
+    # Index 12
+    [2] * 19,
+    # Index 13
+    [1] * 19,
+    # Indices 14-18
+    [0] * 19, [0] * 19, [0] * 19, [0] * 19, [0] * 19
+]
+
 class Star:
     roller = GD.DiceRoller()
 

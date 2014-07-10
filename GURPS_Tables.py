@@ -55,7 +55,7 @@ StEvoTable = {
     'Gspan': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.1,
               1.0, 0.8, 0.7, 0.6, 0.6, 0.5, 0.4, 0.4, 0.4, 0.3, 0.3,
               0.2, 0.2, 0.2, 0.1, 0.1]
-    }
+}
 
 # The purpose of IndexTable is to facilitate lookups in StEvoTable.
 # The contents of IndexTable are the indices of the respective entries in
@@ -100,3 +100,11 @@ IndexTable = [
     # Indices 14-18
     [0] * 19, [0] * 19, [0] * 19, [0] * 19, [0] * 19
 ]
+
+# SequenceTable is used to look up the name of the sequence on which the star is
+SequenceTable = {
+    0: 'Main',
+    1: 'Subgiant',
+    2: 'Giant',
+    3: 'White Dwarf'
+}

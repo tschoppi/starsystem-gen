@@ -26,8 +26,8 @@ class StarSystem:
 
     def randomcluster(self):
         # Criteria for a success (star system in an open cluster):
-        #    - Roll of 12 or less
-        return self.roll(3,0) <= 12
+        #    - Roll of 10 or less
+        return self.roll(3,0) <= 10
 
     def randomstars(self):
         if self.__opencluster:

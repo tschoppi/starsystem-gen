@@ -1,5 +1,5 @@
 import GURPS_Dice as GD
-from GURPS_Tables import StEvoTable, IndexTable
+from GURPS_Tables import StEvoTable, IndexTable, SequenceTable
 
 class Star:
     roller = GD.DiceRoller()
@@ -9,9 +9,14 @@ class Star:
 
     def __init__(self, age):
         roller = GD.DiceRoller()
-        self.setAge(age)
+        self.__age = age
+        #self.setAge(age)
         self.makeindex()
         self.makemass()
+        self.findsequence()
+        self.makeluminosity()
+        self.maketemperature()
+        self.makeradius()
         self.printinfo()
 
     def printinfo(self):
@@ -19,6 +24,10 @@ class Star:
         print("  ---------")
         #print("        Age:\t{}".format(self.__age))
         print("       Mass:\t{}".format(self.__mass))
+        print("   Sequence:\t{}".format(SequenceTable[self.__SeqIndex]))
+        print(" Luminosity:\t{}".format(self.__luminosity))
+        print("Temperature:\t{}".format(self.__temperature))
+        print("     Radius:\t{}".format(round(self.__radius,6)))
         #print("       Type:\t{}".format(self.__type))
         print("  ---------\n")
 
@@ -71,3 +80,58 @@ class Star:
                 self.__SeqIndex = 1
             else:
                 self.__SeqIndex = 0
+        # For a white dwarf we have to regenerate the mass
+        if self.__SeqIndex == 3:
+            self.__mass = self.roll(2,-2) * 0.05 + 0.9
+
+    def makeluminosity(self):
+        seq = self.__SeqIndex
+        age = self.__age
+        lmin = StEvoTable['Lmin'][self.__StEvoIndex]
+        lmax = StEvoTable['Lmax'][self.__StEvoIndex]
+        mspan = StEvoTable['Mspan'][self.__StEvoIndex]
+        if seq == 0:
+            # For stars with no Mspan value (mspan == 0)
+            if mspan == 0:
+                lum = lmin
+            else:
+                lum = lmin + (age / mspan * (lmax - lmin))
+        elif seq == 1: # Subgiant star
+            lum = lmax
+        elif seq == 2: # Giant star
+            lum = 25 * lmax
+        elif seq == 3: # White dwarf
+            lum = 0.001
+
+        self.__luminosity = lum
+
+    def maketemperature(self):
+        seq = self.__SeqIndex
+        age = self.__age
+        lmin = StEvoTable['Lmin'][self.__StEvoIndex]
+        lmax = StEvoTable['Lmax'][self.__StEvoIndex]
+        mspan = StEvoTable['Mspan'][self.__StEvoIndex]
+        sspan = StEvoTable['Sspan'][self.__StEvoIndex]
+        gspan = StEvoTable['Gspan'][self.__StEvoIndex]
+        if seq == 0:
+            temp = StEvoTable['temp'][self.__StEvoIndex]
+        elif seq == 1: # Subgiant star
+            m = StEvoTable['temp'][self.__StEvoIndex]
+            a = age - mspan
+            s = sspan
+            temp = m - (a / s * (m - 4800))
+        elif seq == 2: # Giant star
+            temp = self.roll(2,-2) * 200 + 3000
+        elif seq == 3: # White dwarf
+            temp = 8000 # Not defined in the rulebook, so arbitrarily assigned
+
+        self.__temperature = temp
+
+    def makeradius(self):
+        lum = self.__luminosity
+        temp = self.__temperature
+        rad = 155000 * lum**(0.5) / temp**2
+        if self.__SeqIndex == 3: # If we're a white dwarf
+            rad = 0.000043 # The size is comparable to the one of Earth
+
+        self.__radius = rad

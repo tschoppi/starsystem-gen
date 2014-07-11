@@ -17,7 +17,10 @@ class Star:
         self.makeluminosity()
         self.maketemperature()
         self.makeradius()
-        self.printinfo()
+        #self.printinfo()
+
+    def __repr__(self):
+        return repr((self.__mass, self.__luminosity, self.__temperature))
 
     def printinfo(self):
         print("  Star Info")

@@ -6,12 +6,11 @@ class StarSystem:
 
     def __init__(self):
         self.__opencluster = self.randomcluster()
-        self.__numstars = self.randomstars()
+        self.__numstars = self.randomstarnum()
         self.makeage()
+        self.generatestars()
+        self.sortstars()
         self.printinfo()
-        self.stars = []
-        for i in range(self.__numstars):
-            self.stars.append(GS.Star(age=self.__age))
 
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
@@ -23,13 +22,15 @@ class StarSystem:
         print(" # of Stars:\t{}".format(self.__numstars))
         print("OpenCluster:\t{}".format(self.__opencluster))
         print("================\n")
+        for i in range(self.__numstars):
+            self.stars[i].printinfo()
 
     def randomcluster(self):
         # Criteria for a success (star system in an open cluster):
         #    - Roll of 10 or less
         return self.roll(3,0) <= 10
 
-    def randomstars(self):
+    def randomstarnum(self):
         if self.__opencluster:
             rollmod = 3
         else:
@@ -42,6 +43,11 @@ class StarSystem:
             return 1
         else:
             return 2
+
+    def generatestars(self):
+        self.stars = []
+        for i in range(self.__numstars):
+            self.stars.append(GS.Star(age=self.__age))
 
     def makeage(self):
         provage = self.randomage()
@@ -63,3 +69,17 @@ class StarSystem:
             return 8.0 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
         else:
             return 10 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
+
+    # Sort the stars according to mass. Higher mass is placed first.
+    def sortstars(self):
+        num = self.__numstars
+        newlist = []
+        for i in range(num):
+            highest = 0    # Index of the star with the highest mass, reset to 0
+            for j in range(len(self.stars)):
+                if self.stars[highest].getMass() < self.stars[j].getMass():
+                    highest = j
+            newlist.append(self.stars[highest])
+            del self.stars[highest]
+
+        self.stars = newlist

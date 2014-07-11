@@ -1,5 +1,6 @@
 import GURPS_Star as GS
 import GURPS_Dice as GD
+from GURPS_Tables import OrbSepTable, StOEccTable
 
 class StarSystem:
     roller = GD.DiceRoller()
@@ -10,6 +11,8 @@ class StarSystem:
         self.makeage()
         self.generatestars()
         self.sortstars()
+        self.makeorbits()
+        self.makeminmaxseps()
         self.printinfo()
 
     def roll(self, dicenum, modifier):
@@ -21,6 +24,8 @@ class StarSystem:
         print("        Age:\t{}".format(self.__age))
         print(" # of Stars:\t{}".format(self.__numstars))
         print("OpenCluster:\t{}".format(self.__opencluster))
+        print("Stellar Orb:\t{}".format(self.__orbits))
+        print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
         print("================\n")
         for i in range(self.__numstars):
             self.stars[i].printinfo()
@@ -83,3 +88,73 @@ class StarSystem:
             del self.stars[highest]
 
         self.stars = newlist
+
+    # Generate stellar orbits for multiple-star systems
+    # Missing: Sub-companion star for distant second companion star
+    # Missing: Ensuring that the orbital separation of the second companion is
+    #          larger than the separation of the first
+    def makeorbits(self):
+        if self.__numstars == 1:
+            # Don't do anything for just one star
+            self.__orbsepentry = None
+            self.__orbits = None
+            return None
+        if self.__numstars >= 2:
+            self.__orbsepentry = []
+            self.__orbits = []
+            dice = self.roll(3,0)
+            osepindex = self.findorbsepindex(dice)
+            orbsep = OrbSepTable[osepindex]
+            orbit = self.roll(2,0) * orbsep[1]
+
+            eccmod = orbsep[2]
+            eccroll = self.roll(3,eccmod)
+            if eccroll < 3:
+                eccroll = 3
+            if eccroll > 18:
+                eccroll = 18
+            eccentricity = StOEccTable[eccroll]
+
+            self.__orbsepentry.append(orbsep)
+            self.__orbits.append((orbit, eccentricity))
+        if self.__numstars == 3:
+            dice = self.roll(3,6)
+            osepindex = self.findorbsepindex(dice)
+            orbsep = OrbSepTable[osepindex]
+            orbit = self.roll(2,0) * orbsep[1]
+
+            eccmod = orbsep[2]
+            eccroll = self.roll(3,eccmod)
+            if eccroll < 3:
+                eccroll = 3
+            if eccroll > 18:
+                eccroll = 18
+            eccentricity = StOEccTable[eccroll]
+
+            self.__orbsepentry.append(orbsep)
+            self.__orbits.append((orbit, eccentricity))
+
+
+
+    def findorbsepindex(self, diceroll):
+        if diceroll <= 6:
+            return 0
+        if diceroll <= 9:
+            return 1
+        if diceroll <= 11:
+            return 2
+        if diceroll <= 14:
+            return 3
+        else:
+            return 4
+
+    def makeminmaxseps(self):
+        if not self.__orbits is None:
+            self.__minmaxorbits = []
+            for i in range(len(self.__orbits)):
+                orbit, ecc = self.__orbits[i]
+                min = (1 - ecc) * orbit
+                max = (1 + ecc) * orbit
+                self.__minmaxorbits.append((min, max))
+        else:
+            self.__minmaxorbits = None

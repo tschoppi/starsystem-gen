@@ -108,3 +108,21 @@ SequenceTable = {
     2: 'Giant',
     3: 'White Dwarf'
 }
+
+# Orbital Separation Table
+OrbSepTable = [
+    # Separation & Radius Multiplier & Modifier for Eccentricity roll
+    ['Very Close', 0.05, -6],
+    ['Close',      0.5,  -4],
+    ['Moderate',   2,    -2],
+    ['Wide',      10,     0],
+    ['Distant',   50,     0]
+]
+
+# Stellar Orbital Eccentricity Table
+# The index here is the roll, limits at 3 and 18
+StOEccTable = [
+    None, None, None, 0, 0.1, 0.2,
+    0.3, 0.4, 0.4, 0.5, 0.5, 0.5,
+    0.6, 0.6, 0.7, 0.7, 0.8, 0.9, 0.95
+]

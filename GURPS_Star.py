@@ -10,14 +10,12 @@ class Star:
     def __init__(self, age):
         roller = GD.DiceRoller()
         self.__age = age
-        #self.setAge(age)
         self.makeindex()
         self.makemass()
         self.findsequence()
         self.makeluminosity()
         self.maketemperature()
         self.makeradius()
-        #self.printinfo()
 
     def __repr__(self):
         return repr((self.__mass, self.__luminosity, self.__temperature))
@@ -25,7 +23,6 @@ class Star:
     def printinfo(self):
         print("  Star Info")
         print("  ---------")
-        #print("        Age:\t{}".format(self.__age))
         print("       Mass:\t{}".format(self.__mass))
         print("   Sequence:\t{}".format(SequenceTable[self.__SeqIndex]))
         print(" Luminosity:\t{}".format(self.__luminosity))
@@ -75,9 +72,9 @@ class Star:
             mspan = StEvoTable['Mspan'][self.__StEvoIndex]
             sspan = StEvoTable['Sspan'][self.__StEvoIndex]
             gspan = StEvoTable['Gspan'][self.__StEvoIndex]
-            if age > gspan:
+            if age > (mspan + sspan + gspan):
                 self.__SeqIndex = 3
-            elif age > sspan:
+            elif age > (mspan + sspan):
                 self.__SeqIndex = 2
             elif age > mspan:
                 self.__SeqIndex = 1

@@ -16,6 +16,7 @@ class Star:
         self.makeluminosity()
         self.maketemperature()
         self.makeradius()
+        self.computeorbitlimits()
 
     def __repr__(self):
         return repr((self.__mass, self.__luminosity, self.__temperature))
@@ -29,6 +30,7 @@ class Star:
         print("Temperature:\t{}".format(self.__temperature))
         print("     Radius:\t{}".format(round(self.__radius,6)))
         #print("       Type:\t{}".format(self.__type))
+        print("Orbital Zne:\t{}".format((self.__innerlimit, self.__outerlimit)))
         print("  ---------\n")
 
     def getMass(self):
@@ -135,3 +137,18 @@ class Star:
             rad = 0.000043 # The size is comparable to the one of Earth
 
         self.__radius = rad
+
+    def computeorbitlimits(self):
+        mass = self.__mass
+        lum = self.__luminosity
+
+        # Inner Orbital Limit
+        inner1 = 0.1 * mass
+        inner2 = 0.01 * lum**(0.5)
+        if inner1 > inner2:
+            self.__innerlimit = inner1
+        else:
+            self.__innerlimit = inner2
+
+        # Outer Orbital Limit
+        self.__outerlimit = 40 * mass

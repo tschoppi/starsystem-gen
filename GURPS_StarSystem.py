@@ -165,7 +165,7 @@ class StarSystem:
 
             # Tell the stars their forbidden zones
             if i == 0: # For the first two stars
-                self.stars[0].setForbiddenZone(min, max)
-                self.stars[1].setForbiddenZone(min, max)
+                self.stars[0].setForbiddenZone(start, end)
+                self.stars[1].setForbiddenZone(start, end)
             if i == 1: # For the third star
-                self.stars[2].setForbiddenZone(min, max)
+                self.stars[2].setForbiddenZone(start, end)

@@ -8,6 +8,7 @@ class Star:
         return self.roller.roll(dicenum, modifier)
 
     def __init__(self, age):
+        self.__hasforbiddenzone = False
         roller = GD.DiceRoller()
         self.__age = age
         self.makeindex()
@@ -33,6 +34,8 @@ class Star:
         #print("       Type:\t{}".format(self.__type))
         print("Orbital Zne:\t{}".format((self.__innerlimit, self.__outerlimit)))
         print("  Snow Line:\t{}".format(self.__snowline))
+        if self.__hasforbiddenzone:
+            print(" Forbid Zne:\t{}".format(self.__forbiddenzone))
         print("  ---------\n")
 
     def getMass(self):
@@ -158,3 +161,7 @@ class Star:
     def computesnowline(self):
         initlum = StEvoTable['Lmin'][self.__StEvoIndex]
         self.__snowline = 4.85 * initlum**(0.5)
+
+    def setForbiddenZone(self, inner, outer):
+        self.__forbiddenzone = (inner, outer)
+        self.__hasforbiddenzone = True

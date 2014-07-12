@@ -13,6 +13,7 @@ class StarSystem:
         self.sortstars()
         self.makeorbits()
         self.makeminmaxseps()
+        self.makeforbiddenzones()
         self.printinfo()
 
     def roll(self, dicenum, modifier):
@@ -94,14 +95,12 @@ class StarSystem:
     # Missing: Ensuring that the orbital separation of the second companion is
     #          larger than the separation of the first
     def makeorbits(self):
+        self.__orbsepentry = []
+        self.__orbits = []
         if self.__numstars == 1:
             # Don't do anything for just one star
-            self.__orbsepentry = None
-            self.__orbits = None
             return None
         if self.__numstars >= 2:
-            self.__orbsepentry = []
-            self.__orbits = []
             dice = self.roll(3,0)
             osepindex = self.findorbsepindex(dice)
             orbsep = OrbSepTable[osepindex]
@@ -149,12 +148,24 @@ class StarSystem:
             return 4
 
     def makeminmaxseps(self):
-        if not self.__orbits is None:
-            self.__minmaxorbits = []
-            for i in range(len(self.__orbits)):
-                orbit, ecc = self.__orbits[i]
-                min = (1 - ecc) * orbit
-                max = (1 + ecc) * orbit
-                self.__minmaxorbits.append((min, max))
-        else:
-            self.__minmaxorbits = None
+        self.__minmaxorbits = []
+        for i in range(len(self.__orbits)):
+            orbit, ecc = self.__orbits[i]
+            min = (1 - ecc) * orbit
+            max = (1 + ecc) * orbit
+            self.__minmaxorbits.append((min, max))
+
+    def makeforbiddenzones(self):
+        self.__forbiddenzones = []
+        for i in range(len(self.__minmaxorbits)):
+            min, max = self.__minmaxorbits[i]
+            start = min / 3.
+            end = max * 3.
+            self.__forbiddenzones.append((start, end))
+
+            # Tell the stars their forbidden zones
+            if i == 0: # For the first two stars
+                self.stars[0].setForbiddenZone(min, max)
+                self.stars[1].setForbiddenZone(min, max)
+            if i == 1: # For the third star
+                self.stars[2].setForbiddenZone(min, max)

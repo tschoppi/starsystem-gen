@@ -17,6 +17,7 @@ class Star:
         self.maketemperature()
         self.makeradius()
         self.computeorbitlimits()
+        self.computesnowline()
 
     def __repr__(self):
         return repr((self.__mass, self.__luminosity, self.__temperature))
@@ -31,6 +32,7 @@ class Star:
         print("     Radius:\t{}".format(round(self.__radius,6)))
         #print("       Type:\t{}".format(self.__type))
         print("Orbital Zne:\t{}".format((self.__innerlimit, self.__outerlimit)))
+        print("  Snow Line:\t{}".format(self.__snowline))
         print("  ---------\n")
 
     def getMass(self):
@@ -152,3 +154,7 @@ class Star:
 
         # Outer Orbital Limit
         self.__outerlimit = 40 * mass
+
+    def computesnowline(self):
+        initlum = StEvoTable['Lmin'][self.__StEvoIndex]
+        self.__snowline = 4.85 * initlum**(0.5)

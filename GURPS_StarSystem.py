@@ -133,6 +133,11 @@ class StarSystem:
             self.__orbsepentry.append(orbsep)
             self.__orbits.append((orbit, eccentricity))
 
+            # Recursively contine until second companion is significantly
+            # further away than the first
+            if self.__orbsepentry[0][1] >= self.__orbsepentry[1][1]:
+                return self.makeorbits()
+
 
 
     def findorbsepindex(self, diceroll):

@@ -26,4 +26,26 @@ class AsteroidBelt(OrbitContent):
     pass
 
 class GasGiant(OrbitContent):
-    pass
+    def __init__(self, primarylum, orbitalradius, snowline, rollbonus=True):
+        OrbitContent.__init__(self, primarylum, orbitalradius)
+        self.makesize(rollbonus)
+        self.printinfo()
+
+    def makesize(self, rollbonus):
+        if rollbonus:
+            modifier = 4
+        else:
+            modifier = 0
+        dice = self.roll(3, modifier)
+        self.__size = "Small"
+        if dice > 10:
+            self.__size = "Medium"
+        if dice > 16:
+            self.__size = "Large"
+
+    def printinfo(self):
+        print("Gas Giant Properties")
+        print("--------------------")
+        print("   Size:\t{}".format(self.__size))
+        print("BB Temp:\t{}".format(self.getBBTemp()))
+        print("--------------------")

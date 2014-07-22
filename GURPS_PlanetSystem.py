@@ -1,4 +1,5 @@
 import GURPS_Dice as GD
+from GURPS_Tables import OrbitalSpace
 
 class PlanetSystem:
     def roll(self, dicenum, modifier):
@@ -18,6 +19,7 @@ class PlanetSystem:
         self.makegasgiantarrangement()
         self.placegasgiant()
         self.createorbits()
+        self.printinfo()
 
     def printinfo(self):
         print("--------------------")
@@ -59,4 +61,65 @@ class PlanetSystem:
 
 
     def createorbits(self):
-        self.__orbitarray = []
+        orbits = []
+        if self.__gasarrangement == 'None':
+            # Create orbits outwards from the inner limit
+            orbits += [self.__innerlimit]
+            orbitsout = self.orbitoutward(self.__innerlimit)
+            orbits += orbitsout
+        else:
+            # Create orbits inwards then outwards from first gas giant
+            orbits += [self.__firstgasorbit]
+            orbitsin = self.orbitinward(self.__firstgasorbit)
+            orbitsout = self.orbitoutward(self.__firstgasorbit)
+            orbits = orbitsin + orbits
+            orbits += orbitsout
+        self.__orbitarray = orbits
+
+    def orbitoutward(self, startorbit):
+        allowed = True
+        orbits = []
+        oldorbit = startorbit
+        neworbit = 0
+        while(allowed):
+            orbsep = OrbitalSpace[self.roll(3,0)]
+            neworbit = oldorbit * orbsep
+            if self.allowedorbit(neworbit) and neworbit - oldorbit >= 0.15:
+                orbits += [neworbit]
+                oldorbit = neworbit
+            else:
+                allowed = False
+                # Check to fit one last orbit
+                if self.allowedorbit(oldorbit * 1.4) and neworbit - oldorbit >= 0.15:
+                    orbits += [oldorbit * 1.4]
+                    # Because this worked we'll try to do this one more time
+                    oldorbit = oldorbit * 1.4
+                    allowed = True
+        return orbits
+
+    def orbitinward(self, startorbit):
+        print("Entered OrbitInward")
+        allowed = True
+        orbits = []
+        oldorbit = startorbit
+        neworbit = 0
+        while(allowed):
+            print(" Orbits: {}".format(orbits))
+            orbsep = OrbitalSpace[self.roll(3,0)]
+            print(" Rolled an orbsep = {}".format(orbsep))
+            neworbit = oldorbit / orbsep
+            print(" New Orbit would be {}".format(neworbit))
+            if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
+                print(" It is allowed.")
+                orbits = [neworbit] + orbits
+                oldorbit = neworbit
+            else:
+                allowed = False
+                # Check to fit one last orbit
+                if self.allowedorbit(oldorbit / 1.4) and oldorbit - neworbit >= 0.15:
+                    orbits = [oldorbit / 1.4] + orbits
+                    # Because this worked we'll try to do this one more time
+                    oldorbit = oldorbit / 1.4
+                    allowed = True
+        print("Returning {}".format(orbits))
+        return orbits

@@ -88,12 +88,29 @@ class PlanetSystem:
                 oldorbit = neworbit
             else:
                 allowed = False
-                # Check to fit one last orbit
-                if self.allowedorbit(oldorbit * 1.4) and neworbit - oldorbit >= 0.15:
-                    orbits += [oldorbit * 1.4]
-                    # Because this worked we'll try to do this one more time
-                    oldorbit = oldorbit * 1.4
+                neworbits = [oldorbit * 1.4, oldorbit * 2.0]
+                success = False
+                # Check 1.4 and 2.0 if allowed, take the first
+                for neworb in neworbits:
+                    if self.allowedorbit(neworb):
+                        if neworb - oldorbit >= 0.15:
+                            success = True
+                            neworbit = neworb
+                            oldorbit = neworb
+                            break
+                if success:
+                    orbits += [neworbit]
                     allowed = True
+                else:
+                    # If our searching yielded nothing, check if there is an
+                    # allowed orbit with the minimal distance, and put that
+                    if self.allowedorbit(oldorbit + 0.15) and self.allowedorbit(oldorbit * 1.4):
+                        neworbit = oldorbit + 0.15
+                        orbits += [neworbit]
+                        oldorbit = neworbit
+                        allowed = True
+
+
         return orbits
 
     def orbitinward(self, startorbit):
@@ -110,7 +127,8 @@ class PlanetSystem:
             else:
                 allowed = False
                 # Check to fit one last orbit
-                if self.allowedorbit(oldorbit / 1.4) and oldorbit - neworbit >= 0.15:
+                neworbit = oldorbit / 1.4
+                if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
                     orbits = [oldorbit / 1.4] + orbits
                     # Because this worked we'll try to do this one more time
                     oldorbit = oldorbit / 1.4

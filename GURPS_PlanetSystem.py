@@ -19,7 +19,6 @@ class PlanetSystem:
         self.makegasgiantarrangement()
         self.placegasgiant()
         self.createorbits()
-        self.printinfo()
 
     def printinfo(self):
         print("--------------------")

@@ -14,6 +14,7 @@ class StarSystem:
         self.makeorbits()
         self.makeminmaxseps()
         self.makeforbiddenzones()
+        self.createplanetsystem()
         self.printinfo()
 
     def roll(self, dicenum, modifier):
@@ -174,3 +175,7 @@ class StarSystem:
                 self.stars[1].setForbiddenZone(start, end)
             if i == 1: # For the third star
                 self.stars[2].setForbiddenZone(start, end)
+
+    def createplanetsystem(self):
+        for star in self.stars:
+            star.makeplanetsystem()

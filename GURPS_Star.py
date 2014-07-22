@@ -1,4 +1,5 @@
 import GURPS_Dice as GD
+import GURPS_PlanetSystem as PS
 from GURPS_Tables import StEvoTable, IndexTable, SequenceTable
 
 class Star:
@@ -36,6 +37,7 @@ class Star:
         print("  Snow Line:\t{}".format(self.__snowline))
         if self.__hasforbiddenzone:
             print(" Forbid Zne:\t{}".format(self.__forbiddenzone))
+        self.planetsystem.printinfo()
         print("  ---------\n")
 
     def getMass(self):
@@ -165,3 +167,15 @@ class Star:
     def setForbiddenZone(self, inner, outer):
         self.__forbiddenzone = (inner, outer)
         self.__hasforbiddenzone = True
+
+    def makeplanetsystem(self):
+        if self.__hasforbiddenzone:
+            finner, fouter = self.__forbiddenzone
+            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
+                                                self.__outerlimit,
+                                                self.__snowline,
+                                                finner, fouter)
+        else:
+            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
+                                                self.__outerlimit,
+                                                self.__snowline)

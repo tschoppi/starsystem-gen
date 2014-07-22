@@ -98,19 +98,14 @@ class PlanetSystem:
         return orbits
 
     def orbitinward(self, startorbit):
-        print("Entered OrbitInward")
         allowed = True
         orbits = []
         oldorbit = startorbit
         neworbit = 0
         while(allowed):
-            print(" Orbits: {}".format(orbits))
             orbsep = OrbitalSpace[self.roll(3,0)]
-            print(" Rolled an orbsep = {}".format(orbsep))
             neworbit = oldorbit / orbsep
-            print(" New Orbit would be {}".format(neworbit))
             if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
-                print(" It is allowed.")
                 orbits = [neworbit] + orbits
                 oldorbit = neworbit
             else:
@@ -121,5 +116,4 @@ class PlanetSystem:
                     # Because this worked we'll try to do this one more time
                     oldorbit = oldorbit / 1.4
                     allowed = True
-        print("Returning {}".format(orbits))
         return orbits

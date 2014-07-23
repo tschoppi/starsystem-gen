@@ -166,11 +166,15 @@ class PlanetSystem:
         # Put the first gas giant
         if self.__gasarrangement is not 'None':
             # Check whether roll bonus for size is applicable here
-            bonus = self.__firstgasorbit <= self.__snowline
-            if not bonus:
-                ggindex = orbits.index(self.__firstgasorbit)
-                if ggindex > 0:
-                    bonus = orbits[ggindex-1] < self.__snowline
+            bonus = self.gasgiantbonus(self.__firstgasorbit)
+
             # Add a GasGiant to the dict
             self.__orbitcontents[self.__firstgasorbit] = OC.GasGiant(
                 self.__primarylum, self.__firstgasorbit, self.__snowline, bonus)
+    def gasgiantbonus(self, orbit):
+        bonus = orbit <= self.__snowline
+        if not bonus:
+            ggindex = self.__orbitarray.index(orbit)
+            if ggindex > 0:
+                bonus = self.__orbitarray[ggindex-1] < self.__snowline
+        return bonus

@@ -1,24 +1,30 @@
 import GURPS_Dice as GD
+import GURPS_OrbitContents as OC
 from GURPS_Tables import OrbitalSpace
 
 class PlanetSystem:
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
 
-    def __init__(self, innerlimit, outerlimit, snowline,
+    def __init__(self, innerlimit, outerlimit, snowline, primarylum,
                  innerforbidden=None, outerforbidden=None):
         self.roller = GD.DiceRoller()
         self.__innerlimit = innerlimit
         self.__outerlimit = outerlimit
         self.__snowline = snowline
+        self.__primarylum = primarylum
         self.__forbidden = False
         if innerforbidden is not None and outerforbidden is not None:
             self.__innerforbidden = innerforbidden
             self.__outerforbidden = outerforbidden
             self.__forbidden = True
         self.makegasgiantarrangement()
-        self.placegasgiant()
+        self.placefirstgasgiant()
         self.createorbits()
+        self.makecontentlist()
+        # Not yet implemented methods
+        #self.placegasgiants()
+        #self.fillorbits()
 
     def printinfo(self):
         print("--------------------")
@@ -31,6 +37,8 @@ class PlanetSystem:
         # Nicely formatted orbits
         norb = [round(orb, 3) for orb in self.__orbitarray]
         print("     Orbits:\t{}".format(norb))
+        # The following is still ugly
+        print("Orb Content:\t{}".format(self.__orbitcontents))
 
     def allowedorbit(self, testorbit):
         result  = testorbit >= self.__innerlimit
@@ -52,7 +60,7 @@ class PlanetSystem:
         if dice > 14:
             self.__gasarrangement = 'Epistellar'
 
-    def placegasgiant(self):
+    def placefirstgasgiant(self):
         orbit = 0
         if self.__gasarrangement == 'Conventional':
             orbit = (1 + (self.roll(2,-2) * 0.05)) * self.__snowline
@@ -138,3 +146,22 @@ class PlanetSystem:
                     oldorbit = oldorbit / 1.4
                     allowed = True
         return orbits
+
+
+    def makecontentlist(self):
+        # Make a dictionary: Orbit: Content. Initially this will only contain
+        # the first gas giant. (If gas giant arrangement is not "None")
+        orbits = self.__orbitarray
+        self.__orbitcontents = dict.fromkeys(self.__orbitarray)
+
+        # Put the first gas giant
+        if self.__gasarrangement is not 'None':
+            # Check whether roll bonus for size is applicable here
+            bonus = self.__firstgasorbit <= self.__snowline
+            if not bonus:
+                ggindex = orbits.index(self.__firstgasorbit)
+                if ggindex > 0:
+                    bonus = orbits[ggindex-1] < self.__snowline
+            # Add a GasGiant to the dict
+            self.__orbitcontents[self.__firstgasorbit] = OC.GasGiant(
+                self.__primarylum, self.__firstgasorbit, self.__snowline, bonus)

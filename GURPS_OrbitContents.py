@@ -29,7 +29,7 @@ class GasGiant(OrbitContent):
     def __init__(self, primarylum, orbitalradius, snowline, rollbonus=True):
         OrbitContent.__init__(self, primarylum, orbitalradius)
         self.makesize(rollbonus)
-        self.printinfo()
+        #self.printinfo()
 
     def __repr__(self):
         return repr("{} Gas Giant".format(self.__size))
@@ -52,3 +52,6 @@ class GasGiant(OrbitContent):
         print("   Size:\t{}".format(self.__size))
         print("BB Temp:\t{}".format(self.getBBTemp()))
         print("--------------------")
+
+    def type(self):
+        return "Gas Giant"

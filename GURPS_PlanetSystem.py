@@ -37,8 +37,17 @@ class PlanetSystem:
         # Nicely formatted orbits
         norb = [round(orb, 3) for orb in self.__orbitarray]
         print("     Orbits:\t{}".format(norb))
-        # The following is still ugly
-        print("Orb Content:\t{}".format(self.__orbitcontents))
+        # Beautifully formatted listing of orbits and contents
+        self.printorbcontent()
+
+    def printorbcontent(self):
+        first = True
+        for skey in sorted(self.__orbitcontents):
+            if first:
+                print("Orb Content:\t{}: {}".format(round(skey,3), self.__orbitcontents[skey]))
+                first = False
+            else:
+                print("\t\t{}: {}".format(round(skey,3), self.__orbitcontents[skey]))
 
     def allowedorbit(self, testorbit):
         result  = testorbit >= self.__innerlimit

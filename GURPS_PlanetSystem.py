@@ -25,8 +25,12 @@ class PlanetSystem:
         print(" Planet System Info ")
         print("--------------------")
         print("GG Arrngmnt:\t{}".format(self.__gasarrangement))
-        print("Frst GG Orb:\t{}".format(self.__firstgasorbit))
-        print("     Orbits:\t{}".format(self.__orbitarray))
+        # Nicely formatted first gas giant orbit
+        nggorb = round(self.__firstgasorbit, 3)
+        print("Frst GG Orb:\t{}".format(nggorb))
+        # Nicely formatted orbits
+        norb = [round(orb, 3) for orb in self.__orbitarray]
+        print("     Orbits:\t{}".format(norb))
 
     def allowedorbit(self, testorbit):
         result  = testorbit >= self.__innerlimit

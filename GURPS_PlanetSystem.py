@@ -22,8 +22,8 @@ class PlanetSystem:
         self.placefirstgasgiant()
         self.createorbits()
         self.makecontentlist()
+        self.placegasgiants()
         # Not yet implemented methods
-        #self.placegasgiants()
         #self.fillorbits()
 
     def printinfo(self):
@@ -171,6 +171,38 @@ class PlanetSystem:
             # Add a GasGiant to the dict
             self.__orbitcontents[self.__firstgasorbit] = OC.GasGiant(
                 self.__primarylum, self.__firstgasorbit, self.__snowline, bonus)
+
+    def placegasgiants(self):
+        # Iterate through all orbits necessary and decide whether to place a
+        # gas giant there. Also check whether the orbit is eligible for a bonus
+
+        rollorbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
+        smallorbits = [orb for orb in rollorbits if orb < self.__snowline]
+        largeorbits = [orb for orb in rollorbits if orb > self.__snowline]
+        if self.__gasarrangement is 'Epistellar':
+            for so in smallorbits:
+                if self.roll(3,0) <= 6:
+                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
+                        so, self.__snowline, True)
+            for so in largeorbits:
+                if self.roll(3,0) <= 14:
+                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
+                        so, self.__snowline, self.gasgiantbonus(so))
+        elif self.__gasarrangement is 'Eccentric':
+            for so in smallorbits:
+                if self.roll(3,0) <= 8:
+                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
+                        so, self.__snowline, True)
+            for so in largeorbits:
+                if self.roll(3,0) <= 14:
+                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
+                        so, self.__snowline, self.gasgiantbonus(so))
+        elif self.__gasarrangement is 'Conventional':
+            for so in largeorbits:
+                if self.roll(3,0) <= 15:
+                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
+                        so, self.__snowline, self.gasgiantbonus(so))
+
     def gasgiantbonus(self, orbit):
         bonus = orbit <= self.__snowline
         if not bonus:

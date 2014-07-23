@@ -33,10 +33,17 @@ class Star:
         print("Temperature:\t{}".format(self.__temperature))
         print("     Radius:\t{}".format(round(self.__radius,6)))
         #print("       Type:\t{}".format(self.__type))
-        print("Orbital Zne:\t{}".format((self.__innerlimit, self.__outerlimit)))
-        print("  Snow Line:\t{}".format(self.__snowline))
+
+        # Nicely formatted orbital zone
+        norzone = (round(self.__innerlimit, 3), round(self.__outerlimit, 3))
+        print("Orbital Zne:\t{}".format(norzone))
+        # Nicely formatted snow line
+        nsnline = round(self.__snowline, 3)
+        print("  Snow Line:\t{}".format(nsnline))
         if self.__hasforbiddenzone:
-            print(" Forbid Zne:\t{}".format(self.__forbiddenzone))
+            # Nicely formatted forbidden zone
+            nforb = [round(fz) for fz in self.__forbiddenzone]
+            print(" Forbid Zne:\t{}".format(nforb))
         self.planetsystem.printinfo()
         print("  ---------\n")
 

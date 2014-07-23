@@ -31,6 +31,9 @@ class GasGiant(OrbitContent):
         self.makesize(rollbonus)
         self.printinfo()
 
+    def __repr__(self):
+        return repr("{} Gas Giant".format(self.__size))
+
     def makesize(self, rollbonus):
         if rollbonus:
             modifier = 4

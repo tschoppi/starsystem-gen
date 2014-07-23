@@ -181,8 +181,10 @@ class Star:
             self.planetsystem = PS.PlanetSystem(self.__innerlimit,
                                                 self.__outerlimit,
                                                 self.__snowline,
+                                                self.__luminosity,
                                                 finner, fouter)
         else:
             self.planetsystem = PS.PlanetSystem(self.__innerlimit,
                                                 self.__outerlimit,
-                                                self.__snowline)
+                                                self.__snowline,
+                                                self.__luminosity)

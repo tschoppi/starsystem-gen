@@ -19,10 +19,22 @@ class OrbitContent:
         return self.__bbtemp
 
 class World(OrbitContent):
-    pass
-#class TerrPlanet(Planet):
+    def __init__(self, primarylum, orbitalradius, sizeclass):
+        OrbitContent.__init__(self, primarylum, orbitalradius)
+        self.__sizeclass = sizeclass
+
+    def __repr__(self):
+        return repr("{} Terrestrial Planet".format(self.__sizeclass))
+
+    def type(self):
+        return "Terrestrial World"
 
 class AsteroidBelt(OrbitContent):
+    def __repr__(self):
+        return repr("Asteroid Belt")
+        
+    def type(self):
+        return "Asteroid Belt"
     pass
 
 class GasGiant(OrbitContent):

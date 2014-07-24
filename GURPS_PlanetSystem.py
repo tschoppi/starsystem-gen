@@ -23,8 +23,7 @@ class PlanetSystem:
         self.createorbits()
         self.makecontentlist()
         self.placegasgiants()
-        # Not yet implemented methods
-        #self.fillorbits()
+        self.fillorbits()
 
     def printinfo(self):
         print("--------------------")
@@ -210,3 +209,53 @@ class PlanetSystem:
             if ggindex > 0:
                 bonus = self.__orbitarray[ggindex-1] < self.__snowline
         return bonus
+
+    def fillorbits(self):
+        # Determine eligible orbits to roll for
+        rollorbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
+        rollorbits.sort()
+        # Go through these orbits and determine the contents
+        for orbit in rollorbits:
+            rollmod = self.orbitfillmodifier(self.__orbitarray.index(orbit))
+            diceroll = self.roll(3, rollmod)
+            if diceroll >= 4 and diceroll <= 6:
+                obj = OC.AsteroidBelt(self.__primarylum, orbit)
+            if diceroll >= 7 and diceroll <= 8:
+                obj = OC.World(self.__primarylum, orbit, "Tiny")
+            if diceroll >= 9 and diceroll <= 11:
+                obj = OC.World(self.__primarylum, orbit, "Small")
+            if diceroll >= 12 and diceroll <= 15:
+                obj = OC.World(self.__primarylum, orbit, "Standard")
+            if diceroll >= 16:
+                obj = OC.World(self.__primarylum, orbit, "Large")
+            if not diceroll <= 3:
+                self.__orbitcontents[orbit] = obj
+
+
+    def orbitfillmodifier(self, orbitindex):
+        modifier = 0
+        orbits = self.__orbitarray
+        # If the orbit is adjacent to a forbidden zone
+        if self.__forbidden:
+            if orbitindex == 0 and self.__outerforbidden < orbits[orbitindex]:
+                modifier -= 6
+            if orbitindex == len(orbits)-1 and self.__innerforbidden > orbits[orbitindex]:
+                modifier -= 6
+
+        # If the orbit is adjacent to the inner or outer limit
+        if orbitindex == 0 or orbitindex == len(orbits)-1:
+            modifier -= 3
+
+        # If the next orbit outward is occupied by a gas giant
+        if orbitindex is not len(orbits)-1:
+            if self.__orbitcontents[orbits[orbitindex + 1]] is not None:
+                if self.__orbitcontents[orbits[orbitindex + 1]].type() is "Gas Giant":
+                    modifier -= 6
+
+        # If the next orbit inward is occupied by a gas giant
+        if orbitindex is not 0:
+            if self.__orbitcontents[orbits[orbitindex - 1]] is not None:
+                if self.__orbitcontents[orbits[orbitindex - 1]].type() is "Gas Giant":
+                    modifier -= 3
+
+        return modifier

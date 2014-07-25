@@ -133,3 +133,17 @@ OrbitalSpace = [
     1.5, 1.6, 1.6, 1.7, 1.7, 1.7,
     1.7, 1.8, 1.8, 1.9, 1.9, 2.0, 2.0
 ]
+
+# Sizeclass to integer dict
+SizeToInt = {
+    "Tiny": 0,
+    "Small": 1,
+    "Standard": 2,
+    "Medium": 2,
+    "Large": 3
+}
+
+# Integer to sizeclass array
+IntToSize = [
+    "Tiny", "Small", "Standard", "Large"
+]

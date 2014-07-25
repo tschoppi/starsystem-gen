@@ -29,10 +29,13 @@ class World(OrbitContent):
     def type(self):
         return "Terrestrial World"
 
+    def getSize(self):
+        return self.__sizeclass
+
 class AsteroidBelt(OrbitContent):
     def __repr__(self):
         return repr("Asteroid Belt")
-        
+
     def type(self):
         return "Asteroid Belt"
     pass
@@ -57,6 +60,9 @@ class GasGiant(OrbitContent):
             self.__size = "Medium"
         if dice > 16:
             self.__size = "Large"
+
+    def getSize(self):
+        return self.__size
 
     def printinfo(self):
         print("Gas Giant Properties")

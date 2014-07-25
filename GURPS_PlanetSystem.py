@@ -82,9 +82,13 @@ class PlanetSystem:
     def createorbits(self):
         orbits = []
         if self.__gasarrangement == 'None':
-            # Create orbits outwards from the inner limit
-            orbits += [self.__innerlimit]
-            orbitsout = self.orbitoutward(self.__innerlimit)
+            # Create orbits outwards from the innermost limit
+            if self.__forbidden and self.__innerforbidden < self.__innerlimit:
+                innermost = self.__outerforbidden
+            else:
+                innermost = self.__innerlimit
+            orbits += [innermost]
+            orbitsout = self.orbitoutward(innermost)
             orbits += orbitsout
         else:
             # Create orbits inwards then outwards from first gas giant

@@ -1,8 +1,35 @@
 from Tkinter import *
+import Tkinter
 import ttk
 import GURPS_Dice as GD
+import tkMessageBox
 
-class diceWindow: 
+class mainWindow(Tkinter.Frame):
+	roller = GD.DiceRoller()
+
+	def __init__(self, parent):		
+		width = parent.winfo_screenwidth() / 5 
+		height = parent.winfo_screenheight() / 5
+		offset_x = (parent.winfo_screenwidth() / 2) - (width / 2)
+		offset_y = (parent.winfo_screenheight() / 2) - (height / 2)
+		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
+		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))	
+
+		mainframe = ttk.Frame(root, padding="3 3 12 12")
+		mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+		mainframe.columnconfigure(3, weight=1)
+		mainframe.rowconfigure(3, weight=1)	
+
+		ttk.Button(mainframe, text="Open the main Star System Generation", command= lambda: tkMessageBox.showinfo("Placeholder", "This is not yet implemented")).grid(column=2, row=1, sticky=(W,E))
+		ttk.Button(mainframe, text="Open a dice roller", command= lambda: self.openDiceWindow(parent)).grid(column=2, row=2, sticky=(W,E))
+
+	def openDiceWindow(self, parent):
+		window = Toplevel()
+		diceWindow(window)
+
+
+
+class diceWindow(Tkinter.Frame): 
 
 	roller = GD.DiceRoller()
 	
@@ -13,7 +40,7 @@ class diceWindow:
 
 	def __init__(self, parent):
 
-		parent.title("GURPS Starsystem Generator")
+		
 		# For now, 1/16th of the screen, centered so that the center of the window is the center of the screen. 
 		# Perhaps make it bigger later 
 		width = parent.winfo_screenwidth() / 4 
@@ -23,10 +50,10 @@ class diceWindow:
 		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
 		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))
 
-		mainframe = ttk.Frame(root, padding="3 3 12 12")
+		mainframe = ttk.Frame(parent, padding="3 3 12 12")
 		mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-		mainframe.columnconfigure(4, weight=1)
-		mainframe.rowconfigure(4, weight=1)
+		mainframe.columnconfigure(3, weight=1)
+		mainframe.rowconfigure(3, weight=1)
 
 		diceResult = StringVar()
 		dicenum    = IntVar()
@@ -36,10 +63,12 @@ class diceWindow:
 		ttk.Entry(mainframe, textvariable=dicenum).grid(column=2, row=1, sticky=(W,E))
 		ttk.Entry(mainframe, textvariable=modifier).grid(column=3, row=1, sticky=(W,E))
 		ttk.Button(mainframe, text="Roll!", command= lambda: self.rollAndUpdate(dicenum.get(), modifier.get(), diceResult)).grid(column=2, row=2, sticky=(W,E))
+		ttk.Label(mainframe,  text="Result of your roll:").grid(column=1, row=3, sticky=(W,E))
 		ttk.Label(mainframe,  textvariable=diceResult).grid(column=2, row=3, sticky=(W,E))
 
 		for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
 
 root = Tk()
-guiDiceWindow = diceWindow(root)
+root.title("GURPS Starsystem Generator")
+startWindow = mainWindow(root)
 root.mainloop()

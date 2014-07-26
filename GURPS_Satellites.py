@@ -7,13 +7,18 @@ class Satellite:
         return self.roller.roll(dicenum, modifier)
 
     def __init__(self, parentplanet):
-        parent = parentplanet
+        self.parent = parentplanet
         self.roller = GD.DiceRoller()
 
 class Moon(Satellite):
     def __init__(self, parentplanet):
         Satellite.__init__(self, parentplanet)
         self.makesize()
+
+    def printinfo(self):
+        print("Moon Information")
+        print("Parent Planet:\t{}".format(self.parent))
+        print("   Size Class:\t{}".format(self.__sizeclass))
 
     def makesize(self):
         parentsize = SizeToInt[parent.getSize()]
@@ -31,4 +36,6 @@ class Moon(Satellite):
         self.__sizeclass = IntToSize[childsize]
 
 class Moonlet(Satellite):
-    pass
+    def printinfo(self):
+        print("Moonlet Information")
+        print("Parent Planet:\t{}".format(self.parent))

@@ -24,13 +24,23 @@ class World(OrbitContent):
         self.__sizeclass = sizeclass
 
     def __repr__(self):
-        return repr("{} Terrestrial Planet".format(self.__sizeclass))
+        return repr("World")
 
     def type(self):
-        return "Terrestrial World"
+        return "World"
 
     def getSize(self):
         return self.__sizeclass
+
+class Planet(World):
+    def __init__(self, primarylum, orbitalradius, sizeclass):
+        World.__init__(self, primarylum, orbitalradius, sizeclass)
+
+    def __repr__(self):
+        return repr("{} Terrestrial Planet".format(self.getSize()))
+
+    def type(self):
+        return "Terrestrial World"
 
 class AsteroidBelt(OrbitContent):
     def __repr__(self):

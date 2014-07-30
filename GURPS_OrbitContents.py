@@ -23,6 +23,9 @@ class OrbitContent:
     def getOrbit(self):
         return self.__orbit
 
+
+
+
 class World(OrbitContent):
     def __init__(self, primarylum, orbitalradius, sizeclass):
         OrbitContent.__init__(self, primarylum, orbitalradius)
@@ -36,6 +39,9 @@ class World(OrbitContent):
 
     def getSize(self):
         return self.__sizeclass
+
+
+
 
 class Planet(World):
     def __init__(self, primarylum, orbitalradius, sizeclass):
@@ -87,6 +93,7 @@ class Planet(World):
             return self.__moonlets
 
 
+
 class AsteroidBelt(OrbitContent):
     def __repr__(self):
         return repr("Asteroid Belt")
@@ -95,10 +102,14 @@ class AsteroidBelt(OrbitContent):
         return "Asteroid Belt"
     pass
 
+
+
+
 class GasGiant(OrbitContent):
     def __init__(self, primarylum, orbitalradius, snowline, rollbonus=True):
         OrbitContent.__init__(self, primarylum, orbitalradius)
         self.makesize(rollbonus)
+        self.makemoons()
         #self.printinfo()
 
     def __repr__(self):
@@ -129,6 +140,63 @@ class GasGiant(OrbitContent):
     def type(self):
         return "Gas Giant"
 
+    def makemoons(self):
+        self.makefirstfamily()
+        self.makesecondfamily()
+        self.makethirdfamily()
+
+    def makefirstfamily(self):
+        orbit = self.getOrbit()
+        modifier = 0
+        if orbit <= 0.1:
+            modifier = -10
+        if orbit > 0.1 and orbit <= 0.5:
+            modifier = -8
+        if orbit > 0.5 and orbit <= 0.75:
+            modifier = -6
+        if orbit > 0.75 and orbit <= 1.5:
+            modifier = -3
+        nummoonlets = self.roll(2, modifier)
+        if nummoonlets < 0:
+            nummoonlets = 0
+        self.__firstfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+
+
+    def makesecondfamily(self):
+        orbit = self.getOrbit()
+        modifier = 0
+        if orbit <= 0.1:
+            modifier = -200 # Equivalent to "do not roll"
+        if orbit > 0.1 and orbit <= 0.5:
+            modifier = -5
+        if orbit > 0.5 and orbit <= 0.75:
+            modifier = -3
+        if orbit > 0.75 and orbit <= 1.5:
+            modifier = -1
+        nummoons = self.roll(1, modifier)
+        if nummoons < 0:
+            nummoons = 0
+        self.__secondfamily = [Moon(self) for nummoon in range(nummoons)]
+
+
+    def makethirdfamily(self):
+        orbit = self.getOrbit()
+        modifier = 0
+        if orbit <= 0.5:
+            modifier = -200 # Equivalent to "do not roll"
+        if orbit > 0.5 and orbit <= 0.75:
+            modifier = -5
+        if orbit > 0.75 and orbit <= 1.5:
+            modifier = -4
+        if orbit > 1.5 and orbit <= 3:
+            modifier = -1
+        nummoonlets = self.roll(1, modifier)
+        if nummoonlets < 0:
+            nummoonlets = 0
+        self.__thirdfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+
+
+
 class Moon(World):
     def __init__(self, parentplanet):
         self.parent = parentplanet
@@ -158,6 +226,9 @@ class Moon(World):
 
     def setOrbit(self, orbit):
         self.__orbit = orbit
+
+
+
 
 class Moonlet:
     def roll(self, ndice, modifier):

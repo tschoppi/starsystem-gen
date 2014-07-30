@@ -199,6 +199,7 @@ class GasGiant(OrbitContent):
 
 class Moon(World):
     def __init__(self, parentplanet):
+        self.roller = GD.DiceRoller()
         self.parent = parentplanet
         self.__orbit = None
         self.makesize()
@@ -210,6 +211,7 @@ class Moon(World):
         print("        Orbit:\t{}".format(self.__orbit))
 
     def makesize(self):
+        parent = self.parent
         parentsize = SizeToInt[parent.getSize()]
         if parent.type() == "Gas Giant":
             parentsize = SizeToInt["Large"]
@@ -227,12 +229,14 @@ class Moon(World):
     def setOrbit(self, orbit):
         self.__orbit = orbit
 
+    def roll(self, ndice, modifier):
+        return self.roller.roll(ndice, modifier)
 
 
 
 class Moonlet:
     def roll(self, ndice, modifier):
-        return self.roller.roll(dicenum, modifier)
+        return self.roller.roll(ndice, modifier)
 
     def __init__(self, parentplanet):
         self.parent = parentplanet

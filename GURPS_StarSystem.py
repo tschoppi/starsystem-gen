@@ -5,10 +5,24 @@ from GURPS_Tables import OrbSepTable, StOEccTable
 class StarSystem:
     roller = GD.DiceRoller()
 
-    def __init__(self):
-        self.__opencluster = self.randomcluster()
-        self.__numstars = self.randomstarnum()
-        self.makeage()
+    def __init__(self, **kwargs):
+        opencluster = kwargs.get('opencluster', None)
+        if opencluster is not None:
+            self.__opencluster = opencluster
+        else:
+            self.__opencluster = self.randomcluster()
+
+        numstars = kwargs.get('numstars', None)
+        if numstars is not None:
+            if numstars > 0 and numstars < 3:
+                self.__numstars = numstars
+            else:
+                self.__numstars = self.randomstarnum()
+        else:
+            self.__numstars = self.randomstarnum()
+
+        age = kwargs.get('age', None)
+        self.makeage(age)
         self.generatestars()
         self.sortstars()
         self.makeorbits()
@@ -56,11 +70,14 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars.append(GS.Star(age=self.__age))
 
-    def makeage(self):
-        provage = self.randomage()
-        while self.__opencluster and provage > 2:
+    def makeage(self, age):
+        if age is None:
             provage = self.randomage()
-        self.__age = provage
+            while self.__opencluster and provage > 2:
+                provage = self.randomage()
+            self.__age = provage
+        else:
+            self.__age = age
 
     def randomage(self):
         diceroll = self.roll(3,0)

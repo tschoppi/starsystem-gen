@@ -132,12 +132,14 @@ class GasGiant(OrbitContent):
 class Moon(World):
     def __init__(self, parentplanet):
         self.parent = parentplanet
+        self.__orbit = None
         self.makesize()
 
     def printinfo(self):
         print("Moon Information")
         print("Parent Planet:\t{}".format(self.parent))
         print("   Size Class:\t{}".format(self.__sizeclass))
+        print("        Orbit:\t{}".format(self.__orbit))
 
     def makesize(self):
         parentsize = SizeToInt[parent.getSize()]
@@ -153,6 +155,9 @@ class Moon(World):
         if childsize < 0:
             childsize = 0
         self.__sizeclass = IntToSize[childsize]
+
+    def setOrbit(self, orbit):
+        self.__orbit = orbit
 
 class Moonlet:
     def roll(self, ndice, modifier):

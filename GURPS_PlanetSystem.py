@@ -225,13 +225,13 @@ class PlanetSystem:
             if diceroll >= 4 and diceroll <= 6:
                 obj = OC.AsteroidBelt(self.__primarylum, orbit)
             if diceroll >= 7 and diceroll <= 8:
-                obj = OC.World(self.__primarylum, orbit, "Tiny")
+                obj = OC.Planet(self.__primarylum, orbit, "Tiny")
             if diceroll >= 9 and diceroll <= 11:
-                obj = OC.World(self.__primarylum, orbit, "Small")
+                obj = OC.Planet(self.__primarylum, orbit, "Small")
             if diceroll >= 12 and diceroll <= 15:
-                obj = OC.World(self.__primarylum, orbit, "Standard")
+                obj = OC.Planet(self.__primarylum, orbit, "Standard")
             if diceroll >= 16:
-                obj = OC.World(self.__primarylum, orbit, "Large")
+                obj = OC.Planet(self.__primarylum, orbit, "Large")
             if not diceroll <= 3:
                 self.__orbitcontents[orbit] = obj
 

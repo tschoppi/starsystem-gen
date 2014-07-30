@@ -40,12 +40,52 @@ class World(OrbitContent):
 class Planet(World):
     def __init__(self, primarylum, orbitalradius, sizeclass):
         World.__init__(self, primarylum, orbitalradius, sizeclass)
+        self.generatemoons()
 
     def __repr__(self):
         return repr("{} Terrestrial Planet".format(self.getSize()))
 
     def type(self):
         return "Terrestrial World"
+
+    def generatemoons(self):
+        rollmod = -4
+        rollmod += self.moonrollmodifier()
+        moonroll = self.roll(1, rollmod)
+        if moonroll < 0:
+            moonroll = 0
+            # If we have no major moons, generate moonlets
+            self.generatemoonlets()
+        self.__nummoons = moonroll
+        self.__moons = [Moon(self) for moonnum in range(moonroll)]
+
+    def generatemoonlets(self):
+        rollmod = -2
+        rollmod += self.moonrollmodifier()
+        moonletroll = self.roll(1, rollmod)
+        if moonletroll < 0:
+            moonletroll = 0
+        self.__nummoonlets = moonletroll
+        self.__moonlets = [Moonlet(self) for moonletnum in range(moonletroll)]
+
+    def moonrollmodifier(self):
+        modifier = 0
+        orbit = self.getOrbit()
+        if orbit <= 0.5:
+            return -20 # Equivalent to "do not roll"
+        if orbit > 0.5 and orbit <= 0.75:
+            modifier -= 3
+        if orbit > 0.75 and orbit <= 1.5:
+            modifier -= 1
+        modifier += (SizeToInt[self.getSize()] - 2)
+        return modifier
+
+    def getSatellites(self):
+        if self.__nummoons > 0:
+            return self.__moons
+        if self.__nummoonlets > 0:
+            return self.__moonlets
+
 
 class AsteroidBelt(OrbitContent):
     def __repr__(self):
@@ -90,7 +130,7 @@ class GasGiant(OrbitContent):
         return "Gas Giant"
 
 class Moon(World):
-    def __init__(self, primarylum, orbitalradius, sizeclass, parentplanet):
+    def __init__(self, parentplanet):
         self.parent = parentplanet
         self.makesize()
 

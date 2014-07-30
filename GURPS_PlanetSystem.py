@@ -90,6 +90,18 @@ class PlanetSystem:
             orbits += [innermost]
             orbitsout = self.orbitoutward(innermost)
             orbits += orbitsout
+        elif self.__gasarrangement == 'Epistellar':
+            # Create orbits outwards. Since the epistellar GasGiant is closer to
+            # the star than the inner orbital limit, special conditions apply
+            orbits += [self.__firstgasorbit]
+            startorbit = self.__firstgasorbit + 0.15
+            # If the minimal distance is not within the orbital zone make the
+            # next orbit right at the border
+            if not self.allowedorbit(startorbit):
+                startorbit = self.__innerlimit
+            orbits += [startorbit]
+            orbitsout = self.orbitoutward(startorbit)
+            orbits += orbitsout
         else:
             # Create orbits inwards then outwards from first gas giant
             orbits += [self.__firstgasorbit]

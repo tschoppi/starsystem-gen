@@ -1,5 +1,7 @@
-# Here live all the GURPS Orbit Contents; Planets and Asteroid Belts
+# Here live all the GURPS Orbit Contents; Planets and Asteroid Belts, Moons and
+# Moonlets
 import GURPS_Dice as GD
+from GURPS_Tables import SizeToInt, IntToSize
 
 class OrbitContent:
     def roll(self, dicenum, modifier):
@@ -17,6 +19,9 @@ class OrbitContent:
 
     def getBBTemp(self):
         return self.__bbtemp
+
+    def getOrbit(self):
+        return self.__orbit
 
 class World(OrbitContent):
     def __init__(self, primarylum, orbitalradius, sizeclass):
@@ -83,3 +88,40 @@ class GasGiant(OrbitContent):
 
     def type(self):
         return "Gas Giant"
+
+class Moon(World):
+    def __init__(self, primarylum, orbitalradius, sizeclass, parentplanet):
+        self.parent = parentplanet
+        self.makesize()
+
+    def printinfo(self):
+        print("Moon Information")
+        print("Parent Planet:\t{}".format(self.parent))
+        print("   Size Class:\t{}".format(self.__sizeclass))
+
+    def makesize(self):
+        parentsize = SizeToInt[parent.getSize()]
+        if parent.type() == "Gas Giant":
+            parentsize = SizeToInt["Large"]
+        diceroll = self.roll(3,0)
+        if diceroll >= 15:
+            childsize = parentsize - 1
+        if diceroll >= 12:
+            childsize = parentsize - 2
+        else:
+            childsize = parentsize - 3
+        if childsize < 0:
+            childsize = 0
+        self.__sizeclass = IntToSize[childsize]
+
+class Moonlet:
+    def roll(self, ndice, modifier):
+        return self.roller.roll(dicenum, modifier)
+
+    def __init__(self, parentplanet):
+        self.parent = parentplanet
+        self.roller = GD.DiceRoller()
+
+    def printinfo(self):
+        print("Moonlet Information")
+        print("Parent Planet:\t{}".format(self.parent))

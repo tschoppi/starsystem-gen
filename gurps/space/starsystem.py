@@ -14,7 +14,7 @@ class StarSystem:
 
         numstars = kwargs.get('numstars', None)
         if numstars is not None:
-            if numstars > 0 and numstars < 3:
+            if numstars > 0 and numstars <= 3:
                 self.__numstars = numstars
             else:
                 self.__numstars = self.randomstarnum()

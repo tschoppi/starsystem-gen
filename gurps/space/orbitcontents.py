@@ -8,10 +8,12 @@ class OrbitContent:
         return self.roller.roll(dicenum, modifier)
 
     def __init__(self,
-                 primarylum,    # Primary star's luminosity
+                 primary,    # Primary star
                  orbitalradius):
         self.roller = GD.DiceRoller()
         self.__orbit = orbitalradius
+        self.primarystar = primary
+        primarylum = self.primarystar.getLuminosity()
         self.makebbtemp(primarylum, self.__orbit)
 
     def makebbtemp(self, lum, orb):
@@ -27,8 +29,8 @@ class OrbitContent:
 
 
 class World(OrbitContent):
-    def __init__(self, primarylum, orbitalradius, sizeclass):
-        OrbitContent.__init__(self, primarylum, orbitalradius)
+    def __init__(self, primary, orbitalradius, sizeclass):
+        OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
 
     def __repr__(self):
@@ -44,8 +46,8 @@ class World(OrbitContent):
 
 
 class Planet(World):
-    def __init__(self, primarylum, orbitalradius, sizeclass):
-        World.__init__(self, primarylum, orbitalradius, sizeclass)
+    def __init__(self, primary, orbitalradius, sizeclass):
+        World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
 
     def __repr__(self):
@@ -63,7 +65,7 @@ class Planet(World):
             # If we have no major moons, generate moonlets
             self.generatemoonlets()
         self.__nummoons = moonroll
-        self.__moons = [Moon(self) for moonnum in range(moonroll)]
+        self.__moons = [Moon(self, self.primarystar) for moonnum in range(moonroll)]
 
     def generatemoonlets(self):
         rollmod = -2
@@ -106,8 +108,8 @@ class AsteroidBelt(OrbitContent):
 
 
 class GasGiant(OrbitContent):
-    def __init__(self, primarylum, orbitalradius, snowline, rollbonus=True):
-        OrbitContent.__init__(self, primarylum, orbitalradius)
+    def __init__(self, primary, orbitalradius, rollbonus=True):
+        OrbitContent.__init__(self, primary, orbitalradius)
         self.makesize(rollbonus)
         self.makemoons()
         #self.printinfo()
@@ -176,7 +178,7 @@ class GasGiant(OrbitContent):
         nummoons = self.roll(1, modifier)
         if nummoons < 0:
             nummoons = 0
-        self.__secondfamily = [Moon(self) for nummoon in range(nummoons)]
+        self.__secondfamily = [Moon(self, self.primarystar) for nummoon in range(nummoons)]
 
 
     def makethirdfamily(self):
@@ -198,9 +200,10 @@ class GasGiant(OrbitContent):
 
 
 class Moon(World):
-    def __init__(self, parentplanet):
+    def __init__(self, parentplanet, primarystar):
         self.roller = GD.DiceRoller()
         self.parent = parentplanet
+        self.primarystar = primarystar
         self.__orbit = None
         self.makesize()
 

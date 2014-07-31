@@ -182,7 +182,7 @@ class PlanetSystem:
 
             # Add a GasGiant to the dict
             self.__orbitcontents[self.__firstgasorbit] = OC.GasGiant(
-                self.__primarylum, self.__firstgasorbit, self.__snowline, bonus)
+                self.parentstar, self.__firstgasorbit, bonus)
 
     def placegasgiants(self):
         # Iterate through all orbits necessary and decide whether to place a
@@ -194,26 +194,26 @@ class PlanetSystem:
         if self.__gasarrangement is 'Epistellar':
             for so in smallorbits:
                 if self.roll(3,0) <= 6:
-                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
-                        so, self.__snowline, True)
+                    self.__orbitcontents[so] = OC.GasGiant(self.parentstar,
+                        so, True)
             for so in largeorbits:
                 if self.roll(3,0) <= 14:
-                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
-                        so, self.__snowline, self.gasgiantbonus(so))
+                    self.__orbitcontents[so] = OC.GasGiant(self.parentstar,
+                        so, self.gasgiantbonus(so))
         elif self.__gasarrangement is 'Eccentric':
             for so in smallorbits:
                 if self.roll(3,0) <= 8:
-                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
-                        so, self.__snowline, True)
+                    self.__orbitcontents[so] = OC.GasGiant(self.parentstar,
+                        so, True)
             for so in largeorbits:
                 if self.roll(3,0) <= 14:
-                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
-                        so, self.__snowline, self.gasgiantbonus(so))
+                    self.__orbitcontents[so] = OC.GasGiant(self.parentstar,
+                        so, self.gasgiantbonus(so))
         elif self.__gasarrangement is 'Conventional':
             for so in largeorbits:
                 if self.roll(3,0) <= 15:
-                    self.__orbitcontents[so] = OC.GasGiant(self.__primarylum,
-                        so, self.__snowline, self.gasgiantbonus(so))
+                    self.__orbitcontents[so] = OC.GasGiant(self.parentstar,
+                        so, self.gasgiantbonus(so))
 
     def gasgiantbonus(self, orbit):
         bonus = orbit <= self.__snowline
@@ -232,15 +232,15 @@ class PlanetSystem:
             rollmod = self.orbitfillmodifier(self.__orbitarray.index(orbit))
             diceroll = self.roll(3, rollmod)
             if diceroll >= 4 and diceroll <= 6:
-                obj = OC.AsteroidBelt(self.__primarylum, orbit)
+                obj = OC.AsteroidBelt(self.parentstar, orbit)
             if diceroll >= 7 and diceroll <= 8:
-                obj = OC.Planet(self.__primarylum, orbit, "Tiny")
+                obj = OC.Planet(self.parentstar, orbit, "Tiny")
             if diceroll >= 9 and diceroll <= 11:
-                obj = OC.Planet(self.__primarylum, orbit, "Small")
+                obj = OC.Planet(self.parentstar, orbit, "Small")
             if diceroll >= 12 and diceroll <= 15:
-                obj = OC.Planet(self.__primarylum, orbit, "Standard")
+                obj = OC.Planet(self.parentstar, orbit, "Standard")
             if diceroll >= 16:
-                obj = OC.Planet(self.__primarylum, orbit, "Large")
+                obj = OC.Planet(self.parentstar, orbit, "Large")
             if not diceroll <= 3:
                 self.__orbitcontents[orbit] = obj
 

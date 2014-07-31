@@ -176,18 +176,7 @@ class Star:
         self.__hasforbiddenzone = True
 
     def makeplanetsystem(self):
-        if self.__hasforbiddenzone:
-            finner, fouter = self.__forbiddenzone
-            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
-                                                self.__outerlimit,
-                                                self.__snowline,
-                                                self.__luminosity,
-                                                finner, fouter)
-        else:
-            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
-                                                self.__outerlimit,
-                                                self.__snowline,
-                                                self.__luminosity)
+        self.planetsystem = PS.PlanetSystem(self)
 
     def getOrbitlimits(self):
         return (self.__innerlimit, self.__outerlimit)

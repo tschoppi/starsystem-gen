@@ -6,18 +6,15 @@ class PlanetSystem:
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
 
-    def __init__(self, innerlimit, outerlimit, snowline, primarylum,
-                 innerforbidden=None, outerforbidden=None):
+    def __init__(self, parentstar):
         self.roller = GD.DiceRoller()
-        self.__innerlimit = innerlimit
-        self.__outerlimit = outerlimit
-        self.__snowline = snowline
-        self.__primarylum = primarylum
-        self.__forbidden = False
-        if innerforbidden is not None and outerforbidden is not None:
-            self.__innerforbidden = innerforbidden
-            self.__outerforbidden = outerforbidden
-            self.__forbidden = True
+        self.parentstar = parentstar
+        self.__innerlimit, self.__outerlimit = parentstar.getOrbitlimits()
+        self.__snowline = parentstar.getSnowline()
+        self.__primarylum = parentstar.getLuminosity()
+        self.__forbidden = parentstar.hasForbidden()
+        if self.__forbidden:
+            self.__innerforbidden, self.__outerforbidden = parentstar.getForbidden()
         self.makegasgiantarrangement()
         self.placefirstgasgiant()
         self.createorbits()

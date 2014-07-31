@@ -1,6 +1,6 @@
-import GURPS_Dice as GD
-import GURPS_OrbitContents as OC
-from GURPS_Tables import OrbitalSpace
+from . import dice as GD
+from . import orbitcontents as OC
+from .tables import OrbitalSpace
 
 class PlanetSystem:
     def roll(self, dicenum, modifier):

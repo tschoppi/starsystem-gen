@@ -1,6 +1,6 @@
-import GURPS_Star as GS
-import GURPS_Dice as GD
-from GURPS_Tables import OrbSepTable, StOEccTable
+from . import star as GS
+from . import dice as GD
+from .tables import OrbSepTable, StOEccTable
 
 class StarSystem:
     roller = GD.DiceRoller()

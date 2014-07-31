@@ -1,7 +1,7 @@
 # Here live all the GURPS Orbit Contents; Planets and Asteroid Belts, Moons and
 # Moonlets
-import GURPS_Dice as GD
-from GURPS_Tables import SizeToInt, IntToSize
+from . import dice as GD
+from .tables import SizeToInt, IntToSize
 
 class OrbitContent:
     def roll(self, dicenum, modifier):

@@ -1,6 +1,6 @@
-import GURPS_Dice as GD
-import GURPS_PlanetSystem as PS
-from GURPS_Tables import StEvoTable, IndexTable, SequenceTable
+from . import dice as GD
+from . import planetsystem as PS
+from .tables import StEvoTable, IndexTable, SequenceTable
 
 class Star:
     roller = GD.DiceRoller()

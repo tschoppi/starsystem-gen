@@ -188,3 +188,18 @@ class Star:
                                                 self.__outerlimit,
                                                 self.__snowline,
                                                 self.__luminosity)
+
+    def getOrbitlimits(self):
+        return (self.__innerlimit, self.__outerlimit)
+
+    def getSnowline(self):
+        return self.__snowline
+
+    def getLuminosity(self):
+        return self.__luminosity
+
+    def hasForbidden(self):
+        return self.__hasforbiddenzone
+
+    def getForbidden(self):
+        return self.__forbiddenzone

@@ -94,6 +94,14 @@ class Planet(World):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
 
+    def printinfo(self):
+        print("Planet Info")
+        print("        Orbit:\t{}".format(self.getOrbit()))
+        print("   World Type:\t{} ({})".format(self.getSize(), self.getType()))
+    #    print("         Type:\t{}".format(self.getType()))
+        print("      # Moons:\t{}".format(self.__nummoons))
+        print("    # Moonlts:\t{}".format(self.__nummoonlets))
+
     def __repr__(self):
         return repr("{} Terrestrial Planet".format(self.getSize()))
 
@@ -104,10 +112,13 @@ class Planet(World):
         rollmod = -4
         rollmod += self.moonrollmodifier()
         moonroll = self.roll(1, rollmod)
-        if moonroll < 0:
+        if moonroll <= 0:
             moonroll = 0
             # If we have no major moons, generate moonlets
             self.generatemoonlets()
+        else:
+            self.__nummoonlets = 0
+            self.__moonlets = []
         self.__nummoons = moonroll
         self.__moons = [Moon(self, self.primarystar) for moonnum in range(moonroll)]
 
@@ -146,7 +157,10 @@ class AsteroidBelt(OrbitContent):
 
     def type(self):
         return "Asteroid Belt"
-    pass
+
+    def printinfo(self):
+        print("Asteroid Belt")
+        print("    Orbit:\t{}".format(self.getOrbit()))
 
 
 
@@ -178,10 +192,11 @@ class GasGiant(OrbitContent):
 
     def printinfo(self):
         print("Gas Giant Properties")
-        print("--------------------")
-        print("   Size:\t{}".format(self.__size))
-        print("BB Temp:\t{}".format(self.getBBTemp()))
-        print("--------------------")
+        print("     Size:\t{}".format(self.__size))
+        print("  BB Temp:\t{}".format(self.getBBTemp()))
+        print("  # 1st M:\t{}".format(len(self.__firstfamily)))
+        print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
+        print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
 
     def type(self):
         return "Gas Giant"

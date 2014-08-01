@@ -2,6 +2,7 @@
 # Moonlets
 from . import dice as GD
 from .tables import SizeToInt, IntToSize
+from math import floor
 
 class OrbitContent:
     def roll(self, dicenum, modifier):
@@ -32,6 +33,7 @@ class World(OrbitContent):
     def __init__(self, primary, orbitalradius, sizeclass):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
+        self.maketype()
 
     def __repr__(self):
         return repr("World")
@@ -41,6 +43,48 @@ class World(OrbitContent):
 
     def getSize(self):
         return self.__sizeclass
+
+    def maketype(self):
+        bbtemp = self.getBBTemp()
+        size = self.getSize()
+        primmass = self.primarystar.getMass()
+        type = 'Ice'
+        if size == 'Tiny' and bbtemp >= 141:
+            type = 'Rock'
+        if size == 'Small':
+            if bbtemp <= 80:
+                type = 'Hadean'
+            if bbtemp >= 141:
+                type = 'Rock'
+        if size == 'Standard':
+            if bbtemp <= 80:
+                type = 'Hadean'
+        if size == 'Standard' or size == 'Large':
+            if bbtemp > 150 and bbtemp <= 230 and primmass <= 0.65:
+                type = 'Ammonia'
+            if bbtemp > 240 and bbtemp <= 320:
+                age = self.primarystar.getAge()
+                if size == 'Standard':
+                    cap = 10
+                if size == 'Large':
+                    cap = 5
+                bonus = floor(age / 0.5)
+                if bonus > cap:
+                    bonus = cap
+                dice = self.roll(3, bonus)
+                if dice >= 18:
+                    type = 'Garden'
+                else:
+                    type = 'Ocean'
+            if bbtemp > 320 and bbtemp <= 500:
+                type = 'Greenhouse'
+            if bbtemp > 500:
+                type = 'Chthonian'
+        self.__type = type
+
+
+    def getType(self):
+        return self.__type
 
 
 
@@ -204,14 +248,21 @@ class Moon(World):
         self.roller = GD.DiceRoller()
         self.parent = parentplanet
         self.primarystar = primarystar
+        self.makebbtemp()
         self.__orbit = None
         self.makesize()
+        self.maketype()
 
     def printinfo(self):
         print("Moon Information")
         print("Parent Planet:\t{}".format(self.parent))
         print("   Size Class:\t{}".format(self.__sizeclass))
         print("        Orbit:\t{}".format(self.__orbit))
+
+    def makebbtemp(self):
+        self.__bbtemp = self.parent.getBBTemp()
+    def getBBTemp(self):
+        return self.__bbtemp
 
     def makesize(self):
         parent = self.parent
@@ -228,6 +279,9 @@ class Moon(World):
         if childsize < 0:
             childsize = 0
         self.__sizeclass = IntToSize[childsize]
+
+    def getSize(self):
+        return self.__sizeclass
 
     def setOrbit(self, orbit):
         self.__orbit = orbit

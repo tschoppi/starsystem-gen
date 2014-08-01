@@ -82,9 +82,18 @@ class World(OrbitContent):
                 type = 'Chthonian'
         self.__type = type
 
-
     def getType(self):
         return self.__type
+
+    def makeatmosphere(self):
+        # Determine atmospheric mass
+        if self.getSize() == 'Tiny' or self.getType() == 'Hadean' or self.getType() == 'Chthonian' or  self.getType() == 'Rock':
+            self.__atmmass = 0
+        else:
+            self.__atmmass = self.roll(3,0) / 10.
+
+        # Now determine atmospheric composition
+        pass
 
 
 

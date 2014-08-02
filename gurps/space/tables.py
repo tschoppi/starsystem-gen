@@ -157,3 +157,12 @@ MAtmoTable = [
     'Pollutants', 'Pollutants', 'High Carbon Dioxide',
     'High Oxygen', 'High Oxygen', 'Inert Gases', 'Inert Gases'
 ]
+
+# Abbreviations for the atmospheric composition labels
+AtmCompAbbr = {
+    'Corrosive': 'C',
+    'Mildly Toxic': 'MT',
+    'Highly Toxic': 'HT',
+    'Lethally Toxic': 'LT',
+    'Suffocating': 'S'
+}

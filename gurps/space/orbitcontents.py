@@ -34,6 +34,7 @@ class World(OrbitContent):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
         self.maketype()
+        self.makeatmosphere()
 
     def __repr__(self):
         return repr("World")
@@ -130,7 +131,11 @@ class World(OrbitContent):
             self.atmcomp['Highly Toxic'] = True
             self.atmcomp['Suffocating'] = True
 
-
+    def getMarginal(self):
+        """Return a tuple:
+        (boolean: marginal, marginal atmosphere)
+        """
+        return (self.__hasmarginal, self.__marginal)
 
 
 
@@ -147,6 +152,16 @@ class Planet(World):
     #    print("         Type:\t{}".format(self.getType()))
         print("      # Moons:\t{}".format(self.__nummoons))
         print("    # Moonlts:\t{}".format(self.__nummoonlets))
+        self.printatmosphere()
+
+    def printatmosphere(self):
+        atcomp = self.atmcomp
+        bmarg, marg = self.getMarginal()
+        atmcomp = [key for key in atcomp.keys() if atcomp[key] == True]
+        if len(atmcomp) > 0:
+            print("     Atm Comp:\t{}".format(atmcomp))
+        if bmarg:
+            print("     Marginal:\t{}".format(marg))
 
     def __repr__(self):
         return repr("{} Terrestrial Planet".format(self.getSize()))
@@ -313,6 +328,7 @@ class Moon(World):
         self.__orbit = None
         self.makesize()
         self.maketype()
+        self.makeatmosphere()
 
     def printinfo(self):
         print("Moon Information")

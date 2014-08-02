@@ -147,3 +147,22 @@ SizeToInt = {
 IntToSize = [
     "Tiny", "Small", "Standard", "Large"
 ]
+
+# Marginal Atmosphere Table
+# Usage: MAtmoTable[diceroll], diceroll is between 3 and 18
+MAtmoTable = [
+    None, None, None, 'Chlorine', 'Chlorine', 'Sulfur Compounds',
+    'Sulfur Compounds', 'Nitrogen Compounds', 'Organic Toxins',
+    'Organic Toxins', 'Low Oxygen', 'Low Oxygen',
+    'Pollutants', 'Pollutants', 'High Carbon Dioxide',
+    'High Oxygen', 'High Oxygen', 'Inert Gases', 'Inert Gases'
+]
+
+# Abbreviations for the atmospheric composition labels
+AtmCompAbbr = {
+    'Corrosive': 'C',
+    'Mildly Toxic': 'MT',
+    'Highly Toxic': 'HT',
+    'Lethally Toxic': 'LT',
+    'Suffocating': 'S'
+}

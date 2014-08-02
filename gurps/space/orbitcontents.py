@@ -1,7 +1,7 @@
 # Here live all the GURPS Orbit Contents; Planets and Asteroid Belts, Moons and
 # Moonlets
 from . import dice as GD
-from .tables import SizeToInt, IntToSize
+from .tables import SizeToInt, IntToSize, MAtmoTable
 from math import floor
 
 class OrbitContent:
@@ -34,6 +34,7 @@ class World(OrbitContent):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
         self.maketype()
+        self.makeatmosphere()
 
     def __repr__(self):
         return repr("World")
@@ -82,9 +83,59 @@ class World(OrbitContent):
                 type = 'Chthonian'
         self.__type = type
 
-
     def getType(self):
         return self.__type
+
+    def makeatmosphere(self):
+        size = self.getSize()
+        type = self.getType()
+        # Determine atmospheric mass
+        if size == 'Tiny' or type == 'Hadean' or type == 'Chthonian' or  type == 'Rock':
+            self.__atmmass = 0
+        else:
+            self.__atmmass = self.roll(3,0) / 10.
+
+        # Now determine atmospheric composition
+        self.atmcomp = {
+            'Corrosive': False,
+            'Mildly Toxic': False,
+            'Highly Toxic': False,
+            'Lethally Toxic': False,
+            'Suffocating': False
+        }
+        self.__hasmarginal = False
+        self.__marginal = ''
+        if size == 'Small' and type == 'Ice':
+            self.atmcomp['Suffocating'] = True
+            if self.roll(3,0) > 15:
+                self.atmcomp['Lethally Toxic'] = True
+            else:
+                self.atmcomp['Mildly Toxic'] = True
+
+        if type == 'Ammonia' or type == 'Greenhouse':
+            self.atmcomp['Suffocating'] = True
+            self.atmcomp['Lethally Toxic'] = True
+            self.atmcomp['Corrosive'] = True
+
+        if type == 'Garden':
+            if self.roll(3,0) >= 12:
+                self.__hasmarginal = True
+                self.__marginal = MAtmoTable[self.roll(3,0)]
+
+        if size == 'Standard' and (type == 'Ice' or type == 'Ocean'):
+            self.atmcomp['Suffocating'] = True
+            if self.roll(3,0) > 12:
+                self.atmcomp['Mildly Toxic'] = True
+
+        if size == 'Large' and (type == 'Ice' or type == 'Ocean'):
+            self.atmcomp['Highly Toxic'] = True
+            self.atmcomp['Suffocating'] = True
+
+    def getMarginal(self):
+        """Return a tuple:
+        (boolean: marginal, marginal atmosphere)
+        """
+        return (self.__hasmarginal, self.__marginal)
 
 
 
@@ -101,6 +152,16 @@ class Planet(World):
     #    print("         Type:\t{}".format(self.getType()))
         print("      # Moons:\t{}".format(self.__nummoons))
         print("    # Moonlts:\t{}".format(self.__nummoonlets))
+        self.printatmosphere()
+
+    def printatmosphere(self):
+        atcomp = self.atmcomp
+        bmarg, marg = self.getMarginal()
+        atmcomp = [key for key in atcomp.keys() if atcomp[key] == True]
+        if len(atmcomp) > 0:
+            print("     Atm Comp:\t{}".format(atmcomp))
+        if bmarg:
+            print("     Marginal:\t{}".format(marg))
 
     def __repr__(self):
         return repr("{} Terrestrial Planet".format(self.getSize()))
@@ -267,6 +328,7 @@ class Moon(World):
         self.__orbit = None
         self.makesize()
         self.maketype()
+        self.makeatmosphere()
 
     def printinfo(self):
         print("Moon Information")

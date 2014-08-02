@@ -1,7 +1,7 @@
 # Here live all the GURPS Orbit Contents; Planets and Asteroid Belts, Moons and
 # Moonlets
 from . import dice as GD
-from .tables import SizeToInt, IntToSize
+from .tables import SizeToInt, IntToSize, MAtmoTable
 from math import floor
 
 class OrbitContent:
@@ -86,14 +86,51 @@ class World(OrbitContent):
         return self.__type
 
     def makeatmosphere(self):
+        size = self.getSize()
+        type = self.getType()
         # Determine atmospheric mass
-        if self.getSize() == 'Tiny' or self.getType() == 'Hadean' or self.getType() == 'Chthonian' or  self.getType() == 'Rock':
+        if size == 'Tiny' or type == 'Hadean' or type == 'Chthonian' or  type == 'Rock':
             self.__atmmass = 0
         else:
             self.__atmmass = self.roll(3,0) / 10.
 
         # Now determine atmospheric composition
-        pass
+        self.atmcomp = {
+            'Corrosive': False,
+            'Mildly Toxic': False,
+            'Highly Toxic': False,
+            'Lethally Toxic': False,
+            'Suffocating': False
+        }
+        self.__hasmarginal = False
+        self.__marginal = ''
+        if size == 'Small' and type == 'Ice':
+            self.atmcomp['Suffocating'] = True
+            if self.roll(3,0) > 15:
+                self.atmcomp['Lethally Toxic'] = True
+            else:
+                self.atmcomp['Mildly Toxic'] = True
+
+        if type == 'Ammonia' or type == 'Greenhouse':
+            self.atmcomp['Suffocating'] = True
+            self.atmcomp['Lethally Toxic'] = True
+            self.atmcomp['Corrosive'] = True
+
+        if type == 'Garden':
+            if self.roll(3,0) >= 12:
+                self.__hasmarginal = True
+                self.__marginal = MAtmoTable[self.roll(3,0)]
+
+        if size == 'Standard' and (type == 'Ice' or type == 'Ocean'):
+            self.atmcomp['Suffocating'] = True
+            if self.roll(3,0) > 12:
+                self.atmcomp['Mildly Toxic'] = True
+
+        if size == 'Large' and (type == 'Ice' or type == 'Ocean'):
+            self.atmcomp['Highly Toxic'] = True
+            self.atmcomp['Suffocating'] = True
+
+
 
 
 

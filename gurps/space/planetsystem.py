@@ -248,6 +248,9 @@ class PlanetSystem:
                 obj = OC.Planet(self.parentstar, orbit, "Large")
             if not diceroll <= 3:
                 self.__orbitcontents[orbit] = obj
+        # Now remove all orbits that still have None as content
+        orc = {k: v for k, v in self.__orbitcontents.items() if v is not None}
+        self.__orbitcontents = orc
 
 
     def orbitfillmodifier(self, orbitindex):

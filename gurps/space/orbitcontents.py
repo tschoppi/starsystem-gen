@@ -37,6 +37,7 @@ class World(OrbitContent):
         self.makeatmosphere()
         self.makehydrographics()
         self.makeclimate()
+        self.makedensity()
 
     def __repr__(self):
         return repr("World")
@@ -205,6 +206,49 @@ class World(OrbitContent):
     def getClimate(self):
         return self.__climatetype
 
+    def makedensity(self):
+        type = self.getType()
+        size = self.getSize()
+        density = 0
+        dice = self.roll(3,0)
+        if type == 'Ammonia' or type == 'Hadean' or type == 'Sulfur' or (type == 'Ice' and size != 'Large'):
+            if dice >= 3:
+                density = 0.3
+            if dice >= 7:
+                density = 0.4
+            if dice >= 11:
+                density = 0.5
+            if dice >= 15:
+                density = 0.6
+            if dice == 18:
+                density = 0.7
+        elif type == 'Rock':
+            if dice >= 3:
+                density = 0.6
+            if dice >= 7:
+                density = 0.7
+            if dice >= 11:
+                density = 0.8
+            if dice >= 15:
+                density = 0.9
+            if dice == 18:
+                density = 1.0
+        else:
+            if dice >= 3:
+                density = 0.8
+            if dice >= 7:
+                density = 0.9
+            if dice >= 11:
+                density = 1.0
+            if dice >= 15:
+                density = 1.1
+            if dice == 18:
+                density = 1.2
+        self.__density = density
+
+    def getDensity(self):
+        return self.__density
+
 
 
 
@@ -227,6 +271,7 @@ class Planet(World):
         print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("    Av Surf T:\t{}".format(self.getAvSurf()))
         print("      Climate:\t{}".format(self.getClimate()))
+        print("      Density:\t{}".format(self.getDensity()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -408,12 +453,18 @@ class Moon(World):
         self.maketype()
         self.makeatmosphere()
         self.makehydrographics()
+        self.makeclimate()
+        self.makedensity()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
         #print("Parent Planet:\t{}".format(self.parent))
-        print("           Size Class:\t{}".format(self.__sizeclass))
+        print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{}".format(self.__orbit))
+        print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
+        print("            Av Surf T:\t{}".format(self.getAvSurf()))
+        print("              Climate:\t{}".format(self.getClimate()))
+        print("              Density:\t{}".format(self.getDensity()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

@@ -176,14 +176,18 @@ class Planet(World):
         self.generatemoons()
 
     def printinfo(self):
-        print("Planet Info")
+        print("--- Planet Info ---")
         print("        Orbit:\t{}".format(self.getOrbit()))
         print("   World Type:\t{} ({})".format(self.getSize(), self.getType()))
-    #    print("         Type:\t{}".format(self.getType()))
-        print("      # Moons:\t{}".format(self.__nummoons))
-        print("    # Moonlts:\t{}".format(self.__nummoonlets))
+        if self.__nummoons > 0:
+            print("      # Moons:\t{}".format(self.__nummoons))
+            for moon in self.__moons:
+                moon.printinfo()
+        if self.__nummoonlets > 0:
+            print("    # Moonlts:\t{}".format(self.__nummoonlets))
         self.printatmosphere()
         print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
+        print("------------------- \n")
 
     def printatmosphere(self):
         atcomp = self.atmcomp
@@ -283,12 +287,15 @@ class GasGiant(OrbitContent):
         return self.__size
 
     def printinfo(self):
-        print("Gas Giant Properties")
+        print("---- Gas Giant Properties ----")
         print("     Size:\t{}".format(self.__size))
         print("  BB Temp:\t{}".format(self.getBBTemp()))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
         print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
+        for moon in self.__secondfamily:
+            moon.printinfo()
+        print("------------------------------\n")
 
     def type(self):
         return "Gas Giant"
@@ -363,10 +370,11 @@ class Moon(World):
         self.makehydrographics()
 
     def printinfo(self):
-        print("Moon Information")
-        print("Parent Planet:\t{}".format(self.parent))
-        print("   Size Class:\t{}".format(self.__sizeclass))
-        print("        Orbit:\t{}".format(self.__orbit))
+        print("         *** Moon Information *** ")
+        #print("Parent Planet:\t{}".format(self.parent))
+        print("           Size Class:\t{}".format(self.__sizeclass))
+        print("                Orbit:\t{}".format(self.__orbit))
+        print("         --- **************** --- \n")
 
     def makebbtemp(self):
         self.__bbtemp = self.parent.getBBTemp()

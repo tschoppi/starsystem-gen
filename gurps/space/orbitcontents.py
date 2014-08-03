@@ -331,6 +331,41 @@ class World(OrbitContent):
     def volcanicbonus(self):
         return 0
 
+    def maketectonism(self):
+        if self.getSize() == 'Small' or self.getSize() == 'Tiny':
+            self.__tectonic = 'None'
+        else:
+            volc = self.getVolcanism()
+            bonus = 0
+            if volc == 'None':
+                bonus -= 8
+            if volc == 'Light':
+                bonus -= 4
+            if volc == 'Heavy':
+                bonus += 4
+            if volc == 'Extreme':
+                bonus += 8
+            if self.getHydrocover() < 50:
+                bonus -= 2
+            bonus += self.tectonicbonus()
+            tect = self.roll(3, bonus)
+            activity = 'None'
+            if tect > 6:
+                activity = 'Light'
+            if tect > 10:
+                activity = 'Moderate'
+            if tect > 14:
+                activity = 'Heavy'
+            if tect > 18:
+                activity = 'Extreme'
+            self.__tectonic = activity
+
+    def tectonicbonus(self):
+        return 0
+
+    def getTectonics(self):
+        return self.__tectonic
+
 
 
 
@@ -339,6 +374,7 @@ class Planet(World):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
         self.makevolcanism()
+        self.maketectonism()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -360,6 +396,7 @@ class Planet(World):
         print("         Mass:\t{}".format(self.getMass()))
         print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("    Volcanism:\t{}".format(self.getVolcanism()))
+        print("    Tectonics:\t{}".format(self.getTectonics()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -423,6 +460,13 @@ class Planet(World):
             return 5
         if self.__nummoons > 1:
             return 10
+        return 0
+
+    def tectonicbonus(self):
+        if self.__nummoons == 1:
+            return 2
+        if self.__nummoons > 1:
+            return 4
         return 0
 
 
@@ -573,6 +617,7 @@ class Moon(World):
         self.makemass()
         self.makepressure()
         self.makevolcanism()
+        self.maketectonism()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -588,6 +633,7 @@ class Moon(World):
         print("                 Mass:\t{}".format(self.getMass()))
         print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("            Volcanism:\t{}".format(self.getVolcanism()))
+        print("            Tectonics:\t{}".format(self.getTectonics()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

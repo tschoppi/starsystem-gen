@@ -2,6 +2,7 @@
 # Moonlets
 from . import dice as GD
 from .tables import SizeToInt, IntToSize, MAtmoTable, TempFactor, WorldClimate
+from .tables import SizeConstrTable
 from math import floor
 
 class OrbitContent:
@@ -38,6 +39,7 @@ class World(OrbitContent):
         self.makehydrographics()
         self.makeclimate()
         self.makedensity()
+        self.makediameter()
 
     def __repr__(self):
         return repr("World")
@@ -249,6 +251,22 @@ class World(OrbitContent):
     def getDensity(self):
         return self.__density
 
+    def makediameter(self):
+        size = self.getSize()
+        bb = self.getBBTemp()
+        dens = self.getDensity()
+        smin, smax = SizeConstrTable[size]
+        term = (bb / dens) ** (0.5)
+        min = term * smin
+        max = term * smax
+        diff = max - min
+        diam = self.roll(2, -2) * 0.1 * diff + min
+        self.__diameter = diam
+
+    def getDiameter(self):
+        return self.__diameter
+
+
 
 
 
@@ -272,6 +290,7 @@ class Planet(World):
         print("    Av Surf T:\t{}".format(self.getAvSurf()))
         print("      Climate:\t{}".format(self.getClimate()))
         print("      Density:\t{}".format(self.getDensity()))
+        print("     Diameter:\t{}".format(self.getDiameter()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -455,6 +474,7 @@ class Moon(World):
         self.makehydrographics()
         self.makeclimate()
         self.makedensity()
+        self.makediameter()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -465,6 +485,7 @@ class Moon(World):
         print("            Av Surf T:\t{}".format(self.getAvSurf()))
         print("              Climate:\t{}".format(self.getClimate()))
         print("              Density:\t{}".format(self.getDensity()))
+        print("             Diameter:\t{}".format(self.getDiameter()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

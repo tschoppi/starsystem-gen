@@ -166,3 +166,61 @@ AtmCompAbbr = {
     'Lethally Toxic': 'LT',
     'Suffocating': 'S'
 }
+
+# Temperature factors table, contains tuples of (abs, greenh)
+# Note that for Ocean and Garden worlds, nothing is defined. This is because of
+# the different absorption factors due to hydrographic coverage
+TempFactor = {
+    'Ice': {
+        'Tiny': (0.86, 0),
+        'Small': (0.93, 0.1),
+        'Standard': (0.86, 0.2),
+        'Large': (0.86, 0.2)
+    },
+    'Rock': {
+        'Tiny': (0.97, 0),
+        'Small': (0.96, 0)
+    },
+    'Hadean': {
+        'Small': (0.67, 0),
+        'Standard': (0.67, 0)
+    },
+    'Chthonian': {
+        'Standard': (0.97, 0),
+        'Large': (0.97, 0)
+    },
+    'Ammonia': {
+        'Standard': (0.84, 0.2),
+        'Large': (0.84, 0.2)
+    },
+    'Greenhouse': {
+        'Standard': (0.77, 2),
+        'Large': (0.77, 2)
+    }
+}
+
+# WorldClimate is a function that returns the world climate designator string
+# depending on the input (average surface temperature)
+def WorldClimate(temperature):
+    climate = 'Infernal'
+    if temperature <= 344:
+        climate = 'Very Hot'
+    if temperature <= 333:
+        climate = 'Hot'
+    if temperature <= 322:
+        climate = 'Tropical'
+    if temperature <= 311:
+        climate = 'Warm'
+    if temperature <= 300:
+        climate = 'Normal'
+    if temperature <= 289:
+        climate = 'Cool'
+    if temperature <= 278:
+        climate = 'Chilly'
+    if temperature <= 266:
+        climate = 'Cold'
+    if temperature <= 255:
+        climate = 'Very Cold'
+    if temperature <= 244:
+        climate = 'Frozen'
+    return climate

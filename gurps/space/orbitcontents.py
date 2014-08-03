@@ -35,6 +35,7 @@ class World(OrbitContent):
         self.__sizeclass = sizeclass
         self.maketype()
         self.makeatmosphere()
+        self.makehydrographics()
 
     def __repr__(self):
         return repr("World")
@@ -137,6 +138,35 @@ class World(OrbitContent):
         """
         return (self.__hasmarginal, self.__marginal)
 
+    def makehydrographics(self):
+        hydro = 0
+        size = self.getSize()
+        type = self.getType()
+        if size == 'Small' and type == 'Ice':
+            hydro = self.roll(1,2) * 10
+        if type == 'Ammonia':
+            hydro = self.roll(2,0) * 10
+            if hydro > 100:
+                hydro = 100
+        if type == 'Ice' and (size == 'Standard' or size == 'Large'):
+            hydro = self.roll(2,-10) * 10
+            if hydro < 0:
+                hydro = 0
+        if type == 'Ocean' or type == 'Garden':
+            bonus = 4
+            if size == 'Large':
+                bonus = 6
+            hydro = self.roll(1, bonus) * 10
+            if hydro > 100:
+                hydro = 100
+        if type == 'Greenhouse':
+            hydro = self.roll(2, -7) * 10
+            if hydro < 0:
+                hydro = 0
+        self.__hydrocover = hydro
+
+    def getHydrocover(self):
+        return self.__hydrocover
 
 
 
@@ -153,6 +183,7 @@ class Planet(World):
         print("      # Moons:\t{}".format(self.__nummoons))
         print("    # Moonlts:\t{}".format(self.__nummoonlets))
         self.printatmosphere()
+        print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
 
     def printatmosphere(self):
         atcomp = self.atmcomp
@@ -329,6 +360,7 @@ class Moon(World):
         self.makesize()
         self.maketype()
         self.makeatmosphere()
+        self.makehydrographics()
 
     def printinfo(self):
         print("Moon Information")

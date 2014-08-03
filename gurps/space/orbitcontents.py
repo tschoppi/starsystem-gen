@@ -41,6 +41,7 @@ class World(OrbitContent):
         self.makedensity()
         self.makediameter()
         self.makegravity()
+        self.makemass()
 
     def __repr__(self):
         return repr("World")
@@ -273,6 +274,11 @@ class World(OrbitContent):
     def getGravity(self):
         return self.__surfacegravity
 
+    def makemass(self):
+        self.__mass = self.getDensity() * self.getDiameter() ** 3
+
+    def getMass(self):
+        return self.__mass
 
 
 
@@ -299,6 +305,7 @@ class Planet(World):
         print("      Density:\t{}".format(self.getDensity()))
         print("     Diameter:\t{}".format(self.getDiameter()))
         print("    Surf Grav:\t{}".format(self.getGravity()))
+        print("         Mass:\t{}".format(self.getMass()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -484,6 +491,7 @@ class Moon(World):
         self.makedensity()
         self.makediameter()
         self.makegravity()
+        self.makemass()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -496,6 +504,7 @@ class Moon(World):
         print("              Density:\t{}".format(self.getDensity()))
         print("             Diameter:\t{}".format(self.getDiameter()))
         print("            Surf Grav:\t{}".format(self.getGravity()))
+        print("                 Mass:\t{}".format(self.getMass()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

@@ -2,6 +2,7 @@
 # Moonlets
 from . import dice as GD
 from .tables import SizeToInt, IntToSize, MAtmoTable, TempFactor, WorldClimate
+from .tables import SizeConstrTable, PressureCategory, GGSizeTable
 from math import floor
 
 class OrbitContent:
@@ -37,6 +38,11 @@ class World(OrbitContent):
         self.makeatmosphere()
         self.makehydrographics()
         self.makeclimate()
+        self.makedensity()
+        self.makediameter()
+        self.makegravity()
+        self.makemass()
+        self.makepressure()
 
     def __repr__(self):
         return repr("World")
@@ -205,6 +211,105 @@ class World(OrbitContent):
     def getClimate(self):
         return self.__climatetype
 
+    def makedensity(self):
+        type = self.getType()
+        size = self.getSize()
+        density = 0
+        dice = self.roll(3,0)
+        if type == 'Ammonia' or type == 'Hadean' or type == 'Sulfur' or (type == 'Ice' and size != 'Large'):
+            if dice >= 3:
+                density = 0.3
+            if dice >= 7:
+                density = 0.4
+            if dice >= 11:
+                density = 0.5
+            if dice >= 15:
+                density = 0.6
+            if dice == 18:
+                density = 0.7
+        elif type == 'Rock':
+            if dice >= 3:
+                density = 0.6
+            if dice >= 7:
+                density = 0.7
+            if dice >= 11:
+                density = 0.8
+            if dice >= 15:
+                density = 0.9
+            if dice == 18:
+                density = 1.0
+        else:
+            if dice >= 3:
+                density = 0.8
+            if dice >= 7:
+                density = 0.9
+            if dice >= 11:
+                density = 1.0
+            if dice >= 15:
+                density = 1.1
+            if dice == 18:
+                density = 1.2
+        self.__density = density
+
+    def getDensity(self):
+        return self.__density
+
+    def makediameter(self):
+        size = self.getSize()
+        bb = self.getBBTemp()
+        dens = self.getDensity()
+        smin, smax = SizeConstrTable[size]
+        term = (bb / dens) ** (0.5)
+        min = term * smin
+        max = term * smax
+        diff = max - min
+        diam = self.roll(2, -2) * 0.1 * diff + min
+        self.__diameter = diam
+
+    def getDiameter(self):
+        return self.__diameter
+
+    def makegravity(self):
+        self.__surfacegravity = self.getDensity() * self.getDiameter()
+
+    def getGravity(self):
+        return self.__surfacegravity
+
+    def makemass(self):
+        self.__mass = self.getDensity() * self.getDiameter() ** 3
+
+    def getMass(self):
+        return self.__mass
+
+    def makepressure(self):
+        size = self.getSize()
+        type = self.getType()
+        pressure = 0
+        if size == 'Tiny' or type == 'Hadean':
+            category = 'None'
+        elif type == 'Chthonian':
+            category = 'Trace'
+        elif size == 'Small' and type == 'Rock':
+            category = 'Trace'
+        else:
+            factor = 1
+            if size == 'Small' and type == 'Ice':
+                factor = 10
+            if size == 'Large':
+                factor = 5
+            if type == 'Greenhouse':
+                factor *= 100
+            pressure = self.getMass() * factor * self.getGravity()
+            category = PressureCategory(pressure)
+        self.__pressure = pressure
+        self.__presscat = category
+
+    def getPressure(self):
+        return self.__pressure
+
+    def getPressCat(self):
+        return self.__presscat
+
 
 
 
@@ -227,6 +332,11 @@ class Planet(World):
         print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("    Av Surf T:\t{}".format(self.getAvSurf()))
         print("      Climate:\t{}".format(self.getClimate()))
+        print("      Density:\t{}".format(self.getDensity()))
+        print("     Diameter:\t{}".format(self.getDiameter()))
+        print("    Surf Grav:\t{}".format(self.getGravity()))
+        print("         Mass:\t{}".format(self.getMass()))
+        print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -306,6 +416,9 @@ class GasGiant(OrbitContent):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.makesize(rollbonus)
         self.makemoons()
+        self.makemass()
+        self.makediameter()
+        self.makecloudtopgrav()
         #self.printinfo()
 
     def __repr__(self):
@@ -330,6 +443,10 @@ class GasGiant(OrbitContent):
         print("---- Gas Giant Properties ----")
         print("     Size:\t{}".format(self.__size))
         print("  BB Temp:\t{}".format(self.getBBTemp()))
+        print("     Mass:\t{}".format(self.__mass))
+        print("     Dens:\t{}".format(self.__density))
+        print("     Diam:\t{}".format(self.__diameter))
+        print(" Cl Top G:\t{}".format(self.__gravity))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
         print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
@@ -361,7 +478,6 @@ class GasGiant(OrbitContent):
             nummoonlets = 0
         self.__firstfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
 
-
     def makesecondfamily(self):
         orbit = self.getOrbit()
         modifier = 0
@@ -377,7 +493,6 @@ class GasGiant(OrbitContent):
         if nummoons < 0:
             nummoons = 0
         self.__secondfamily = [Moon(self, self.primarystar) for nummoon in range(nummoons)]
-
 
     def makethirdfamily(self):
         orbit = self.getOrbit()
@@ -395,6 +510,20 @@ class GasGiant(OrbitContent):
             nummoonlets = 0
         self.__thirdfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
 
+    def makemass(self):
+        size = self.getSize()
+        diceroll = self.roll(3, 0)
+        mass, density = GGSizeTable[size][diceroll]
+        self.__mass = mass
+        self.__density = density
+
+    def makediameter(self):
+        self.__diameter = (self.__mass / self.__density) ** (1/3.)
+
+    def makecloudtopgrav(self):
+        self.__gravity = self.__density * self.__diameter
+
+
 
 
 class Moon(World):
@@ -408,12 +537,26 @@ class Moon(World):
         self.maketype()
         self.makeatmosphere()
         self.makehydrographics()
+        self.makeclimate()
+        self.makedensity()
+        self.makediameter()
+        self.makegravity()
+        self.makemass()
+        self.makepressure()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
         #print("Parent Planet:\t{}".format(self.parent))
-        print("           Size Class:\t{}".format(self.__sizeclass))
+        print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{}".format(self.__orbit))
+        print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
+        print("            Av Surf T:\t{}".format(self.getAvSurf()))
+        print("              Climate:\t{}".format(self.getClimate()))
+        print("              Density:\t{}".format(self.getDensity()))
+        print("             Diameter:\t{}".format(self.getDiameter()))
+        print("            Surf Grav:\t{}".format(self.getGravity()))
+        print("                 Mass:\t{}".format(self.getMass()))
+        print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

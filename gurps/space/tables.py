@@ -166,3 +166,35 @@ AtmCompAbbr = {
     'Lethally Toxic': 'LT',
     'Suffocating': 'S'
 }
+
+# Temperature factors table, contains tuples of (abs, greenh)
+# Note that for Ocean and Garden worlds, nothing is defined. This is because of
+# the different absorption factors due to hydrographic coverage
+TempFactor = {
+    'Ice': {
+        'Tiny': (0.86, 0),
+        'Small': (0.93, 0.1),
+        'Standard': (0.86, 0.2),
+        'Large': (0.86, 0.2)
+    },
+    'Rock': {
+        'Tiny': (0.97, 0),
+        'Small': (0.96, 0)
+    },
+    'Hadean': {
+        'Small': (0.67, 0),
+        'Standard': (0.67, 0)
+    },
+    'Chthonian': {
+        'Standard': (0.97, 0),
+        'Large': (0.97, 0)
+    },
+    'Ammonia': {
+        'Standard': (0.84, 0.2),
+        'Large': (0.84, 0.2)
+    },
+    'Greenhouse': {
+        'Standard': (0.77, 2),
+        'Large': (0.77, 2)
+    }
+}

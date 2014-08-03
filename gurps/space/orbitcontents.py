@@ -2,7 +2,7 @@
 # Moonlets
 from . import dice as GD
 from .tables import SizeToInt, IntToSize, MAtmoTable, TempFactor, WorldClimate
-from .tables import SizeConstrTable, PressureCategory
+from .tables import SizeConstrTable, PressureCategory, GGSizeTable
 from math import floor
 
 class OrbitContent:
@@ -416,6 +416,9 @@ class GasGiant(OrbitContent):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.makesize(rollbonus)
         self.makemoons()
+        self.makemass()
+        self.makediameter()
+        self.makecloudtopgrav()
         #self.printinfo()
 
     def __repr__(self):
@@ -440,6 +443,10 @@ class GasGiant(OrbitContent):
         print("---- Gas Giant Properties ----")
         print("     Size:\t{}".format(self.__size))
         print("  BB Temp:\t{}".format(self.getBBTemp()))
+        print("     Mass:\t{}".format(self.__mass))
+        print("     Dens:\t{}".format(self.__density))
+        print("     Diam:\t{}".format(self.__diameter))
+        print(" Cl Top G:\t{}".format(self.__gravity))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
         print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
@@ -471,7 +478,6 @@ class GasGiant(OrbitContent):
             nummoonlets = 0
         self.__firstfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
 
-
     def makesecondfamily(self):
         orbit = self.getOrbit()
         modifier = 0
@@ -488,7 +494,6 @@ class GasGiant(OrbitContent):
             nummoons = 0
         self.__secondfamily = [Moon(self, self.primarystar) for nummoon in range(nummoons)]
 
-
     def makethirdfamily(self):
         orbit = self.getOrbit()
         modifier = 0
@@ -504,6 +509,20 @@ class GasGiant(OrbitContent):
         if nummoonlets < 0:
             nummoonlets = 0
         self.__thirdfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+
+    def makemass(self):
+        size = self.getSize()
+        diceroll = self.roll(3, 0)
+        mass, density = GGSizeTable[size][diceroll]
+        self.__mass = mass
+        self.__density = density
+
+    def makediameter(self):
+        self.__diameter = (self.__mass / self.__density) ** (1/3.)
+
+    def makecloudtopgrav(self):
+        self.__gravity = self.__density * self.__diameter
+
 
 
 

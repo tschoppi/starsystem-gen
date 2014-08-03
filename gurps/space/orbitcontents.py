@@ -1,7 +1,7 @@
 # Here live all the GURPS Orbit Contents; Planets and Asteroid Belts, Moons and
 # Moonlets
 from . import dice as GD
-from .tables import SizeToInt, IntToSize, MAtmoTable
+from .tables import SizeToInt, IntToSize, MAtmoTable, TempFactor, WorldClimate
 from math import floor
 
 class OrbitContent:
@@ -36,6 +36,7 @@ class World(OrbitContent):
         self.maketype()
         self.makeatmosphere()
         self.makehydrographics()
+        self.makeclimate()
 
     def __repr__(self):
         return repr("World")
@@ -86,6 +87,9 @@ class World(OrbitContent):
 
     def getType(self):
         return self.__type
+
+    def getAtmass(self):
+        return self.__atmmass
 
     def makeatmosphere(self):
         size = self.getSize()
@@ -168,6 +172,40 @@ class World(OrbitContent):
     def getHydrocover(self):
         return self.__hydrocover
 
+    def absorptiongreenhouse(self):
+        """
+        Return a tuple (absorption factor, greenhouse factor) based on world
+        type and size.
+        """
+        type = self.getType()
+        size = self.getSize()
+        if type is not 'Garden' and type is not 'Ocean':
+            return TempFactor[type][size]
+        else:
+            hydro = self.getHydrocover()
+            abs = 0.84
+            if hydro <= 90:
+                abs = 0.88
+            if hydro <= 50:
+                abs = 0.92
+            if hydro <= 20:
+                abs = 0.95
+            return (abs, 0.16)
+
+    def makeclimate(self):
+        abs, green = self.absorptiongreenhouse()
+        matm  = self.getAtmass()
+        bbcorr = abs * (1 + (matm * green))
+        self.__averagesurface = bbcorr * self.getBBTemp()
+        self.__climatetype = WorldClimate(self.__averagesurface)
+
+    def getAvSurf(self):
+        return self.__averagesurface
+
+    def getClimate(self):
+        return self.__climatetype
+
+
 
 
 class Planet(World):
@@ -184,6 +222,8 @@ class Planet(World):
         print("    # Moonlts:\t{}".format(self.__nummoonlets))
         self.printatmosphere()
         print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
+        print("    Av Surf T:\t{}".format(self.getAvSurf()))
+        print("      Climate:\t{}".format(self.getClimate()))
 
     def printatmosphere(self):
         atcomp = self.atmcomp

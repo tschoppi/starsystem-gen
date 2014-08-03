@@ -224,3 +224,11 @@ def WorldClimate(temperature):
     if temperature <= 244:
         climate = 'Frozen'
     return climate
+
+# Size Constraints Table (GURPS Space p.85)
+SizeConstrTable = {
+    'Tiny': (0.004, 0.024),
+    'Small': (0.024, 0.030),
+    'Standard': (0.030, 0.065),
+    'Large': (0.065, 0.091)
+}

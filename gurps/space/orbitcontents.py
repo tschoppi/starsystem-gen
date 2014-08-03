@@ -310,6 +310,27 @@ class World(OrbitContent):
     def getPressCat(self):
         return self.__presscat
 
+    def makevolcanism(self):
+        bonus = self.getGravity() / self.primarystar.getAge()
+        bonus += self.volcanicbonus()
+        volcanoroll = self.roll(3, bonus)
+        activity = 'None'
+        if volcanoroll > 16:
+            activity = 'Light'
+        if volcanoroll > 20:
+            activity = 'Moderate'
+        if volcanoroll > 26:
+            activity = 'Heavy'
+        if volcanoroll > 70:
+            activity = 'Extreme'
+        self.__volcanism = activity
+
+    def getVolcanism(self):
+        return self.__volcanism
+
+    def volcanicbonus(self):
+        return 0
+
 
 
 
@@ -317,6 +338,7 @@ class Planet(World):
     def __init__(self, primary, orbitalradius, sizeclass):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
+        self.makevolcanism()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -337,6 +359,7 @@ class Planet(World):
         print("    Surf Grav:\t{}".format(self.getGravity()))
         print("         Mass:\t{}".format(self.getMass()))
         print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
+        print("    Volcanism:\t{}".format(self.getVolcanism()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -395,6 +418,12 @@ class Planet(World):
         if self.__nummoonlets > 0:
             return self.__moonlets
 
+    def volcanicbonus(self):
+        if self.__nummoons == 1:
+            return 5
+        if self.__nummoons > 1:
+            return 10
+        return 0
 
 
 class AsteroidBelt(OrbitContent):
@@ -543,6 +572,7 @@ class Moon(World):
         self.makegravity()
         self.makemass()
         self.makepressure()
+        self.makevolcanism()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -557,6 +587,7 @@ class Moon(World):
         print("            Surf Grav:\t{}".format(self.getGravity()))
         print("                 Mass:\t{}".format(self.getMass()))
         print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
+        print("            Volcanism:\t{}".format(self.getVolcanism()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):
@@ -589,6 +620,11 @@ class Moon(World):
     def roll(self, ndice, modifier):
         return self.roller.roll(ndice, modifier)
 
+    def volcanicbonus(self):
+        if self.getType() == 'Sulfur':
+            return 60
+        if self.parent.type() == "Gas Giant":
+            return 5
 
 
 class Moonlet:

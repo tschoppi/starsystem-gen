@@ -198,3 +198,29 @@ TempFactor = {
         'Large': (0.77, 2)
     }
 }
+
+# WorldClimate is a function that returns the world climate designator string
+# depending on the input (average surface temperature)
+def WorldClimate(temperature):
+    climate = 'Infernal'
+    if temperature <= 344:
+        climate = 'Very Hot'
+    if temperature <= 333:
+        climate = 'Hot'
+    if temperature <= 322:
+        climate = 'Tropical'
+    if temperature <= 311:
+        climate = 'Warm'
+    if temperature <= 300:
+        climate = 'Normal'
+    if temperature <= 289:
+        climate = 'Cool'
+    if temperature <= 278:
+        climate = 'Chilly'
+    if temperature <= 266:
+        climate = 'Cold'
+    if temperature <= 255:
+        climate = 'Very Cold'
+    if temperature <= 244:
+        climate = 'Frozen'
+    return climate

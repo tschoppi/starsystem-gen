@@ -232,3 +232,22 @@ SizeConstrTable = {
     'Standard': (0.030, 0.065),
     'Large': (0.065, 0.091)
 }
+
+# Categorize the given pressure
+def PressureCategory(press):
+    cat = 'Superdense'
+    if press <= 10:
+        cat = 'Very Dense'
+    if press <= 1.5:
+        cat = 'Dense'
+    if press <= 1.2:
+        cat = 'Standard'
+    if press <= 0.8:
+        cat = 'Thin'
+    if press <= 0.5:
+        cat = 'Very Thin'
+    if press <= 0.01:
+        cat = 'Trace'
+    if press == 0.0:
+        cat = 'None'
+    return cat

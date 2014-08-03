@@ -2,7 +2,7 @@
 # Moonlets
 from . import dice as GD
 from .tables import SizeToInt, IntToSize, MAtmoTable, TempFactor, WorldClimate
-from .tables import SizeConstrTable
+from .tables import SizeConstrTable, PressureCategory
 from math import floor
 
 class OrbitContent:
@@ -42,6 +42,7 @@ class World(OrbitContent):
         self.makediameter()
         self.makegravity()
         self.makemass()
+        self.makepressure()
 
     def __repr__(self):
         return repr("World")
@@ -280,6 +281,35 @@ class World(OrbitContent):
     def getMass(self):
         return self.__mass
 
+    def makepressure(self):
+        size = self.getSize()
+        type = self.getType()
+        pressure = 0
+        if size == 'Tiny' or type == 'Hadean':
+            category = 'None'
+        elif type == 'Chthonian':
+            category = 'Trace'
+        elif size == 'Small' and type == 'Rock':
+            category = 'Trace'
+        else:
+            factor = 1
+            if size == 'Small' and type == 'Ice':
+                factor = 10
+            if size == 'Large':
+                factor = 5
+            if type == 'Greenhouse':
+                factor *= 100
+            pressure = self.getMass() * factor * self.getGravity()
+            category = PressureCategory(pressure)
+        self.__pressure = pressure
+        self.__presscat = category
+
+    def getPressure(self):
+        return self.__pressure
+
+    def getPressCat(self):
+        return self.__presscat
+
 
 
 
@@ -306,6 +336,7 @@ class Planet(World):
         print("     Diameter:\t{}".format(self.getDiameter()))
         print("    Surf Grav:\t{}".format(self.getGravity()))
         print("         Mass:\t{}".format(self.getMass()))
+        print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -492,6 +523,7 @@ class Moon(World):
         self.makediameter()
         self.makegravity()
         self.makemass()
+        self.makepressure()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -505,6 +537,7 @@ class Moon(World):
         print("             Diameter:\t{}".format(self.getDiameter()))
         print("            Surf Grav:\t{}".format(self.getGravity()))
         print("                 Mass:\t{}".format(self.getMass()))
+        print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

@@ -671,6 +671,7 @@ class Moon(World):
             return 60
         if self.parent.type() == "Gas Giant":
             return 5
+        return 0
 
 
 class Moonlet:

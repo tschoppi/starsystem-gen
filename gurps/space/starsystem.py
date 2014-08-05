@@ -82,7 +82,8 @@ class StarSystem:
     def randomage(self):
         diceroll = self.roll(3,0)
         if diceroll == 3:
-            return 0
+            # Extreme Population I: Age is set to 1 million years
+            return 0.001
         elif diceroll <= 6:
             return 0.1 + self.roll(1,-1) * 0.3 + self.roll(1,-1) * 0.05
         elif diceroll <= 10:

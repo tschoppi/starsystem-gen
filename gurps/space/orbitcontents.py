@@ -471,6 +471,10 @@ class Planet(World):
 
 
 class AsteroidBelt(OrbitContent):
+    def __init__(self, primarystar, orbitalradius):
+        OrbitContent.__init__(self, primarystar, orbitalradius)
+        self.makeresources()
+
     def __repr__(self):
         return repr("Asteroid Belt")
 
@@ -480,6 +484,45 @@ class AsteroidBelt(OrbitContent):
     def printinfo(self):
         print("Asteroid Belt")
         print("    Orbit:\t{}".format(self.getOrbit()))
+        print("      RVM:\t{}".format(self.__rvm))
+        print("   Res. V:\t{}\n".format(self.__resources))
+
+    def makeresources(self):
+        dice = self.roll(3,0)
+        rvm = -5
+        value = 'Worthless'
+        if dice == 4:
+            rvm = -4
+            value = 'Very Scant'
+        if dice == 5:
+            rvm = -3
+            value = 'Scant'
+        if dice >= 6 and dice <= 7:
+            rvm = -2
+            value = 'Very Poor'
+        if dice >= 8 and dice <= 9:
+            rvm = -1
+            value = 'Poor'
+        if dice >= 10 and dice <= 11:
+            rvm = 0
+            value = 'Average'
+        if dice >= 12 and dice <= 13:
+            rvm = 1
+            value = 'Abundant'
+        if dice >= 14 and dice <= 15:
+            rvm = 2
+            value = 'Very Abundant'
+        if dice == 16:
+            rvm = 3
+            value = 'Rich'
+        if dice == 17:
+            rvm = 4
+            value = 'Very Rich'
+        if dice == 16:
+            rvm = 5
+            value = 'Motherlode'
+        self.__rvm = rvm
+        self.__resources = value
 
 
 

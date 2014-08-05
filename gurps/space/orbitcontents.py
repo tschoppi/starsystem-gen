@@ -411,6 +411,66 @@ class World(OrbitContent):
     def getResources(self):
         return self.__resources
 
+    def makehabitability(self):
+        modifier = 0
+        # The following is from p. 121
+        volc = self.getVolcanism()
+        tect = self.getTectonics()
+        if volc == 'Heavy':
+            modifier -= 1
+        if volc == 'Extreme':
+            modifier -= 2
+        if tect == 'Heavy':
+            modifier -= 1
+        if tect == 'Extreme':
+            modifier -= 2
+
+        # Now comes standard implementation, p. 88
+        # First: Based on breathable or non-breathable atmosphere
+        atmo = [key for key in self.atmcomp.keys() if self.atmcomp[key] is True]
+        if len(atmo) > 0:
+            # Non-breathable atmosphere
+            if len(atmo) == 2:
+                # Suffocating and Toxic
+                modifier -= 1
+            elif len(atmo) == 3:
+                # Suffocating, Toxic and Corrosive
+                modifier -= 2
+        else:
+            # Breathable atmosphere
+            press = self.getPressCat()
+            if press == 'Very Thin':
+                modifier += 1
+            if press == 'Thin':
+                modifier += 2
+            if press == 'Standard' or press == 'Dense':
+                modifier += 3
+            if press == 'Very Dense' or press == 'Superdense':
+                modifier += 1
+            hasmarg, marg = self.getMarginal()
+            if not hasmarg:
+                modifier += 1
+            climate = self.getClimate()
+            if climate == 'Cold' or climate == 'Hot':
+                modifier += 1
+            if climate in ['Chilly', 'Cool', 'Normal', 'Warm', 'Tropical']:
+                modifier += 2
+        # Now the Hydrographics Coverage conditions
+        if self.getType() in ['Garden', 'Ocean']:
+            hydro = self.getHydrocover()
+            if (hydro > 0 and hydro < 60) or (hydro > 90 and hydro < 100):
+                modifier += 1
+            elif hydro > 0:
+                modifier += 2
+
+        # Check lower bounds (p. 121)
+        if modifier < -2:
+            modifier = -2
+        self.__habitability = modifier
+
+    def getHabitability(self):
+        return self.__habitability
+
 
 
 
@@ -421,6 +481,7 @@ class Planet(World):
         self.makevolcanism()
         self.maketectonism()
         self.makeresources()
+        self.makehabitability()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -444,7 +505,8 @@ class Planet(World):
         print("    Volcanism:\t{}".format(self.getVolcanism()))
         print("    Tectonics:\t{}".format(self.getTectonics()))
         print("          RVM:\t{}".format(self.getRVM()))
-        print("       Res. V:\t{}\n".format(self.getResources()))
+        print("       Res. V:\t{}".format(self.getResources()))
+        print(" Habitability:\t{}".format(self.getHabitability()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -710,6 +772,7 @@ class Moon(World):
         self.makevolcanism()
         self.maketectonism()
         self.makeresources()
+        self.makehabitability()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -727,7 +790,8 @@ class Moon(World):
         print("            Volcanism:\t{}".format(self.getVolcanism()))
         print("            Tectonics:\t{}".format(self.getTectonics()))
         print("                  RVM:\t{}".format(self.getRVM()))
-        print("               Res. V:\t{}\n".format(self.getResources()))
+        print("               Res. V:\t{}".format(self.getResources()))
+        print("         Habitability:\t{}".format(self.getHabitability()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

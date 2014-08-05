@@ -366,6 +366,51 @@ class World(OrbitContent):
     def getTectonics(self):
         return self.__tectonic
 
+    def resourcebonus(self):
+        volc = self.getVolcanism()
+        bonus = 0
+        if volc == 'None':
+            bonus -= 2
+        if volc == 'Light':
+            bonus -= 1
+        if volc == 'Heavy':
+            bonus += 1
+        if volc == 'Extreme':
+            bonus += 2
+        return bonus
+
+    def makeresources(self):
+        rollbonus = self.resourcebonus()
+        dice = self.roll(3, rollbonus)
+        rvm = -3
+        value = 'Scant'
+        if dice > 2:
+            rvm = -2
+            value = 'Very Poor'
+        if dice > 4:
+            rvm = -1
+            value = 'Poor'
+        if dice > 7:
+            rvm = 0
+            value = 'Average'
+        if dice > 13:
+            rvm = 1
+            value = 'Abundant'
+        if dice > 16:
+            rvm = 2
+            value = 'Very Abundant'
+        if dice> 18:
+            rvm = 3
+            value = 'Rich'
+        self.__rvm = rvm
+        self.__resources = value
+
+    def getRVM(self):
+        return self.__rvm
+
+    def getResources(self):
+        return self.__resources
+
 
 
 
@@ -375,6 +420,7 @@ class Planet(World):
         self.generatemoons()
         self.makevolcanism()
         self.maketectonism()
+        self.makeresources()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -397,6 +443,8 @@ class Planet(World):
         print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("    Volcanism:\t{}".format(self.getVolcanism()))
         print("    Tectonics:\t{}".format(self.getTectonics()))
+        print("          RVM:\t{}".format(self.getRVM()))
+        print("       Res. V:\t{}\n".format(self.getResources()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -661,6 +709,7 @@ class Moon(World):
         self.makepressure()
         self.makevolcanism()
         self.maketectonism()
+        self.makeresources()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -677,6 +726,8 @@ class Moon(World):
         print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("            Volcanism:\t{}".format(self.getVolcanism()))
         print("            Tectonics:\t{}".format(self.getTectonics()))
+        print("                  RVM:\t{}".format(self.getRVM()))
+        print("               Res. V:\t{}\n".format(self.getResources()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

@@ -471,6 +471,12 @@ class World(OrbitContent):
     def getHabitability(self):
         return self.__habitability
 
+    def makeaffinity(self):
+        self.__affinity = self.getRVM() + self.getHabitability()
+
+    def getAffinity(self):
+        return self.__affinity
+
 
 
 
@@ -482,6 +488,7 @@ class Planet(World):
         self.maketectonism()
         self.makeresources()
         self.makehabitability()
+        self.makeaffinity()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -507,6 +514,7 @@ class Planet(World):
         print("          RVM:\t{}".format(self.getRVM()))
         print("       Res. V:\t{}".format(self.getResources()))
         print(" Habitability:\t{}".format(self.getHabitability()))
+        print("     Affinity:\t{}".format(self.getAffinity()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -584,6 +592,8 @@ class AsteroidBelt(OrbitContent):
     def __init__(self, primarystar, orbitalradius):
         OrbitContent.__init__(self, primarystar, orbitalradius)
         self.makeresources()
+        self.__habitability = 0
+        self.__affinity = self.__habitability + self.__rvm
 
     def __repr__(self):
         return repr("Asteroid Belt")
@@ -595,7 +605,9 @@ class AsteroidBelt(OrbitContent):
         print("Asteroid Belt")
         print("    Orbit:\t{}".format(self.getOrbit()))
         print("      RVM:\t{}".format(self.__rvm))
-        print("   Res. V:\t{}\n".format(self.__resources))
+        print("   Res. V:\t{}".format(self.__resources))
+        print("     Aff.:\t{}".format(self.__affinity))
+        print("")
 
     def makeresources(self):
         dice = self.roll(3,0)
@@ -773,6 +785,7 @@ class Moon(World):
         self.maketectonism()
         self.makeresources()
         self.makehabitability()
+        self.makeaffinity()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -792,6 +805,7 @@ class Moon(World):
         print("                  RVM:\t{}".format(self.getRVM()))
         print("               Res. V:\t{}".format(self.getResources()))
         print("         Habitability:\t{}".format(self.getHabitability()))
+        print("             Affinity:\t{}".format(self.getAffinity()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

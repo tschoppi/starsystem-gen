@@ -366,6 +366,117 @@ class World(OrbitContent):
     def getTectonics(self):
         return self.__tectonic
 
+    def resourcebonus(self):
+        volc = self.getVolcanism()
+        bonus = 0
+        if volc == 'None':
+            bonus -= 2
+        if volc == 'Light':
+            bonus -= 1
+        if volc == 'Heavy':
+            bonus += 1
+        if volc == 'Extreme':
+            bonus += 2
+        return bonus
+
+    def makeresources(self):
+        rollbonus = self.resourcebonus()
+        dice = self.roll(3, rollbonus)
+        rvm = -3
+        value = 'Scant'
+        if dice > 2:
+            rvm = -2
+            value = 'Very Poor'
+        if dice > 4:
+            rvm = -1
+            value = 'Poor'
+        if dice > 7:
+            rvm = 0
+            value = 'Average'
+        if dice > 13:
+            rvm = 1
+            value = 'Abundant'
+        if dice > 16:
+            rvm = 2
+            value = 'Very Abundant'
+        if dice> 18:
+            rvm = 3
+            value = 'Rich'
+        self.__rvm = rvm
+        self.__resources = value
+
+    def getRVM(self):
+        return self.__rvm
+
+    def getResources(self):
+        return self.__resources
+
+    def makehabitability(self):
+        modifier = 0
+        # The following is from p. 121
+        volc = self.getVolcanism()
+        tect = self.getTectonics()
+        if volc == 'Heavy':
+            modifier -= 1
+        if volc == 'Extreme':
+            modifier -= 2
+        if tect == 'Heavy':
+            modifier -= 1
+        if tect == 'Extreme':
+            modifier -= 2
+
+        # Now comes standard implementation, p. 88
+        # First: Based on breathable or non-breathable atmosphere
+        atmo = [key for key in self.atmcomp.keys() if self.atmcomp[key] is True]
+        if len(atmo) > 0:
+            # Non-breathable atmosphere
+            if len(atmo) == 2:
+                # Suffocating and Toxic
+                modifier -= 1
+            elif len(atmo) == 3:
+                # Suffocating, Toxic and Corrosive
+                modifier -= 2
+        else:
+            # Breathable atmosphere
+            press = self.getPressCat()
+            if press == 'Very Thin':
+                modifier += 1
+            if press == 'Thin':
+                modifier += 2
+            if press == 'Standard' or press == 'Dense':
+                modifier += 3
+            if press == 'Very Dense' or press == 'Superdense':
+                modifier += 1
+            hasmarg, marg = self.getMarginal()
+            if not hasmarg:
+                modifier += 1
+            climate = self.getClimate()
+            if climate == 'Cold' or climate == 'Hot':
+                modifier += 1
+            if climate in ['Chilly', 'Cool', 'Normal', 'Warm', 'Tropical']:
+                modifier += 2
+        # Now the Hydrographics Coverage conditions
+        if self.getType() in ['Garden', 'Ocean']:
+            hydro = self.getHydrocover()
+            if (hydro > 0 and hydro < 60) or (hydro > 90 and hydro < 100):
+                modifier += 1
+            elif hydro > 0:
+                modifier += 2
+
+        # Check lower bounds (p. 121)
+        if modifier < -2:
+            modifier = -2
+        self.__habitability = modifier
+
+    def getHabitability(self):
+        return self.__habitability
+
+    def makeaffinity(self):
+        self.__affinity = self.getRVM() + self.getHabitability()
+
+    def getAffinity(self):
+        return self.__affinity
+
 
 
 
@@ -375,6 +486,9 @@ class Planet(World):
         self.generatemoons()
         self.makevolcanism()
         self.maketectonism()
+        self.makeresources()
+        self.makehabitability()
+        self.makeaffinity()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -397,6 +511,10 @@ class Planet(World):
         print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("    Volcanism:\t{}".format(self.getVolcanism()))
         print("    Tectonics:\t{}".format(self.getTectonics()))
+        print("          RVM:\t{}".format(self.getRVM()))
+        print("       Res. V:\t{}".format(self.getResources()))
+        print(" Habitability:\t{}".format(self.getHabitability()))
+        print("     Affinity:\t{}".format(self.getAffinity()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -471,6 +589,12 @@ class Planet(World):
 
 
 class AsteroidBelt(OrbitContent):
+    def __init__(self, primarystar, orbitalradius):
+        OrbitContent.__init__(self, primarystar, orbitalradius)
+        self.makeresources()
+        self.__habitability = 0
+        self.__affinity = self.__habitability + self.__rvm
+
     def __repr__(self):
         return repr("Asteroid Belt")
 
@@ -480,6 +604,47 @@ class AsteroidBelt(OrbitContent):
     def printinfo(self):
         print("Asteroid Belt")
         print("    Orbit:\t{}".format(self.getOrbit()))
+        print("      RVM:\t{}".format(self.__rvm))
+        print("   Res. V:\t{}".format(self.__resources))
+        print("     Aff.:\t{}".format(self.__affinity))
+        print("")
+
+    def makeresources(self):
+        dice = self.roll(3,0)
+        rvm = -5
+        value = 'Worthless'
+        if dice == 4:
+            rvm = -4
+            value = 'Very Scant'
+        if dice == 5:
+            rvm = -3
+            value = 'Scant'
+        if dice >= 6 and dice <= 7:
+            rvm = -2
+            value = 'Very Poor'
+        if dice >= 8 and dice <= 9:
+            rvm = -1
+            value = 'Poor'
+        if dice >= 10 and dice <= 11:
+            rvm = 0
+            value = 'Average'
+        if dice >= 12 and dice <= 13:
+            rvm = 1
+            value = 'Abundant'
+        if dice >= 14 and dice <= 15:
+            rvm = 2
+            value = 'Very Abundant'
+        if dice == 16:
+            rvm = 3
+            value = 'Rich'
+        if dice == 17:
+            rvm = 4
+            value = 'Very Rich'
+        if dice == 16:
+            rvm = 5
+            value = 'Motherlode'
+        self.__rvm = rvm
+        self.__resources = value
 
 
 
@@ -618,6 +783,9 @@ class Moon(World):
         self.makepressure()
         self.makevolcanism()
         self.maketectonism()
+        self.makeresources()
+        self.makehabitability()
+        self.makeaffinity()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -634,6 +802,10 @@ class Moon(World):
         print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
         print("            Volcanism:\t{}".format(self.getVolcanism()))
         print("            Tectonics:\t{}".format(self.getTectonics()))
+        print("                  RVM:\t{}".format(self.getRVM()))
+        print("               Res. V:\t{}".format(self.getResources()))
+        print("         Habitability:\t{}".format(self.getHabitability()))
+        print("             Affinity:\t{}".format(self.getAffinity()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):

@@ -23,6 +23,7 @@ class PlanetSystem:
         self.makecontentlist()
         self.placegasgiants()
         self.fillorbits()
+        self.makeeccentricities()
 
     def printinfo(self):
         print("--------------------")
@@ -282,3 +283,15 @@ class PlanetSystem:
                     modifier -= 3
 
         return modifier
+
+    def makeeccentricities(self):
+        for k, oc in self.__orbitcontents.items():
+            if self.__gasarrangement == 'Conventional':
+                bonus = -6
+            elif k == self.__orbitcontents.keys()[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
+                bonus = -6
+            elif self.__gasarrangement == 'Eccentric' and oc.type() == 'Gas Giant' and k < self.__snowline:
+                bonus = +4
+            else:
+                bonus = 0
+            oc.seteccentricity(self.roll(3, bonus))

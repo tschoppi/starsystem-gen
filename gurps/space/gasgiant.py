@@ -38,6 +38,7 @@ class GasGiant(OrbitContent):
         print("     Dens:\t{}".format(self.__density))
         print("     Diam:\t{}".format(self.__diameter))
         print("  Orb Per:\t{}".format(self.getPeriod()))
+        print("  Orb Ecc:\t{}".format(self.getEcc()))
         print(" Cl Top G:\t{}".format(self.__gravity))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))

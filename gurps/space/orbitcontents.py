@@ -13,6 +13,7 @@ class OrbitContent:
         self.primarystar = primary
         primarylum = self.primarystar.getLuminosity()
         self.makebbtemp(primarylum, self.__orbit)
+        self.makeorbitperiod()
 
     def makebbtemp(self, lum, orb):
         self.__bbtemp = 278 * lum**(0.25) * orb**(-0.5)
@@ -22,3 +23,10 @@ class OrbitContent:
 
     def getOrbit(self):
         return self.__orbit
+
+    def makeorbitperiod(self):
+        m = self.primarystar.getMass()
+        self.__period = (self.__orbit**3 / m)**(0.5)
+
+    def getPeriod(self):
+        return self.__period

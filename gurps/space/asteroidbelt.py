@@ -18,6 +18,7 @@ class AsteroidBelt(OrbitContent):
     def printinfo(self):
         print("Asteroid Belt")
         print("    Orbit:\t{}".format(self.getOrbit()))
+        print("  Orb Per:\t{}".format(self.getPeriod()))
         print("      RVM:\t{}".format(self.__rvm))
         print("   Res. V:\t{}".format(self.__resources))
         print("     Aff.:\t{}".format(self.__affinity))

@@ -37,6 +37,7 @@ class Planet(World):
         print("       Res. V:\t{}".format(self.getResources()))
         print(" Habitability:\t{}".format(self.getHabitability()))
         print("     Affinity:\t{}".format(self.getAffinity()))
+        print("     Orb Per.:\t{}".format(self.getPeriod()))
         print("------------------- \n")
 
     def printatmosphere(self):

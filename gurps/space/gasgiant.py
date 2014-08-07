@@ -110,6 +110,9 @@ class GasGiant(OrbitContent):
         self.__mass = mass
         self.__density = density
 
+    def getMass(self):
+        return self.__mass
+
     def makediameter(self):
         self.__diameter = (self.__mass / self.__density) ** (1/3.)
 

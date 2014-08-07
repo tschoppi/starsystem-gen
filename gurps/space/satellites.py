@@ -25,12 +25,14 @@ class Moon(World):
         self.makehabitability()
         self.makeaffinity()
         self.makeorbit()
+        self.makeperiod()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
         #print("Parent Planet:\t{}".format(self.parent))
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
+        print("             Orb Per.:\t{} d".format(self.getPeriod()))
         print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("            Av Surf T:\t{}".format(self.getAvSurf()))
         print("              Climate:\t{}".format(self.getClimate()))
@@ -108,6 +110,19 @@ class Moon(World):
                 roll += self.roll(2, 0)
             self.__orbit = roll / 2. * self.parent.getDiameter()
 
+    def getOrbit(self):
+        return self.__orbit
+
+    def makeperiod(self):
+        m1 = self.getMass()
+        mp = self.parent.getMass()
+        m = m1 + mp
+        orbit = self.getOrbit()
+        self.__period = 0.166 * (orbit**3 / m)**(0.5)
+
+    def getPeriod(self):
+        return self.__period
+
 
 
 class Moonlet:
@@ -119,11 +134,13 @@ class Moonlet:
         self.roller = GD.DiceRoller()
         self.family = family
         self.makeorbit()
+        self.makeperiod()
 
     def printinfo(self):
         print("Moonlet Information")
         print("Parent Planet:\t{}".format(self.parent))
         print("        Orbit:\t{} Earth Diameters".format(self.getOrbit()))
+        print("      Orb Per:\t{} d".format(self.getPeriod()))
 
     def makeorbit(self):
         ptype = self.parent.type()
@@ -140,3 +157,11 @@ class Moonlet:
 
     def getOrbit(self):
         return self.__orbit
+
+    def makeperiod(self):
+        m = self.parent.getMass()
+        orbit = self.getOrbit()
+        self.__period = 0.166 * (orbit**3 / m)**(0.5)
+
+    def getPeriod(self):
+        return self.__period

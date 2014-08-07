@@ -14,6 +14,7 @@ class Planet(World):
         self.makehabitability()
         self.makeaffinity()
         self.makecalendar()
+        self.makeaxialtilt()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -47,6 +48,7 @@ class Planet(World):
         print("      Day Len:\t{} d".format(self.getDayLength()))
         if self.getMoonLengths() is not None:
             print("     Moon Len:\t{} d".format(self.getMoonLengths()))
+        print("      Ax Tilt:\t{}".format(self.getAxialTilt()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -215,3 +217,29 @@ class Planet(World):
             return self.__moonlength
         else:
             return None
+
+    def makeaxialtilt(self):
+        roll1 = self.roll(3, 0)
+        base = 0
+        if roll1 > 6:
+            base = 10
+        if roll1 > 9:
+            base = 20
+        if roll1 > 12:
+            base = 30
+        if roll1 > 14:
+            base = 40
+        if roll1 > 16:
+            roll2 = self.roll(1, 0)
+            if roll2 in [1, 2]:
+                base = 50
+            if roll2 in [3, 4]:
+                base = 60
+            if roll2 == 5:
+                base = 70
+            if roll2 == 6:
+                base = 80
+        self.__axtilt = base + self.roll(2, -2)
+
+    def getAxialTilt(self):
+        return self.__axtilt

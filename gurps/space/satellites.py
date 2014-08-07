@@ -26,6 +26,7 @@ class Moon(World):
         self.makeaffinity()
         self.makeorbit()
         self.makeperiod()
+        self.maketidals()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -47,6 +48,7 @@ class Moon(World):
         print("               Res. V:\t{}".format(self.getResources()))
         print("         Habitability:\t{}".format(self.getHabitability()))
         print("             Affinity:\t{}".format(self.getAffinity()))
+        print("                  TTE:\t{}".format(self.getTTE()))
         print("         --- **************** --- \n")
 
     def makebbtemp(self):
@@ -122,6 +124,17 @@ class Moon(World):
 
     def getPeriod(self):
         return self.__period
+
+    def maketidals(self):
+        m = self.parent.getMass()
+        d = self.getDiameter()
+        r = self.getOrbit()
+        tidal = 2230000 * m * d / r**3
+        tte = tidal * self.primarystar.getAge() / m
+        self.__tte = round(tte)
+
+    def getTTE(self):
+        return self.__tte
 
 
 

@@ -28,6 +28,7 @@ class Moon(World):
         self.makeperiod()
         self.maketidals()
         self.makerotation()
+        self.makecalendar()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -36,6 +37,8 @@ class Moon(World):
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
         print("             Orb Per.:\t{} d".format(self.getPeriod()))
         print("             Rot Per.:\t{} d".format(self.getRotation()))
+        print("           Len of day:\t{} d".format(self.getDayLength()))
+        print("         Len of Plday:\t{} d".format(self.getPlanetLength()))
         print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("            Av Surf T:\t{}".format(self.getAvSurf()))
         print("              Climate:\t{}".format(self.getClimate()))
@@ -174,6 +177,30 @@ class Moon(World):
 
     def getRotation(self):
         return self.__rotperiod
+
+    def makecalendar(self):
+        # Calculate apparent length of a day for this moon
+        s = self.parent.getPeriod() * 365.26  # [d]
+        r = self.getRotation()  # [d]
+        if s == r:
+            alen = None
+        else:
+            alen = s * r / (s - r)
+        self.__alenday = alen
+
+        # Calculate the time in which the planet can be seen
+        s = self.getPeriod()  # [d]
+        if s == r:
+            alen = None
+        else:
+            alen = s * r / (s - r)
+        self.__alenplanet = alen
+
+    def getDayLength(self):
+        return self.__alenday
+
+    def getPlanetLength(self):
+        return self.__alenplanet
 
 
 

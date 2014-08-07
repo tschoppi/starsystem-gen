@@ -7,6 +7,7 @@ class Planet(World):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
         self.maketidals()
+        self.makerotation()
         self.makevolcanism()
         self.maketectonism()
         self.makeresources()
@@ -41,6 +42,7 @@ class Planet(World):
         print("     Orb Per.:\t{}".format(self.getPeriod()))
         print("     Orb Ecc.:\t{}".format(self.getEcc()))
         print("          TTE:\t{}".format(self.getTTE()))
+        print("     Rot Per.:\t{} d".format(self.getRotation()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -133,3 +135,46 @@ class Planet(World):
 
     def getTTE(self):
         return self.__tte
+
+    def makerotation(self):
+        if self.getTTE() > 50:
+            if self.__nummoons == 0:
+                rotperiod = self.getPeriod() * 365.26
+            else:
+                # Find innermost moon and its orbital period
+                moons = sorted(self.getSatellites(), key = lambda moon: moon.getOrbit())
+                innermoon = moons[0]
+                rotperiod = innermoon.getPeriod()
+        else:
+            if self.getSize() == 'Large':
+                bonus = 6
+            if self.getSize() == 'Standard':
+                bonus = 10
+            if self.getSize() == 'Small':
+                bonus = 14
+            if self.getSize() == 'Tiny':
+                bonus = 18
+            diceroll = self.roll(3, bonus)
+            rotperiod = (diceroll + self.getTTE()) / 24.
+            if rotperiod > 1.5 or diceroll - bonus >= 16:
+                roll2 = self.roll(2, 0)
+                if roll2 == 7:
+                    rotperiod = self.roll(1, 0) * 2
+                if roll2 == 8:
+                    rotperiod = self.roll(1, 0) * 5
+                if roll2 == 9:
+                    rotperiod = self.roll(1, 0) * 10
+                if roll2 == 10:
+                    rotperiod = self.roll(1, 0) * 20
+                if roll2 == 11:
+                    rotperiod = self.roll(1, 0) * 50
+                if roll2 == 12:
+                    rotperiod = self.roll(1, 0) * 100
+            if rotperiod > self.getPeriod() * 365.26:
+                rotperiod = self.getPeriod() * 365.26
+        if self.roll(3, 0) >= 13:
+            rotperiod = -rotperiod
+        self.__rotperiod = rotperiod
+
+    def getRotation(self):
+        return self.__rotperiod

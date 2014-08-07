@@ -1,6 +1,6 @@
 """This is an example script for automated star system generation"""
 
-import gurps.space.starsystem as starsys
+import gurpsspace.starsystem as starsys
 
 # Change from None to a value if you want to set an argument
 args = {

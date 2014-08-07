@@ -24,12 +24,13 @@ class Moon(World):
         self.makeresources()
         self.makehabitability()
         self.makeaffinity()
+        self.makeorbit()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
         #print("Parent Planet:\t{}".format(self.parent))
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
-        print("                Orbit:\t{}".format(self.__orbit))
+        print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
         print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("            Av Surf T:\t{}".format(self.getAvSurf()))
         print("              Climate:\t{}".format(self.getClimate()))
@@ -82,6 +83,31 @@ class Moon(World):
         if self.parent.type() == "Gas Giant":
             return 5
         return 0
+
+    def makeorbit(self):
+        """
+        Randomly generate the orbit of this satellite, distinguishing between
+        parent planets that are terrestrial or gas giants.
+        """
+        ptype = self.parent.type()
+        if ptype == 'Terrestrial World':
+            # Check for size difference and infer roll bonus from it
+            psize = SizeToInt[self.parent.getSize()]
+            osize = SizeToInt[self.getSize()]
+            diff = psize - osize
+            bonus = 0
+            if diff == 2:
+                bonus = 2
+            if diff == 1:
+                bonus = 4
+            dice = self.roll(2, bonus)
+            self.__orbit = dice * 2.5 * self.parent.getDiameter()
+        if ptype == 'Gas Giant':
+            roll = self.roll(3, 3)
+            if roll >= 15:
+                roll += self.roll(2, 0)
+            self.__orbit = roll / 2. * self.parent.getDiameter()
+
 
 
 class Moonlet:

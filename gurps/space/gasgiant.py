@@ -6,10 +6,10 @@ class GasGiant(OrbitContent):
     def __init__(self, primary, orbitalradius, rollbonus=True):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.makesize(rollbonus)
-        self.makemoons()
         self.makemass()
         self.makediameter()
         self.makecloudtopgrav()
+        self.makemoons()
         #self.printinfo()
 
     def __repr__(self):
@@ -112,6 +112,9 @@ class GasGiant(OrbitContent):
 
     def makediameter(self):
         self.__diameter = (self.__mass / self.__density) ** (1/3.)
+
+    def getDiameter(self):
+        return self.__diameter
 
     def makecloudtopgrav(self):
         self.__gravity = self.__density * self.__diameter

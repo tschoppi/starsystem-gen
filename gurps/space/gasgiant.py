@@ -85,7 +85,7 @@ class GasGiant(OrbitContent):
         nummoons = self.roll(1, modifier)
         if nummoons < 0:
             nummoons = 0
-        self.__secondfamily = [Moon(self, self.primarystar) for nummoon in range(nummoons)]
+        self.__secondfamily = sorted([Moon(self, self.primarystar) for nummoon in range(nummoons)], key = lambda moon: moon.getOrbit())
 
     def makethirdfamily(self):
         orbit = self.getOrbit()

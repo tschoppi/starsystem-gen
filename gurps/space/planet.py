@@ -72,7 +72,7 @@ class Planet(World):
             self.__nummoonlets = 0
             self.__moonlets = []
         self.__nummoons = moonroll
-        self.__moons = [Moon(self, self.primarystar) for moonnum in range(moonroll)]
+        self.__moons = sorted([Moon(self, self.primarystar) for moonnum in range(moonroll)], key = lambda moon: moon.getOrbit())
 
     def generatemoonlets(self):
         rollmod = -2

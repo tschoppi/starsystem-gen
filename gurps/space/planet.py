@@ -6,6 +6,7 @@ class Planet(World):
     def __init__(self, primary, orbitalradius, sizeclass):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.generatemoons()
+        self.maketidals()
         self.makevolcanism()
         self.maketectonism()
         self.makeresources()
@@ -39,6 +40,7 @@ class Planet(World):
         print("     Affinity:\t{}".format(self.getAffinity()))
         print("     Orb Per.:\t{}".format(self.getPeriod()))
         print("     Orb Ecc.:\t{}".format(self.getEcc()))
+        print("          TTE:\t{}".format(self.getTTE()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -110,3 +112,24 @@ class Planet(World):
         if self.__nummoons > 1:
             return 4
         return 0
+
+    def maketidals(self):
+        # Collect tidal effects for Moons
+        moontide = 0
+        if self.__nummoons > 0:
+            moons = self.getSatellites()
+            for moon in moons:
+                m = moon.getMass()
+                r = moon.getOrbit()
+                d = self.getDiameter()
+                moontide += 2230000 * m * d / r**3
+        # Make tidal effect for star
+        sunmass = self.primarystar.getMass()
+        diameter = self.getDiameter()
+        orbit = self.getOrbit()
+        startide = 0.46 * sunmass * diameter / orbit**3
+        totaltide = (moontide + startide) * self.primarystar.getAge() / self.getMass()
+        self.__tte = round(totaltide)
+
+    def getTTE(self):
+        return self.__tte

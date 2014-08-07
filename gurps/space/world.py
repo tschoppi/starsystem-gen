@@ -284,7 +284,7 @@ class World(OrbitContent):
         return self.__presscat
 
     def makevolcanism(self):
-        bonus = self.getGravity() / self.primarystar.getAge()
+        bonus = round(self.getGravity() / self.primarystar.getAge() * 40)
         bonus += self.volcanicbonus()
         volcanoroll = self.roll(3, bonus)
         activity = 'None'

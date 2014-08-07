@@ -13,6 +13,7 @@ class Planet(World):
         self.makeresources()
         self.makehabitability()
         self.makeaffinity()
+        self.makecalendar()
 
     def printinfo(self):
         print("--- Planet Info ---")
@@ -43,6 +44,9 @@ class Planet(World):
         print("     Orb Ecc.:\t{}".format(self.getEcc()))
         print("          TTE:\t{}".format(self.getTTE()))
         print("     Rot Per.:\t{} d".format(self.getRotation()))
+        print("      Day Len:\t{} d".format(self.getDayLength()))
+        if self.getMoonLengths() is not None:
+            print("     Moon Len:\t{} d".format(self.getMoonLengths()))
         print("------------------- \n")
 
     def printatmosphere(self):
@@ -178,3 +182,36 @@ class Planet(World):
 
     def getRotation(self):
         return self.__rotperiod
+
+    def makecalendar(self):
+        """Make the local calendar, including:
+
+            - Apparent length of day
+            - Apparent length of moon cycles
+        """
+        s = self.getPeriod() * 365.26
+        r = self.getRotation()
+        if s == r:
+            alen = None
+        else:
+            alen = s * r / (s - r)
+        self.__daylength = alen
+
+        if self.__nummoons > 0:
+            self.__moonlength = []
+            for moon in self.getSatellites():
+                s = moon.getPeriod()
+                if s == r:
+                    alen = None
+                else:
+                    alen = s * r / (s - r)
+                self.__moonlength.append(alen)
+
+    def getDayLength(self):
+        return self.__daylength
+
+    def getMoonLengths(self):
+        if self.__nummoons > 0:
+            return self.__moonlength
+        else:
+            return None

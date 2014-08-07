@@ -69,7 +69,7 @@ class GasGiant(OrbitContent):
         nummoonlets = self.roll(2, modifier)
         if nummoonlets < 0:
             nummoonlets = 0
-        self.__firstfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+        self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(nummoonlets)]
 
     def makesecondfamily(self):
         orbit = self.getOrbit()
@@ -101,7 +101,7 @@ class GasGiant(OrbitContent):
         nummoonlets = self.roll(1, modifier)
         if nummoonlets < 0:
             nummoonlets = 0
-        self.__thirdfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+        self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(nummoonlets)]
 
     def makemass(self):
         size = self.getSize()

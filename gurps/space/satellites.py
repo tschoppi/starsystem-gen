@@ -114,10 +114,29 @@ class Moonlet:
     def roll(self, ndice, modifier):
         return self.roller.roll(ndice, modifier)
 
-    def __init__(self, parentplanet):
+    def __init__(self, parentplanet, family=None):
         self.parent = parentplanet
         self.roller = GD.DiceRoller()
+        self.family = family
+        self.makeorbit()
 
     def printinfo(self):
         print("Moonlet Information")
         print("Parent Planet:\t{}".format(self.parent))
+        print("        Orbit:\t{} Earth Diameters".format(self.getOrbit()))
+
+    def makeorbit(self):
+        ptype = self.parent.type()
+        if ptype == 'Gas Giant' and self.family == 'first':
+            self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
+        if ptype == 'Gas Giant' and self.family == 'third':
+            # Make random orbits between 20 and 200 planetary diameters
+            import random as r
+            multiplier = r.uniform(20, 200)
+            self.__orbit = multiplier * self.parent.getDiameter()
+
+        if ptype == 'Terrestrial World':
+            self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
+
+    def getOrbit(self):
+        return self.__orbit

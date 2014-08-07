@@ -27,6 +27,7 @@ class Moon(World):
         self.makeorbit()
         self.makeperiod()
         self.maketidals()
+        self.makerotation()
 
     def printinfo(self):
         print("         *** Moon Information *** ")
@@ -34,6 +35,7 @@ class Moon(World):
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
         print("             Orb Per.:\t{} d".format(self.getPeriod()))
+        print("             Rot Per.:\t{} d".format(self.getRotation()))
         print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
         print("            Av Surf T:\t{}".format(self.getAvSurf()))
         print("              Climate:\t{}".format(self.getClimate()))
@@ -135,6 +137,43 @@ class Moon(World):
 
     def getTTE(self):
         return self.__tte
+
+    def makerotation(self):
+        if self.getTTE() > 50:
+            rotperiod = self.getPeriod()  # [d]
+        else:
+            if self.getSize() == 'Large':
+                bonus = 6
+            if self.getSize() == 'Standard':
+                bonus = 10
+            if self.getSize() == 'Small':
+                bonus = 14
+            if self.getSize() == 'Tiny':
+                bonus = 18
+            diceroll = self.roll(3, bonus)
+            rotperiod = (diceroll + self.getTTE()) / 24.
+            if rotperiod > 1.5 or diceroll - bonus >= 16:
+                roll2 = self.roll(2, 0)
+                if roll2 == 7:
+                    rotperiod = self.roll(1, 0) * 2
+                if roll2 == 8:
+                    rotperiod = self.roll(1, 0) * 5
+                if roll2 == 9:
+                    rotperiod = self.roll(1, 0) * 10
+                if roll2 == 10:
+                    rotperiod = self.roll(1, 0) * 20
+                if roll2 == 11:
+                    rotperiod = self.roll(1, 0) * 50
+                if roll2 == 12:
+                    rotperiod = self.roll(1, 0) * 100
+            if rotperiod > self.getPeriod():
+                rotperiod = self.getPeriod()
+        if self.roll(3, 0) >= 17:
+            rotperiod = -rotperiod
+        self.__rotperiod = rotperiod
+
+    def getRotation(self):
+        return self.__rotperiod
 
 
 

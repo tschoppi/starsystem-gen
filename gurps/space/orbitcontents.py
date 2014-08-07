@@ -56,9 +56,18 @@ class OrbitContent:
             ecc = 0.8
         self.__ecc = ecc
         self.__eccset = True
+        self.makeminmax()
 
     def getEcc(self):
         if self.__eccset:
             return self.__ecc
         else:
             return None
+
+    def makeminmax(self):
+        min = self.getOrbit() * (1 - self.__ecc)
+        max = self.getOrbit() * (1 + self.__ecc)
+        self.__minmax = (min, max)
+
+    def getMinMax(self):
+        return self.__minmax

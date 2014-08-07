@@ -29,6 +29,7 @@ class StarSystem:
         self.makeminmaxseps()
         self.makeforbiddenzones()
         self.createplanetsystem()
+        self.makeperiods()
         self.printinfo()
 
     def roll(self, dicenum, modifier):
@@ -40,8 +41,10 @@ class StarSystem:
         print("        Age:\t{}".format(self.__age))
         print(" # of Stars:\t{}".format(self.__numstars))
         print("OpenCluster:\t{}".format(self.__opencluster))
-        print("Stellar Orb:\t{}".format(self.__orbits))
-        print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
+        if self.__numstars > 1:
+            print("Stellar Orb:\t{}".format(self.__orbits))
+            print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
+            print(" Orbit Per.:\t{}".format(self.__periods))
         print("================\n")
         for i in range(self.__numstars):
             self.stars[i].printinfo()
@@ -111,8 +114,6 @@ class StarSystem:
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star
-    # Missing: Ensuring that the orbital separation of the second companion is
-    #          larger than the separation of the first
     def makeorbits(self):
         self.__orbsepentry = []
         self.__orbits = []
@@ -197,3 +198,18 @@ class StarSystem:
     def createplanetsystem(self):
         for star in self.stars:
             star.makeplanetsystem()
+
+    def makeperiods(self):
+        self.__periods = []
+        if self.__numstars >= 2:
+            orbit, ecc = self.__orbits[0]
+            m1 = self.stars[0].getMass()
+            m2 = self.stars[1].getMass()
+            m = m1 + m2
+            self.__periods.append( (orbit**3 / m)**(0.5) )
+        if self.__numstars == 3:
+            orbit, ecc = self.__orbits[1]
+            m1 = self.stars[0].getMass() + self.stars[1].getMass()
+            m2 = self.stars[2].getMass()
+            m = m1 + m2
+            self.__periods.append( (orbit**3 / m)**(0.5) )

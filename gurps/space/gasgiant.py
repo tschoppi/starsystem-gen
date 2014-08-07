@@ -6,10 +6,10 @@ class GasGiant(OrbitContent):
     def __init__(self, primary, orbitalradius, rollbonus=True):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.makesize(rollbonus)
-        self.makemoons()
         self.makemass()
         self.makediameter()
         self.makecloudtopgrav()
+        self.makemoons()
         #self.printinfo()
 
     def __repr__(self):
@@ -37,6 +37,8 @@ class GasGiant(OrbitContent):
         print("     Mass:\t{}".format(self.__mass))
         print("     Dens:\t{}".format(self.__density))
         print("     Diam:\t{}".format(self.__diameter))
+        print("  Orb Per:\t{}".format(self.getPeriod()))
+        print("  Orb Ecc:\t{}".format(self.getEcc()))
         print(" Cl Top G:\t{}".format(self.__gravity))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
@@ -67,7 +69,7 @@ class GasGiant(OrbitContent):
         nummoonlets = self.roll(2, modifier)
         if nummoonlets < 0:
             nummoonlets = 0
-        self.__firstfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+        self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(nummoonlets)]
 
     def makesecondfamily(self):
         orbit = self.getOrbit()
@@ -83,7 +85,7 @@ class GasGiant(OrbitContent):
         nummoons = self.roll(1, modifier)
         if nummoons < 0:
             nummoons = 0
-        self.__secondfamily = [Moon(self, self.primarystar) for nummoon in range(nummoons)]
+        self.__secondfamily = sorted([Moon(self, self.primarystar) for nummoon in range(nummoons)], key = lambda moon: moon.getOrbit())
 
     def makethirdfamily(self):
         orbit = self.getOrbit()
@@ -99,7 +101,7 @@ class GasGiant(OrbitContent):
         nummoonlets = self.roll(1, modifier)
         if nummoonlets < 0:
             nummoonlets = 0
-        self.__thirdfamily = [Moonlet(self) for nummoonlet in range(nummoonlets)]
+        self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(nummoonlets)]
 
     def makemass(self):
         size = self.getSize()
@@ -108,8 +110,14 @@ class GasGiant(OrbitContent):
         self.__mass = mass
         self.__density = density
 
+    def getMass(self):
+        return self.__mass
+
     def makediameter(self):
         self.__diameter = (self.__mass / self.__density) ** (1/3.)
+
+    def getDiameter(self):
+        return self.__diameter
 
     def makecloudtopgrav(self):
         self.__gravity = self.__density * self.__diameter

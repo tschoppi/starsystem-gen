@@ -288,7 +288,7 @@ class PlanetSystem:
         for k, oc in self.__orbitcontents.items():
             if self.__gasarrangement == 'Conventional':
                 bonus = -6
-            elif k == self.__orbitcontents.keys()[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
+            elif k == list(self.__orbitcontents)[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
                 bonus = -6
             elif self.__gasarrangement == 'Eccentric' and oc.type() == 'Gas Giant' and k < self.__snowline:
                 bonus = +4

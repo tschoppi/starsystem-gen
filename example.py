@@ -10,3 +10,4 @@ args = {
 }
 
 mysys = starsys.StarSystem(**args)
+mysys.writelatex()

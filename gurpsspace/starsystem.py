@@ -1,6 +1,8 @@
 from . import star as GS
 from . import dice as GD
 from .tables import OrbSepTable, StOEccTable
+from .output import latexout
+LW = latexout.LatexWriter
 
 class StarSystem:
     roller = GD.DiceRoller()
@@ -213,3 +215,7 @@ class StarSystem:
             m2 = self.stars[2].getMass()
             m = m1 + m2
             self.__periods.append( (orbit**3 / m)**(0.5) )
+
+    def writelatex(self):
+        filename = input("Name of the file: ")
+        writer = LW(self, filename)

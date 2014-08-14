@@ -21,7 +21,12 @@ class LatexWriter:
         # Write the title page, ToC and first chapter
         file.write(self.title())
 
+        # Write star system properties
+        file.write(self.starsystemprop())
 
+
+        # Write the end of document
+        file.write(self.end())
         # Close the file
         file.close()
 
@@ -71,3 +76,46 @@ class LatexWriter:
 
 """
         return titelus
+
+    def starsystemprop(self):
+        str = """\chapter{The Star System}
+\section{Star System Properties}
+"""
+        numstar = len(self.starsystem.stars)
+        str += "Number of stars: {}\\\\ \n".format(numstar)
+        age = self.starsystem.getAge()
+        str += "Stellar age: {} billion years \n\n".format(age)
+
+        # Only put table (about the properties of the stellar system) if
+        # necessary (i.e. more than one star)
+        if numstar > 1:
+            str += """\\begin{table}[H]
+\centering
+\\begin{tabular}{"""
+            str += 'l' * numstar
+            str += "}\n\\toprule \n"
+            if numstar == 2:
+                header = "Pair A--B \\\\ \n"
+            else:
+                header = "Pair A--B & Pair A--C \\\\ \n"
+            str += "Property & " + header
+            str += "\midrule\n"
+            # Extract orbit and eccentricities
+            oecc = self.starsystem.getOrbits()
+            orb = ''
+            ecc = ''
+            for o, e in oecc:
+                orb += ' & {:8.2f}'.format(round(o, 2))
+                ecc += ' & {:8.2f}'.format(round(e, 2))
+            str += "Orbital Separation [AU] " + orb + ' \\\\ \n'
+            str += "Orbital Eccentricity    " + ecc + ' \\\\ \n'
+            str += "Orbital Period [d]      "
+            for per in self.starsystem.getPeriod():
+                str += ' & {:7.1f} '.format(round(per, 1))
+            str += " \\\\ \n"
+            str += "\\bottomrule\n\end{tabular} \n\end{table}\n\n"
+        return str
+
+
+    def end(self):
+        return "\n\n\\end{document}"

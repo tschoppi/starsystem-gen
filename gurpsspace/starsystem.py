@@ -219,3 +219,13 @@ class StarSystem:
     def writelatex(self):
         filename = input("Name of the file: ")
         writer = LW(self, filename)
+
+    def getAge(self):
+        return self.__age
+
+    def getOrbits(self):
+        """Return tuple (orbital separation, eccentricity)"""
+        return self.__orbits
+
+    def getPeriod(self):
+        return self.__periods

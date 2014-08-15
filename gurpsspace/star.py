@@ -100,6 +100,9 @@ class Star:
         if self.__SeqIndex == 3:
             self.__mass = self.roll(2,-2) * 0.05 + 0.9
 
+    def getSequence(self):
+        return SequenceTable[self.__SeqIndex]
+
     def makeluminosity(self):
         seq = self.__SeqIndex
         age = self.__age
@@ -142,6 +145,9 @@ class Star:
             temp = 8000 # Not defined in the rulebook, so arbitrarily assigned
 
         self.__temperature = temp
+
+    def getTemp(self):
+        return self.__temperature
 
     def makeradius(self):
         lum = self.__luminosity
@@ -192,3 +198,6 @@ class Star:
 
     def getForbidden(self):
         return self.__forbiddenzone
+
+    def getRadius(self):
+        return self.__radius

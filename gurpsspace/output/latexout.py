@@ -21,9 +21,10 @@ class LatexWriter:
         # Write the title page, ToC and first chapter
         file.write(self.title())
 
-        # Write star system properties
+        # Write stellar system and star properties
         file.write(self.starsystemprop())
 
+        file.write(self.starprop())
 
         # Write the end of document
         file.write(self.end())
@@ -116,6 +117,65 @@ class LatexWriter:
             str += "\\bottomrule\n\end{tabular} \n\end{table}\n\n"
         return str
 
+    def starprop(self):
+        str = """\section{Star Properties}
+% Number of data columns = Number of stars
+\\begin{table}[H]
+\centering
+\\begin{tabular}{"""
+        numstar = len(self.starsystem.stars)
+        str += 'l' * (numstar + 1) + '}\n'
+        str += '\\toprule\n'
+        str += 'Property '
+        letters = ['A', 'B', 'C']
+        for nst in range(numstar):
+            str += '& Star ' + letters[nst] + ' '
+        str += '\\\\ \n\midrule\n'
+
+        sequence = 'Sequence   '
+        mass = 'Mass       '
+        temp = 'Temperature'
+        lum = 'Luminosity '
+        rad = 'Radius     '
+        inner = 'Inner Limit'
+        outer = 'Outer Limit'
+        snowline = 'Snow line  '
+        if numstar > 1:
+            fzinner = 'FZ Inner   '
+            fzouter = 'FZ Outer   '
+        for star in self.starsystem.stars:
+            sequence += ' & ' + star.getSequence()
+            mass += ' & {:7.2f}'.format(star.getMass())
+            temp += ' & {:7.0f}'.format(star.getTemp())
+            lum += ' & {:7.4f}'.format(star.getLuminosity())
+            rad += ' & {:7.5f}'.format(star.getRadius())
+            inner += ' & {:7.2f}'.format(star.getOrbitlimits()[0])
+            outer += ' & {:6.1f} '.format(star.getOrbitlimits()[1])
+            snowline += ' & {:7.2f}'.format(star.getSnowline())
+            if numstar > 1:
+                fzinner += ' & {:6.1f} '.format(star.getForbidden()[0])
+                fzouter += ' & {:6.1f} '.format(star.getForbidden()[1])
+        #for string in [sequence, mass, temp, lum, rad, inner, outer, snowline]:
+        #    string += '\\\\ \n'
+        eol = ' \\\\ \n'
+        sequence += eol
+        mass += eol
+        temp += eol
+        lum += eol
+        rad += eol
+        inner += eol
+        outer += eol
+        snowline += eol
+        if numstar > 1:
+            fzinner += eol
+            fzouter += eol
+
+        str += sequence + mass + temp + lum + rad + inner + outer + snowline
+        if numstar > 1:
+            str += fzinner + fzouter
+        str += '\\bottomrule\n\end{tabular} \n\end{table} \n\n'
+
+        return str
 
     def end(self):
         return "\n\n\\end{document}"

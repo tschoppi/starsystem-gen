@@ -1,20 +1,35 @@
-import GURPS_Star as GS
-import GURPS_Dice as GD
-from GURPS_Tables import OrbSepTable, StOEccTable
+from . import star as GS
+from . import dice as GD
+from .tables import OrbSepTable, StOEccTable
 
 class StarSystem:
     roller = GD.DiceRoller()
 
-    def __init__(self):
-        self.__opencluster = self.randomcluster()
-        self.__numstars = self.randomstarnum()
-        self.makeage()
+    def __init__(self, **kwargs):
+        opencluster = kwargs.get('opencluster', None)
+        if opencluster is not None:
+            self.__opencluster = opencluster
+        else:
+            self.__opencluster = self.randomcluster()
+
+        numstars = kwargs.get('numstars', None)
+        if numstars is not None:
+            if numstars > 0 and numstars <= 3:
+                self.__numstars = numstars
+            else:
+                self.__numstars = self.randomstarnum()
+        else:
+            self.__numstars = self.randomstarnum()
+
+        age = kwargs.get('age', None)
+        self.makeage(age)
         self.generatestars()
         self.sortstars()
         self.makeorbits()
         self.makeminmaxseps()
         self.makeforbiddenzones()
         self.createplanetsystem()
+        self.makeperiods()
         self.printinfo()
 
     def roll(self, dicenum, modifier):
@@ -26,8 +41,10 @@ class StarSystem:
         print("        Age:\t{}".format(self.__age))
         print(" # of Stars:\t{}".format(self.__numstars))
         print("OpenCluster:\t{}".format(self.__opencluster))
-        print("Stellar Orb:\t{}".format(self.__orbits))
-        print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
+        if self.__numstars > 1:
+            print("Stellar Orb:\t{}".format(self.__orbits))
+            print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
+            print(" Orbit Per.:\t{}".format(self.__periods))
         print("================\n")
         for i in range(self.__numstars):
             self.stars[i].printinfo()
@@ -56,16 +73,20 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars.append(GS.Star(age=self.__age))
 
-    def makeage(self):
-        provage = self.randomage()
-        while self.__opencluster and provage > 2:
+    def makeage(self, age):
+        if age is None:
             provage = self.randomage()
-        self.__age = provage
+            while self.__opencluster and provage > 2:
+                provage = self.randomage()
+            self.__age = provage
+        else:
+            self.__age = age
 
     def randomage(self):
         diceroll = self.roll(3,0)
         if diceroll == 3:
-            return 0
+            # Extreme Population I: Age is set to 1 million years
+            return 0.001
         elif diceroll <= 6:
             return 0.1 + self.roll(1,-1) * 0.3 + self.roll(1,-1) * 0.05
         elif diceroll <= 10:
@@ -93,8 +114,6 @@ class StarSystem:
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star
-    # Missing: Ensuring that the orbital separation of the second companion is
-    #          larger than the separation of the first
     def makeorbits(self):
         self.__orbsepentry = []
         self.__orbits = []
@@ -179,3 +198,18 @@ class StarSystem:
     def createplanetsystem(self):
         for star in self.stars:
             star.makeplanetsystem()
+
+    def makeperiods(self):
+        self.__periods = []
+        if self.__numstars >= 2:
+            orbit, ecc = self.__orbits[0]
+            m1 = self.stars[0].getMass()
+            m2 = self.stars[1].getMass()
+            m = m1 + m2
+            self.__periods.append( (orbit**3 / m)**(0.5) )
+        if self.__numstars == 3:
+            orbit, ecc = self.__orbits[1]
+            m1 = self.stars[0].getMass() + self.stars[1].getMass()
+            m2 = self.stars[2].getMass()
+            m = m1 + m2
+            self.__periods.append( (orbit**3 / m)**(0.5) )

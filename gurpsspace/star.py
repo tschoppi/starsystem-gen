@@ -1,6 +1,6 @@
-import GURPS_Dice as GD
-import GURPS_PlanetSystem as PS
-from GURPS_Tables import StEvoTable, IndexTable, SequenceTable
+from . import dice as GD
+from . import planetsystem as PS
+from .tables import StEvoTable, IndexTable, SequenceTable
 
 class Star:
     roller = GD.DiceRoller()
@@ -176,15 +176,19 @@ class Star:
         self.__hasforbiddenzone = True
 
     def makeplanetsystem(self):
-        if self.__hasforbiddenzone:
-            finner, fouter = self.__forbiddenzone
-            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
-                                                self.__outerlimit,
-                                                self.__snowline,
-                                                self.__luminosity,
-                                                finner, fouter)
-        else:
-            self.planetsystem = PS.PlanetSystem(self.__innerlimit,
-                                                self.__outerlimit,
-                                                self.__snowline,
-                                                self.__luminosity)
+        self.planetsystem = PS.PlanetSystem(self)
+
+    def getOrbitlimits(self):
+        return (self.__innerlimit, self.__outerlimit)
+
+    def getSnowline(self):
+        return self.__snowline
+
+    def getLuminosity(self):
+        return self.__luminosity
+
+    def hasForbidden(self):
+        return self.__hasforbiddenzone
+
+    def getForbidden(self):
+        return self.__forbiddenzone

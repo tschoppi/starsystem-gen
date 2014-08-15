@@ -147,3 +147,128 @@ SizeToInt = {
 IntToSize = [
     "Tiny", "Small", "Standard", "Large"
 ]
+
+# Marginal Atmosphere Table
+# Usage: MAtmoTable[diceroll], diceroll is between 3 and 18
+MAtmoTable = [
+    None, None, None, 'Chlorine', 'Chlorine', 'Sulfur Compounds',
+    'Sulfur Compounds', 'Nitrogen Compounds', 'Organic Toxins',
+    'Organic Toxins', 'Low Oxygen', 'Low Oxygen',
+    'Pollutants', 'Pollutants', 'High Carbon Dioxide',
+    'High Oxygen', 'High Oxygen', 'Inert Gases', 'Inert Gases'
+]
+
+# Abbreviations for the atmospheric composition labels
+AtmCompAbbr = {
+    'Corrosive': 'C',
+    'Mildly Toxic': 'MT',
+    'Highly Toxic': 'HT',
+    'Lethally Toxic': 'LT',
+    'Suffocating': 'S'
+}
+
+# Temperature factors table, contains tuples of (abs, greenh)
+# Note that for Ocean and Garden worlds, nothing is defined. This is because of
+# the different absorption factors due to hydrographic coverage
+TempFactor = {
+    'Ice': {
+        'Tiny': (0.86, 0),
+        'Small': (0.93, 0.1),
+        'Standard': (0.86, 0.2),
+        'Large': (0.86, 0.2)
+    },
+    'Rock': {
+        'Tiny': (0.97, 0),
+        'Small': (0.96, 0)
+    },
+    'Hadean': {
+        'Small': (0.67, 0),
+        'Standard': (0.67, 0)
+    },
+    'Chthonian': {
+        'Standard': (0.97, 0),
+        'Large': (0.97, 0)
+    },
+    'Ammonia': {
+        'Standard': (0.84, 0.2),
+        'Large': (0.84, 0.2)
+    },
+    'Greenhouse': {
+        'Standard': (0.77, 2),
+        'Large': (0.77, 2)
+    }
+}
+
+# WorldClimate is a function that returns the world climate designator string
+# depending on the input (average surface temperature)
+def WorldClimate(temperature):
+    climate = 'Infernal'
+    if temperature <= 344:
+        climate = 'Very Hot'
+    if temperature <= 333:
+        climate = 'Hot'
+    if temperature <= 322:
+        climate = 'Tropical'
+    if temperature <= 311:
+        climate = 'Warm'
+    if temperature <= 300:
+        climate = 'Normal'
+    if temperature <= 289:
+        climate = 'Cool'
+    if temperature <= 278:
+        climate = 'Chilly'
+    if temperature <= 266:
+        climate = 'Cold'
+    if temperature <= 255:
+        climate = 'Very Cold'
+    if temperature <= 244:
+        climate = 'Frozen'
+    return climate
+
+# Size Constraints Table (GURPS Space p.85)
+SizeConstrTable = {
+    'Tiny': (0.004, 0.024),
+    'Small': (0.024, 0.030),
+    'Standard': (0.030, 0.065),
+    'Large': (0.065, 0.091)
+}
+
+# Categorize the given pressure
+def PressureCategory(press):
+    cat = 'Superdense'
+    if press <= 10:
+        cat = 'Very Dense'
+    if press <= 1.5:
+        cat = 'Dense'
+    if press <= 1.2:
+        cat = 'Standard'
+    if press <= 0.8:
+        cat = 'Thin'
+    if press <= 0.5:
+        cat = 'Very Thin'
+    if press <= 0.01:
+        cat = 'Trace'
+    if press == 0.0:
+        cat = 'None'
+    return cat
+
+# GGSizeTable: Gas Giant Size Table as on GURPS Space p. 115
+# Usage: GGSizeTable[GGsizeclass][3d roll]
+# Returns tuple (mass, density)
+GGSizeTable = {
+    'Small': [(10, 0.42)] * 9 +
+            [(15, 0.26)] * 2 +
+            [(20, 0.22), (30, 0.19), (40, 0.17), (50, 0.17),
+            (60, 0.17), (70, 0.17)] +
+            [(80, 0.17)] * 2,
+    'Medium': [(100, 0.18)] * 9 +
+            [(150, 0.19)] * 2 +
+            [(200, 0.20), (250, 0.22), (300, 0.24), (350, 0.25),
+            (400, 0.26), (450, 0.27)] +
+            [(500, 0.29)] * 2,
+    'Large': [(600, 0.31)] * 9 +
+            [(800, 0.35)] * 2 +
+            [(1000, 0.4), (1500, 0.6), (2000, 0.8), (2500, 1.0),
+            (3000, 1.2), (3500, 1.4)] +
+            [(4000, 1.6)] * 2
+}

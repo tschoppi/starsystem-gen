@@ -22,8 +22,9 @@ class MainWindow(Tkinter.Frame):
 		mainframe.columnconfigure(3, weight=1)
 		mainframe.rowconfigure(3, weight=1)	
 
-		ttk.Button(mainframe, text="Open the main Star System Generation", command= lambda: self.openGenerator(parent)).grid(column=2, row=1, sticky=(W,E))
-		ttk.Button(mainframe, text="Open a dice roller", command= lambda: self.openDiceWindow(parent)).grid(column=2, row=2, sticky=(W,E))
+		ttk.Button(mainframe, text="Generate a completely random star system", command= lambda: self.openGenerator(parent)).grid(column=2, row=1, sticky=(W,E))
+		ttk.Button(mainframe, text="Generate a star system", command= lambda: tkMessageBox.showinfo("Placeholder", "A series of dialogs will guide you through the generation of your star system")).grid(column=2, row=2, sticky=(W,E))
+		ttk.Button(mainframe, text="Open a dice roller", command= lambda: self.openDiceWindow(parent)).grid(column=2, row=3, sticky=(W,E))
 
 	def openDiceWindow(self, parent):
 		window = Toplevel()

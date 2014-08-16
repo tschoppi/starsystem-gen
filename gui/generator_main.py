@@ -7,7 +7,7 @@ import gurpsspace.starsystem as starsys
 
 
 class StarSystemOverview(Tkinter.Frame):
-	# Change from None to a value if you want to set an argument
+	
 	def __init__(self, parent):
 
 		width = parent.winfo_screenwidth() / 4 
@@ -38,9 +38,13 @@ class StarSystemOverview(Tkinter.Frame):
 		ttk.Label(labels, text="# of Stars:", anchor=W).pack(side=TOP)
 		ttk.Label(labels, text="Open Cluster:", anchor=W).pack(side=TOP)
 		if mysys._StarSystem__numstars > 1:
-			ttk.Label(labels, text="Stellar Orbits:", anchor=W).pack(side=TOP)
-			ttk.Label(labels, text="Stellar Orbits Min/Max:", anchor=W).pack(side=TOP)
-			ttk.Label(labels, text="Orbital Periods:", anchor=W).pack(side=TOP)
+			for i in range(len(mysys._StarSystem__orbits)):
+				ttk.Label(labels, text="Companion Star " + str(i+1), anchor=W).pack(side=TOP)
+				ttk.Label(labels, text="Stellar Orbit:", anchor=W).pack(side=TOP)
+				ttk.Label(labels, text="Eccentricity:", anchor=W).pack(side=TOP)
+				ttk.Label(labels, text="Minimum Stellar Orbit:", anchor=W).pack(side=TOP)
+				ttk.Label(labels, text="Maximum Stellar Orbit:", anchor=W).pack(side=TOP)
+				ttk.Label(labels, text="Orbital Period:", anchor=W).pack(side=TOP)
 
 		values = ttk.Frame(parent)
 		values.pack(side=RIGHT)
@@ -48,8 +52,12 @@ class StarSystemOverview(Tkinter.Frame):
 		ttk.Label(values, text=mysys._StarSystem__numstars).pack(side=TOP)
 		ttk.Label(values, text=mysys._StarSystem__opencluster).pack(side=TOP)
 		if mysys._StarSystem__numstars > 1:
-			ttk.Label(values, text=mysys._StarSystem__orbits, anchor=E).pack(side=TOP)
-			ttk.Label(values, text=mysys._StarSystem__minmaxorbits, anchor=E).pack(side=TOP)
-			ttk.Label(values, text=mysys._StarSystem__periods, anchor=E).pack(side=TOP)
+			for i in range(len(mysys._StarSystem__orbits)):
+				ttk.Label(values, text="--------------------").pack(side=TOP)
+				ttk.Label(values, text=str(mysys._StarSystem__orbits[i][0]) + " AU", anchor=E).pack(side=TOP)
+				ttk.Label(values, text=mysys._StarSystem__orbits[i][1], anchor=E).pack(side=TOP)
+				ttk.Label(values, text=str(mysys._StarSystem__minmaxorbits[i][0]) + " AU", anchor=E).pack(side=TOP)
+				ttk.Label(values, text=str(mysys._StarSystem__minmaxorbits[i][1]) + " AU", anchor=E).pack(side=TOP)
+				ttk.Label(values, text=str(round(mysys._StarSystem__periods[i], 1)) + "d", anchor=E).pack(side=TOP)
 
 		mainframe.pack()

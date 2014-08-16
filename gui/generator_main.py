@@ -8,7 +8,8 @@ import gurpsspace.starsystem as starsys
 
 class StarSystemOverview(Tkinter.Frame):
 	
-	def __init__(self, parent):
+
+	def __init__(self, parent, mysys = None):
 
 		width = parent.winfo_screenwidth() / 4 
 		height = parent.winfo_screenheight() / 4
@@ -18,19 +19,16 @@ class StarSystemOverview(Tkinter.Frame):
 		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))
 
 		mainframe = ttk.Frame(parent)
-		#mainframe.pack(side="top", fill="both", expand=True)
-		#mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-		#mainframe.columnconfigure(3, weight=1)
-		#mainframe.rowconfigure(3, weight=1)
-
-		args = {
-		    'opencluster': None, # True or False
-		    'numstars': None, # 1, 2 or 3
-		    'age': None # Number > 0
-		}
-		mysys = starsys.StarSystem(**args)
 
 		ttk.Label(parent, text="Star System Overview", anchor=CENTER).pack(side="top", fill="x", expand=False)
+
+		if mysys == None:
+			args = {
+			    'opencluster': None, # True or False
+			    'numstars': None, # 1, 2 or 3
+			    'age': None # Number > 0
+			}
+			mysys = starsys.StarSystem(**args)
 
 		labels = ttk.Frame(parent)
 		labels.pack(side=LEFT)

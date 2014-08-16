@@ -5,26 +5,25 @@ import gurpsspace.dice as GD
 import tkMessageBox
 import gurpsspace
 from gui.generator_main import StarSystemOverview
+import gurpsspace.starsystem as starsys
 
 class MainWindow(Tkinter.Frame):
 	roller = GD.DiceRoller()
 
 	def __init__(self, parent):		
-		width = parent.winfo_screenwidth() / 5 
-		height = parent.winfo_screenheight() / 5
+		width = parent.winfo_screenwidth() / 4 
+		height = parent.winfo_screenheight() / 4
 		offset_x = (parent.winfo_screenwidth() / 2) - (width / 2)
 		offset_y = (parent.winfo_screenheight() / 2) - (height / 2)
 		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
 		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))	
 
 		mainframe = ttk.Frame(root, padding="3 3 12 12")
-		mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-		mainframe.columnconfigure(3, weight=1)
-		mainframe.rowconfigure(3, weight=1)	
 
-		ttk.Button(mainframe, text="Generate a completely random star system", command= lambda: self.openGenerator(parent)).grid(column=2, row=1, sticky=(W,E))
-		ttk.Button(mainframe, text="Generate a star system", command= lambda: tkMessageBox.showinfo("Placeholder", "A series of dialogs will guide you through the generation of your star system")).grid(column=2, row=2, sticky=(W,E))
-		ttk.Button(mainframe, text="Open a dice roller", command= lambda: self.openDiceWindow(parent)).grid(column=2, row=3, sticky=(W,E))
+		ttk.Button(mainframe, text="Generate a completely random star system", command= lambda: self.openGenerator(parent)).pack(fill="x", expand=True, pady=5)
+		ttk.Button(mainframe, text="Generate a star system", command= lambda: tkMessageBox.showinfo("Placeholder", "A series of dialogs will guide you through the generation of your star system")).pack(fill="x", expand=True, pady=5)
+		ttk.Button(mainframe, text="Open a dice roller", command= lambda: self.openDiceWindow(parent)).pack(fill="x", expand=True, pady=5)
+		mainframe.pack()
 
 	def openDiceWindow(self, parent):
 		window = Toplevel()

@@ -1,13 +1,12 @@
-from Tkinter import *
-import Tkinter
-import ttk
+from tkinter import *
+from tkinter import ttk
+import tkinter
 import gurpsspace.dice as GD
-import tkMessageBox
 import gurpsspace
 from gui.generator_main import StarSystemOverview
 import gurpsspace.starsystem as starsys
 
-class MainWindow(Tkinter.Frame):
+class MainWindow(tkinter.Frame):
 	roller = GD.DiceRoller()
 
 	def __init__(self, parent):		
@@ -16,7 +15,7 @@ class MainWindow(Tkinter.Frame):
 		offset_x = (parent.winfo_screenwidth() / 2) - (width / 2)
 		offset_y = (parent.winfo_screenheight() / 2) - (height / 2)
 		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
-		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))	
+		#parent.geometry('-' + str(offset_x) + '+' + str(offset_y))	
 
 		mainframe = ttk.Frame(root, padding="3 3 12 12")
 
@@ -35,7 +34,7 @@ class MainWindow(Tkinter.Frame):
 
 
 
-class DiceWindow(Tkinter.Frame): 
+class DiceWindow(tkinter.Frame): 
 
 	roller = GD.DiceRoller()
 	
@@ -54,7 +53,7 @@ class DiceWindow(Tkinter.Frame):
 		offset_x = (parent.winfo_screenwidth() / 2) - (width / 4)
 		offset_y = (parent.winfo_screenheight() / 2) - (height / 4)
 		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
-		parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))
+		#parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))
 
 		mainframe = ttk.Frame(parent, padding="3 3 12 12")
 		mainframe.grid(column=0, row=0, sticky=(N, W, E, S))

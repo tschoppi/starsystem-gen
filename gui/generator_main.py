@@ -1,12 +1,11 @@
-from Tkinter import *
-import Tkinter
-import ttk
+from tkinter import *
+from tkinter import ttk
+import tkinter
 import gurpsspace.dice as GD
-import tkMessageBox
 import gurpsspace.starsystem as starsys
 
 
-class StarSystemOverview(Tkinter.Frame):
+class StarSystemOverview(tkinter.Frame):
 	
 
 	def __init__(self, parent, mysys = None):
@@ -17,11 +16,11 @@ class StarSystemOverview(Tkinter.Frame):
 		offset_y = (parent.winfo_screenheight() / 2) - (height / 4)
 		# Geometry is a string of the format 'WxH+offset_x+offset_y' where the offsets are calculated on Linux from the top right corner
 		#parent.geometry(str(width) + 'x' + str(height) + '-' + str(offset_x) + '+' + str(offset_y))
-		parent.geometry('-' + str(offset_x) + '+' + str(offset_y))
+		#parent.geometry('-' + str(offset_x) + '+' + str(offset_y))
 
 		mainframe = ttk.Frame(parent)
 
-		ttk.Label(parent, text="Star System Overview", anchor=CENTER).pack(side="top", fill="x", expand=False, padx=50, pady=20)
+		ttk.Label(parent, text="Star System Overview", anchor=CENTER).pack(side=TOP, fill="x", expand=False, padx=50, pady=20)
 
 		if mysys == None:
 			args = {
@@ -36,7 +35,12 @@ class StarSystemOverview(Tkinter.Frame):
 		else: 
 			openCluster = "No"
 
-		labels = ttk.Frame(parent)
+		details = ttk.Frame(mainframe)
+		details.pack(pady=10)
+		ttk.Button(details, text="Stars Details", command= lambda: self.openStarsWindow(self, mysys)).pack(fill="x", expand=True, pady=5, side=LEFT)
+		ttk.Button(details, text="Planets Details", command= lambda: self.openPlanetsWindow(self, mysys)).pack(fill="x", expand=True, pady=5, side=RIGHT)
+
+		labels = ttk.Frame(mainframe)
 		labels.pack(side=LEFT, pady=10)
 		ttk.Label(labels, text="Age:", anchor=W).pack()
 		ttk.Label(labels, text="# of Stars:", anchor=W).pack()
@@ -50,7 +54,7 @@ class StarSystemOverview(Tkinter.Frame):
 				ttk.Label(labels, text="Maximum Stellar Orbit:", anchor=W).pack()
 				ttk.Label(labels, text="Orbital Period:", anchor=W).pack()
 
-		values = ttk.Frame(parent)
+		values = ttk.Frame(mainframe)
 		values.pack(side=RIGHT, pady=10)
 		ttk.Label(values, text=str(round(mysys._StarSystem__age, 2)) + " billion years").pack(padx=10)
 		ttk.Label(values, text=mysys._StarSystem__numstars).pack()
@@ -66,3 +70,9 @@ class StarSystemOverview(Tkinter.Frame):
 
 		mainframe.pack()
 		parent.update()
+
+	def openStarsWindow(self, parent, mysys):
+		tkMessageBox.showinfo("Placeholder", "Not implemented yet")
+
+	def openPlanetsWindow(self, parent, mysys):
+		tkMessageBox.showinfo("Placeholder", "Not implemented yet")

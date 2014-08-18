@@ -121,3 +121,9 @@ class GasGiant(OrbitContent):
 
     def makecloudtopgrav(self):
         self.__gravity = self.__density * self.__diameter
+
+    def numMoons(self):
+        return len(self.__secondfamily)
+
+    def numMoonlets(self):
+        return len(self.__firstfamily) + len(self.__thirdfamily)

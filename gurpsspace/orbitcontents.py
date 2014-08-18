@@ -71,3 +71,15 @@ class OrbitContent:
 
     def getMinMax(self):
         return self.__minmax
+
+
+    # Overload in subclasses if applicable
+    def getType(self):
+        return ''
+    def getSize(self):
+        return ''
+    def numMoons(self):
+        return ''
+    def numMoonlets(self):
+        return ''
+    

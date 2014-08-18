@@ -53,6 +53,9 @@ class PlanetSystem:
         for skey in sorted(self.__orbitcontents):
             self.__orbitcontents[skey].printinfo()
 
+    def getOrbitcontents(self):
+        return self.__orbitcontents
+
     def allowedorbit(self, testorbit):
         result  = testorbit >= self.__innerlimit
         result &= testorbit <= self.__outerlimit

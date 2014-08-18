@@ -26,6 +26,9 @@ class LatexWriter:
 
         file.write(self.starprop())
 
+        # Write the overviews
+        file.write(self.overviews())
+
         # Write the end of document
         file.write(self.end())
         # Close the file
@@ -40,6 +43,7 @@ class LatexWriter:
 \\usepackage{float}
 \\usepackage[hidelinks]{hyperref}
 \\usepackage{booktabs}
+\\usepackage{multirow}
 \\usepackage[figuresright]{rotating} % For sideways tables
 \\usepackage{pdflscape} % For rotation in the PDF
 \setkomafont{sectioning}{\\bfseries}
@@ -176,6 +180,79 @@ class LatexWriter:
         str += '\\bottomrule\n\end{tabular} \n\end{table} \n\n'
 
         return str
+
+
+    def overviews(self):
+        # Gather number of planet systems
+        # For each planet system:
+        #  - List orbits and occupants
+        #  - List planet details
+        #  - List Moons and Moonlets
+        str = ''
+        letters = ['A', 'B', 'C']
+        for star in self.starsystem.stars:
+            idx = self.starsystem.stars.index(star)
+            lettr = letters[idx]
+            ps = star.planetsystem
+            oc = ps.getOrbitcontents()
+            title = 'Overview -- Planet System ' + lettr
+            str += '\chapter{' + title + '}\n'
+            str += '\section{Summary}\n% A small amount of short sentences describing the general feel of this planet system.\n\n'
+            str += '\section{Description}\n% A more in-depth description of the planet system.\n\n'
+            str += '\section{GM Notes}\n% Notes about the planet system and eventual adventures that can be undertaken.\n\n'
+            str += '\\begin{landscape}\n\section{List of Orbits and their Occupants}\n\\begin{table}[H]\n\\begin{tabular}{llllrrrrrrrrr}\n'
+            str += '\\toprule\n'
+            str += '\multirow{2}{*}{Planet} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & Orbit & O Per. & \multirow{2}{*}{Ecc.} & R$_\mathrm{min}$ & R$_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & BB Temp. \\\\ \n'
+            str += '\cmidrule(lr){5-5} \cmidrule(lr){6-6} \cmidrule(lr){8-8} \cmidrule(lr){9-9} \cmidrule(lr){12-12}\n'
+            str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
+            str += '\midrule\n'
+            planetcounter = 0
+            for skey in sorted(oc):
+                planetcounter += 1
+                str += '<{}-{}> & '.format(lettr, planetcounter)
+                str += '{} & '.format(oc[skey].type())
+                str += '{} & '.format(oc[skey].getSize())
+                str += '{} & '.format(oc[skey].getType())
+                str += '{:.2f} & '.format(oc[skey].getOrbit())
+                str += '{:.2f} & '.format(oc[skey].getPeriod())
+                str += '{:.2f} & '.format(oc[skey].getEcc())
+                str += '{:.2f} & '.format(oc[skey].getMinMax()[0])
+                str += '{:.2f} & '.format(oc[skey].getMinMax()[1])
+                str += '{} & '.format(oc[skey].numMoons())
+                str += '{} & '.format(oc[skey].numMoonlets())
+                str += '{:.0f}'.format(oc[skey].getBBTemp())
+                str += '\\\\ \n'
+            str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+
+
+            sectable = '\\begin{table}[H]\n'
+            sectable += '\\begin{tabular}{lrrr}\n'
+            sectable += '\\toprule\n'
+            sectable += 'Planet & TTE$^1$ & Rot. Per. [d]  & Ax. Tilt [$^\circ$] \\\\ \n'
+            sectable += '\midrule\n'
+            planetcounter = 0
+            secondtable = False
+            for skey in sorted(oc):
+                planetcounter += 1
+                if oc[skey].type() is not 'Terrestrial':
+                    continue
+                else:
+                    secondtable = True
+                sectable += '<{}-{}> & '.format(lettr, planetcounter)
+                sectable += '{:.0f} & '.format(oc[skey].getTTE())
+                sectable += '{:.2f} & '.format(oc[skey].getRotation())
+                sectable += '{}'.format(oc[skey].getAxialTilt())
+                sectable += '\\\\ \n'
+            sectable += '\\bottomrule\n\end{tabular}\n\n'
+            sectable += '\\footnotesize\n'
+            sectable += '$^1$ Total Tidal Effect\n\end{table}\n\n'
+
+            if secondtable is True:
+                str += sectable
+
+            str += '\end{landscape}\n\n'
+        return str
+
 
     def end(self):
         return "\n\n\\end{document}"

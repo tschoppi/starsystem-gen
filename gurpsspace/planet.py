@@ -64,7 +64,7 @@ class Planet(World):
         return repr("{} Terrestrial Planet".format(self.getSize()))
 
     def type(self):
-        return "Terrestrial World"
+        return "Terrestrial"
 
     def generatemoons(self):
         rollmod = -4
@@ -243,3 +243,9 @@ class Planet(World):
 
     def getAxialTilt(self):
         return self.__axtilt
+
+    def numMoons(self):
+        return self.__nummoons
+
+    def numMoonlets(self):
+        return self.__nummoonlets

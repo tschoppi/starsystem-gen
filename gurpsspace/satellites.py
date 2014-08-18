@@ -99,7 +99,7 @@ class Moon(World):
         parent planets that are terrestrial or gas giants.
         """
         ptype = self.parent.type()
-        if ptype == 'Terrestrial World':
+        if ptype == 'Terrestrial':
             # Check for size difference and infer roll bonus from it
             psize = SizeToInt[self.parent.getSize()]
             osize = SizeToInt[self.getSize()]
@@ -231,7 +231,7 @@ class Moonlet:
             multiplier = r.uniform(20, 200)
             self.__orbit = multiplier * self.parent.getDiameter()
 
-        if ptype == 'Terrestrial World':
+        if ptype == 'Terrestrial':
             self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
 
     def getOrbit(self):

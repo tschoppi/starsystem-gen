@@ -236,6 +236,29 @@ class LatexWriter:
                 str += '\\\\ \n'
             str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
 
+            # Now gather all asteroid belts and print an overview table
+            astable = '\section{List of Asteroid Belts}\n\n'
+            astable += '\\begin{table}[H]\n\\begin{tabular}{lrlrrr}\n'
+            astable += '\\toprule\n'
+            astable += 'Name & $T_\mathrm{surf}$ [K] & Climate Type & RVM & Affinity \\\\ \n'
+            astable += '\midrule\n'
+            planetcounter = 0
+            for skey in sorted(oc):
+                planetcounter += 1
+                if oc[skey].type() != 'Ast. Belt':
+                    continue
+                astable += '<{}-{}> & '.format(lettr, planetcounter)
+                astable += '{:.0f} & '.format(oc[skey].getAvSurf())
+                astable += '{} & '.format(oc[skey].getClimate())
+                astable += '{:+.0f} & '.format(oc[skey].getRVM())
+                astable += '{:+.0f} '.format(oc[skey].getAffinity())
+                astable += '\\\\ \n'
+            astable += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+
+            if 'Ast. Belt' in types:
+                str += astable
+            else:
+                str += '\pagebreak\n\n'
 
             # Make a detail table for all terrestrials
             tertable = '\section{List of Planets and their Properties}\n'
@@ -338,27 +361,7 @@ class LatexWriter:
                 str += tertable
             del tertable
 
-            # Now gather all asteroid belts and print an overview table
-            astable = '\section{List of Asteroid Belts}\n\n'
-            astable += '\\begin{table}[H]\n\\begin{tabular}{lrlrrr}\n'
-            astable += '\\toprule\n'
-            astable += 'Name & $T_\mathrm{surf}$ [K] & Climate Type & RVM & Affinity \\\\ \n'
-            astable += '\midrule\n'
-            planetcounter = 0
-            for skey in sorted(oc):
-                planetcounter += 1
-                if oc[skey].type() != 'Ast. Belt':
-                    continue
-                astable += '<{}-{}> & '.format(lettr, planetcounter)
-                astable += '{:.0f} & '.format(oc[skey].getAvSurf())
-                astable += '{} & '.format(oc[skey].getClimate())
-                astable += '{:+.0f} & '.format(oc[skey].getRVM())
-                astable += '{:+.0f} '.format(oc[skey].getAffinity())
-                astable += '\\\\ \n'
-            astable += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
 
-            if 'Ast. Belt' in types:
-                str += astable
 
 
             str += '\end{landscape}\n\n'

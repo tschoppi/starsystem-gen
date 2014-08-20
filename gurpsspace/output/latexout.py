@@ -186,8 +186,9 @@ class LatexWriter:
         # Gather number of planet systems
         # For each planet system:
         #  - List orbits and occupants
-        #  - List planet details
+        #  - List terrestrial planet details
         #  - List Moons and Moonlets
+        #  - List Asteroid Belts
         str = ''
         letters = ['A', 'B', 'C']
         for star in self.starsystem.stars:
@@ -195,6 +196,8 @@ class LatexWriter:
             lettr = letters[idx]
             ps = star.planetsystem
             oc = ps.getOrbitcontents()
+            types = [pl.type() for key, pl in oc.items()]
+
             title = 'Overview -- Planet System ' + lettr
             str += '\chapter{' + title + '}\n'
             str += '\section{Summary}\n% A small amount of short sentences describing the general feel of this planet system.\n\n'
@@ -202,7 +205,7 @@ class LatexWriter:
             str += '\section{GM Notes}\n% Notes about the planet system and eventual adventures that can be undertaken.\n\n'
             str += '\\begin{landscape}\n\section{List of Orbits and their Occupants}\n\\begin{table}[H]\n\\begin{tabular}{llllrrrrrrrrr}\n'
             str += '\\toprule\n'
-            str += '\multirow{2}{*}{Planet} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & Orbit & O Per. & \multirow{2}{*}{Ecc.} & R$_\mathrm{min}$ & R$_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & BB Temp. \\\\ \n'
+            str += '\multirow{2}{*}{Name} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & Orbit & O Per. & \multirow{2}{*}{Ecc.} & R$_\mathrm{min}$ & R$_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & BB Temp. \\\\ \n'
             str += '\cmidrule(lr){5-5} \cmidrule(lr){6-6} \cmidrule(lr){8-8} \cmidrule(lr){9-9} \cmidrule(lr){12-12}\n'
             str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
             str += '\midrule\n'
@@ -232,12 +235,12 @@ class LatexWriter:
             sectable += '\midrule\n'
             planetcounter = 0
             secondtable = False
+            if 'Terrestrial' in types:
+                secondtable = True
             for skey in sorted(oc):
                 planetcounter += 1
                 if oc[skey].type() is not 'Terrestrial':
                     continue
-                else:
-                    secondtable = True
                 sectable += '<{}-{}> & '.format(lettr, planetcounter)
                 sectable += '{:.0f} & '.format(oc[skey].getTTE())
                 sectable += '{:.2f} & '.format(oc[skey].getRotation())

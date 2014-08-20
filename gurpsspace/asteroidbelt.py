@@ -13,7 +13,7 @@ class AsteroidBelt(OrbitContent):
         return repr("Asteroid Belt")
 
     def type(self):
-        return "Asteroid Belt"
+        return "Ast. Belt"
 
     def printinfo(self):
         print("Asteroid Belt")

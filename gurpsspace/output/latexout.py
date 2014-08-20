@@ -237,31 +237,6 @@ class LatexWriter:
             str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
 
 
-            sectable = '\\begin{table}[H]\n'
-            sectable += '\\begin{tabular}{lrrr}\n'
-            sectable += '\\toprule\n'
-            sectable += 'Planet & TTE$^1$ & $P_\mathrm{rot}$ [d]  & Ax. Tilt [$^\circ$] \\\\ \n'
-            sectable += '\midrule\n'
-            planetcounter = 0
-            secondtable = False
-            if 'Terrestrial' in types:
-                secondtable = True
-            for skey in sorted(oc):
-                planetcounter += 1
-                if oc[skey].type() is not 'Terrestrial':
-                    continue
-                sectable += '<{}-{}> & '.format(lettr, planetcounter)
-                sectable += '{:.0f} & '.format(oc[skey].getTTE())
-                sectable += '{:.2f} & '.format(oc[skey].getRotation())
-                sectable += '{}'.format(oc[skey].getAxialTilt())
-                sectable += '\\\\ \n'
-            sectable += '\\bottomrule\n\end{tabular}\n\n'
-            sectable += '\\footnotesize\n'
-            sectable += '$^1$ Total Tidal Effect\n\end{table}\n\n'
-
-            if secondtable is True:
-                str += sectable
-
             # Make a detail table for all terrestrials
             tertable = '\section{List of Planets and their Properties}\n'
             tertable += '\\begin{table}[H]\n\\begin{tabular}{l ' + ('l' * types.count('Terrestrial')) + '}\n'

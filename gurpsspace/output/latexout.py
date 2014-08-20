@@ -5,6 +5,7 @@ processing towards a nicely formatted PDF file.
 """
 
 #from ..starsystem import StarSystem
+from ..tables import AtmCompAbbr
 
 class LatexWriter:
     def __init__(self, starsystem, filename='starsystem.tex'):
@@ -260,6 +261,107 @@ class LatexWriter:
 
             if secondtable is True:
                 str += sectable
+
+            # Make a detail table for all terrestrials
+            tertable = '\section{List of Planets and their Properties}\n'
+            tertable += '\\begin{table}[H]\n\\begin{tabular}{l ' + ('l' * types.count('Terrestrial')) + '}\n'
+            tertable += '\\toprule\n'
+            planetcounter = 0
+            tertable += '\multirow{2}{*}{Property} & \multicolumn{' + '{}'.format(types.count('Terrestrial')) + '}{c}{Planet Name}\\\\ \n'
+            for skey in sorted(oc):
+                planetcounter += 1
+                if oc[skey].type() != 'Terrestrial':
+                    continue
+                tertable += ' & <{}-{}>'.format(lettr, planetcounter)
+            tertable += '\\\\ \n\midrule\n'
+            wtype = 'World Type'
+            size = 'World Size'
+            atmass = 'Atm. Mass'
+            atcom = 'Atm. Comp.$^1$'
+            hydro = 'Hydr. Cov. [\%]'
+            tsurf = '$T_\mathrm{surf}$ [K]'
+            climate = 'Climate Type'
+            dens = 'Density'
+            diam = 'Diameter'
+            grav = 'Surface Gravity'
+            mass = 'Mass'
+            press = 'Pressure [atm]'
+            presscat = 'Pressure Cat.'
+            tte = 'TTE$^2$'
+            volc = 'Volcanics'
+            tect = 'Tectonics'
+            rvm = 'RVM$^3$'
+            hab = 'Habitability'
+            aff = 'Affinity'
+            prot = '$P_\mathrm{rot}$ [d]'
+            axtilt = 'Axial Tilt [$^\circ$]'
+            for skey in sorted(oc):
+                if oc[skey].type() != 'Terrestrial':
+                    continue
+                wtype += ' & {}'.format(oc[skey].getType())
+                size += ' & {}'.format(oc[skey].getSize())
+                if oc[skey].getAtmass() == 0:
+                    atmass += ' & '
+                    atcom += ' & '
+                    press += ' & '
+                else:
+                    atmass += ' & {}'.format(oc[skey].getAtmass())
+                    atcom += ' & '
+                    atcomp = oc[skey].atmcomp
+                    atkeys = [key for key in atcomp.keys() if atcomp[key] == True]
+                    abbr = ''
+                    for k in atkeys:
+                        abbr += AtmCompAbbr[k] + ', '
+                    atcom += abbr[:-2]
+                    press += ' & {:.3f}'.format(oc[skey].getPressure())
+                if oc[skey].getHydrocover() == 0:
+                    hydro += ' & '
+                else:
+                    hydro += ' & {}'.format(oc[skey].getHydrocover())
+                tsurf += ' & {:.0f}'.format(oc[skey].getAvSurf())
+                climate += ' & {}'.format(oc[skey].getClimate())
+                axtilt += ' & {}'.format(oc[skey].getAxialTilt())
+                dens += ' & {}'.format(oc[skey].getDensity())
+                diam += ' & {:.2f}'.format(oc[skey].getDiameter())
+                grav += ' & {:.2f}'.format(oc[skey].getGravity())
+                mass += ' & {:.3f}'.format(oc[skey].getMass())
+                presscat += ' & {}'.format(oc[skey].getPressCat())
+                tte += ' & {:.0f}'.format(oc[skey].getTTE())
+                volc += ' & {}'.format(oc[skey].getVolcanism())
+                tect += ' & {}'.format(oc[skey].getTectonics())
+                rvm += ' & {:+.0f}'.format(oc[skey].getRVM())
+                hab += ' & {:+.0f}'.format(oc[skey].getHabitability())
+                aff += ' & {:+.0f}'.format(oc[skey].getAffinity())
+                prot += ' & {:.2f}'.format(oc[skey].getRotation())
+            lend = '\\\\ \n'
+            tertable += size + lend
+            tertable += wtype + lend
+            tertable += atmass + lend
+            tertable += atcom + lend
+            tertable += hydro + lend
+            tertable += tsurf + lend
+            tertable += climate + lend
+            tertable += axtilt + lend
+            tertable += dens + lend
+            tertable += diam + lend
+            tertable += grav + lend
+            tertable += mass + lend
+            tertable += press + lend
+            tertable += presscat + lend
+            tertable += tte + lend
+            tertable += volc + lend
+            tertable += tect + lend
+            tertable += rvm + lend + hab + lend + aff + lend
+            tertable += prot + lend
+            tertable += '\\bottomrule\n\end{tabular}\n\n'
+            tertable += '\\footnotesize\n$^1$ '
+            tertable += '\\textbf{C}: Corrosive, \\textbf{LT}: Lethally Toxic, \\textbf{HT}: Highly Toxic, \\textbf{MT}: Mildly Toxic, \\textbf{S}: Suffocating\\\\ \n'
+            tertable += '$^2$ Total Tidal Effect\\\\ \n'
+            tertable += '$^3$ Resource Value Modifier \n'
+            tertable += '\end{table}\n\n'
+            if 'Terrestrial' in types:
+                str += tertable
+            del tertable
 
             # Now gather all asteroid belts and print an overview table
             astable = '\section{List of Asteroid Belts}\n\n'

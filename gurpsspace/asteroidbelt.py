@@ -1,4 +1,5 @@
 from .orbitcontents import OrbitContent
+from .tables import WorldClimate
 
 
 class AsteroidBelt(OrbitContent):
@@ -6,6 +7,8 @@ class AsteroidBelt(OrbitContent):
     def __init__(self, primarystar, orbitalradius):
         OrbitContent.__init__(self, primarystar, orbitalradius)
         self.makeresources()
+        self.makesurftemp()
+        self.makeclimate()
         self.__habitability = 0
         self.__affinity = self.__habitability + self.__rvm
 
@@ -61,3 +64,24 @@ class AsteroidBelt(OrbitContent):
             value = 'Motherlode'
         self.__rvm = rvm
         self.__resources = value
+
+    def makesurftemp(self):
+        self.__avsurf = self.getBBTemp() * 0.97
+
+    def getAvSurf(self):
+        return self.__avsurf
+
+    def makeclimate(self):
+        self.__climate = WorldClimate(self.getAvSurf())
+
+    def getClimate(self):
+        return self.__climate
+
+    def getResources(self):
+        return self.__resources
+
+    def getRVM(self):
+        return self.__rvm
+
+    def getAffinity(self):
+        return self.__affinity

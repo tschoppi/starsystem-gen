@@ -205,7 +205,7 @@ class LatexWriter:
             str += '\section{GM Notes}\n% Notes about the planet system and eventual adventures that can be undertaken.\n\n'
             str += '\\begin{landscape}\n\section{List of Orbits and their Occupants}\n\\begin{table}[H]\n\\begin{tabular}{llllrrrrrrrrr}\n'
             str += '\\toprule\n'
-            str += '\multirow{2}{*}{Name} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & Orbit & O Per. & \multirow{2}{*}{Ecc.} & R$_\mathrm{min}$ & R$_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & BB Temp. \\\\ \n'
+            str += '\multirow{2}{*}{Name} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & $R_\mathrm{orb}$ & $P_\mathrm{orb}$ & \multirow{2}{*}{Ecc.} & $R_\mathrm{min}$ & $R_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & $T_\mathrm{BB}$ \\\\ \n'
             str += '\cmidrule(lr){5-5} \cmidrule(lr){6-6} \cmidrule(lr){8-8} \cmidrule(lr){9-9} \cmidrule(lr){12-12}\n'
             str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
             str += '\midrule\n'
@@ -221,8 +221,16 @@ class LatexWriter:
                 str += '{:.2f} & '.format(oc[skey].getEcc())
                 str += '{:.2f} & '.format(oc[skey].getMinMax()[0])
                 str += '{:.2f} & '.format(oc[skey].getMinMax()[1])
-                str += '{} & '.format(oc[skey].numMoons())
-                str += '{} & '.format(oc[skey].numMoonlets())
+                nmoon = oc[skey].numMoons()
+                nmoonlts = oc[skey].numMoonlets()
+                if nmoon is 0:
+                    str += ' & '
+                else:
+                    str += '{} & '.format(oc[skey].numMoons())
+                if nmoonlts is 0:
+                    str += ' & '
+                else:
+                    str += '{} & '.format(oc[skey].numMoonlets())
                 str += '{:.0f}'.format(oc[skey].getBBTemp())
                 str += '\\\\ \n'
             str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
@@ -231,7 +239,7 @@ class LatexWriter:
             sectable = '\\begin{table}[H]\n'
             sectable += '\\begin{tabular}{lrrr}\n'
             sectable += '\\toprule\n'
-            sectable += 'Planet & TTE$^1$ & Rot. Per. [d]  & Ax. Tilt [$^\circ$] \\\\ \n'
+            sectable += 'Planet & TTE$^1$ & $P_\mathrm{rot}$ [d]  & Ax. Tilt [$^\circ$] \\\\ \n'
             sectable += '\midrule\n'
             planetcounter = 0
             secondtable = False

@@ -30,6 +30,11 @@ class LatexWriter:
         # Write the overviews
         file.write(self.overviews())
 
+        # Write the detailed planet system chapters
+        for star in self.starsystem.stars:
+            str = self.psdetails(star.planetsystem)
+            file.write(str)
+
         # Write the end of document
         file.write(self.end())
         # Close the file
@@ -358,6 +363,23 @@ class LatexWriter:
             str += '\end{landscape}\n\n'
         return str
 
+    def psdetails(planetsystem):
+        """Print details about the planet system
+
+        Every new section is a new orbiting object, be it terrestrial planet,
+        gas giant or major moon
+        """
+        str = ''
+        # Call for each celestial body the function to print its details
+        return str
+
+    def planetdetails(planet):
+        """Print details about terrestrial planets"""
+        return ''
+
+    def gasgiantdetails(gasgiant):
+        """Print details about gas giants"""
+        return ''
 
     def end(self):
         return "\n\n\\end{document}"

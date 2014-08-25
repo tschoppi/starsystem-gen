@@ -132,9 +132,8 @@ class LatexWriter:
         str += 'l' * (numstar + 1) + '}\n'
         str += '\\toprule\n'
         str += 'Property '
-        letters = ['A', 'B', 'C']
-        for nst in range(numstar):
-            str += '& Star ' + letters[nst] + ' '
+        for star in self.starsystem.stars:
+            str += '& Star ' + star.getLetter() + ' '
         str += '\\\\ \n\midrule\n'
 
         sequence = 'Sequence   '
@@ -191,10 +190,8 @@ class LatexWriter:
         #  - List Moons and Moonlets
         #  - List Asteroid Belts
         str = ''
-        letters = ['A', 'B', 'C']
         for star in self.starsystem.stars:
-            idx = self.starsystem.stars.index(star)
-            lettr = letters[idx]
+            lettr = star.getLetter()
             ps = star.planetsystem
             oc = ps.getOrbitcontents()
             types = [pl.type() for key, pl in oc.items()]
@@ -210,10 +207,8 @@ class LatexWriter:
             str += '\cmidrule(lr){5-5} \cmidrule(lr){6-6} \cmidrule(lr){8-8} \cmidrule(lr){9-9} \cmidrule(lr){12-12}\n'
             str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
             str += '\midrule\n'
-            planetcounter = 0
             for skey in sorted(oc):
-                planetcounter += 1
-                str += '<{}-{}> & '.format(lettr, planetcounter)
+                str += '{} & '.format(oc[skey].getName())
                 str += '{} & '.format(oc[skey].type())
                 str += '{} & '.format(oc[skey].getSize())
                 str += '{} & '.format(oc[skey].getType())
@@ -242,12 +237,10 @@ class LatexWriter:
             astable += '\\toprule\n'
             astable += 'Name & $T_\mathrm{surf}$ [K] & Climate Type & RVM & Affinity \\\\ \n'
             astable += '\midrule\n'
-            planetcounter = 0
             for skey in sorted(oc):
-                planetcounter += 1
                 if oc[skey].type() != 'Ast. Belt':
                     continue
-                astable += '<{}-{}> & '.format(lettr, planetcounter)
+                astable += '{} & '.format(oc[skey].getName())
                 astable += '{:.0f} & '.format(oc[skey].getAvSurf())
                 astable += '{} & '.format(oc[skey].getClimate())
                 astable += '{:+.0f} & '.format(oc[skey].getRVM())
@@ -264,13 +257,11 @@ class LatexWriter:
             tertable = '\section{List of Planets and their Properties}\n'
             tertable += '\\begin{table}[H]\n\\begin{tabular}{l ' + ('l' * types.count('Terrestrial')) + '}\n'
             tertable += '\\toprule\n'
-            planetcounter = 0
             tertable += '\multirow{2}{*}{Property} & \multicolumn{' + '{}'.format(types.count('Terrestrial')) + '}{c}{Planet Name}\\\\ \n'
             for skey in sorted(oc):
-                planetcounter += 1
                 if oc[skey].type() != 'Terrestrial':
                     continue
-                tertable += ' & <{}-{}>'.format(lettr, planetcounter)
+                tertable += ' & {}'.format(oc[skey].getName())
             tertable += '\\\\ \n\midrule\n'
             wtype = '{:22}'.format('World Type')
             size = '{:22}'.format('World Size')

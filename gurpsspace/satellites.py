@@ -31,7 +31,7 @@ class Moon(World):
         self.makecalendar()
 
     def printinfo(self):
-        print("         *** Moon Information *** ")
+        print("         *** Moon {} Information *** ".format(self.getName()))
         #print("Parent Planet:\t{}".format(self.parent))
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
@@ -202,6 +202,17 @@ class Moon(World):
     def getPlanetLength(self):
         return self.__alenplanet
 
+    def setName(self, name):
+        self.__name = name
+
+    def getName(self):
+        return self.__name
+
+    def setNumber(self, number):
+        self.__number = number
+
+    def getNumber(self):
+        return self.__number
 
 
 class Moonlet:

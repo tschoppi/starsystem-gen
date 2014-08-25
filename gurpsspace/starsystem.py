@@ -27,6 +27,7 @@ class StarSystem:
         self.makeage(age)
         self.generatestars()
         self.sortstars()
+        self.namestars()
         self.makeorbits()
         self.makeminmaxseps()
         self.makeforbiddenzones()
@@ -113,6 +114,15 @@ class StarSystem:
             del self.stars[highest]
 
         self.stars = newlist
+
+    def namestars(self):
+        """
+        Assign a letter to each star according to it's primaryness in the
+        stellar system.
+        """
+        letters = ['A', 'B', 'C']
+        for star in self.stars:
+            star.setLetter(letters[self.stars.index(star)])
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star

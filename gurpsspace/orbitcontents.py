@@ -72,6 +72,17 @@ class OrbitContent:
     def getMinMax(self):
         return self.__minmax
 
+    def setName(self, name):
+        self.__name = name
+
+    def getName(self):
+        return self.__name
+
+    def setNumber(self, number):
+        self.__number = number
+
+    def getNumber(self):
+        return self.__number
 
     # Overload in subclasses if applicable
     def getType(self):
@@ -82,4 +93,3 @@ class OrbitContent:
         return ''
     def numMoonlets(self):
         return ''
-    

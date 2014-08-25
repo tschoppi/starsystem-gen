@@ -25,7 +25,7 @@ class Star:
         return repr((self.__mass, self.__luminosity, self.__temperature))
 
     def printinfo(self):
-        print("  Star Info")
+        print("  Star {} Info".format(self.__letter))
         print("  ---------")
         print("       Mass:\t{}".format(self.__mass))
         print("   Sequence:\t{}".format(SequenceTable[self.__SeqIndex]))
@@ -201,3 +201,9 @@ class Star:
 
     def getRadius(self):
         return self.__radius
+
+    def setLetter(self, letter):
+        self.__letter = letter
+
+    def getLetter(self):
+        return self.__letter

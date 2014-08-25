@@ -23,6 +23,7 @@ class PlanetSystem:
         self.makecontentlist()
         self.placegasgiants()
         self.fillorbits()
+        self.namecontents()
         self.makeeccentricities()
 
     def printinfo(self):
@@ -258,6 +259,13 @@ class PlanetSystem:
         orc = {k: v for k, v in self.__orbitcontents.items() if v is not None}
         self.__orbitcontents = orc
 
+    def namecontents(self):
+        counter = 0
+        for key in sorted(self.__orbitcontents):
+            counter += 1
+            name = '<{}-{}>'.format(self.parentstar.getLetter(), counter)
+            self.__orbitcontents[key].setName(name)
+            self.__orbitcontents[key].setNumber(counter)
 
     def orbitfillmodifier(self, orbitindex):
         modifier = 0

@@ -17,7 +17,7 @@ class Planet(World):
         self.makeaxialtilt()
 
     def printinfo(self):
-        print("--- Planet Info ---")
+        print("--- Planet {} Info ---".format(self.getName()))
         print("        Orbit:\t{}".format(self.getOrbit()))
         print("   World Type:\t{} ({})".format(self.getSize(), self.getType()))
         if self.__nummoons > 0:
@@ -249,3 +249,14 @@ class Planet(World):
 
     def numMoonlets(self):
         return self.__nummoonlets
+
+    def setNumber(self, number):
+        World.setNumber(self, number)
+        # Name the moons
+        counter = 0
+        for moon in self.__moons:
+            counter += 1
+            moon.setNumber(counter)
+            letter = self.primarystar.getLetter()
+            name = '<{}-{}-{}>'.format(letter, number, counter)
+            moon.setName(name)

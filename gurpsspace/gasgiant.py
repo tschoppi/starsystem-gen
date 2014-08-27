@@ -141,3 +141,15 @@ class GasGiant(OrbitContent):
 
     def getMoons(self):
         return self.__secondfamily
+
+    def getDensity(self):
+        return self.__density
+
+    def getGravity(self):
+        return self.__gravity
+
+    def getFirstFamily(self):
+        return self.__firstfamily
+
+    def getThirdFamily(self):
+        return self.__thirdfamily

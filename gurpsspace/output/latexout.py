@@ -425,6 +425,23 @@ class LatexWriter:
     def gasgiantdetails(self, gasgiant):
         """Print details about gas giants"""
         str = '\section{Gas Giant ' + gasgiant.getName() + '}\n'
+        str += '\subsection{Summary}\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n'
+        str += '\midrule\n'
+        str += 'Mass & {} Earth Masses\\\\ \n'.format(gasgiant.getMass())
+        str += 'Density & {} Earth Densities \\\\ \n'.format(gasgiant.getDensity())
+        str += 'Diameter & {:.2f} Earth Diameters \\\\ \n'.format(gasgiant.getDiameter())
+        str += 'Cloud-Top Gravity & {:.2f} G \\\\ \n'.format(gasgiant.getGravity())
+        str += 'Satellites $1^\mathrm{st}$ Family & {num} \\\\ \n'.format(st='{st}', num=len(gasgiant.getFirstFamily()))
+        str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.getMoons()))
+        str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
+        str += '\\bottomrule\n'
+        str += '\end{tabular}\n\end{table}\n\n'
+        
         moons = gasgiant.getMoons()
         for m in moons:
             str += self.moondetails(m)

@@ -30,6 +30,11 @@ class LatexWriter:
         # Write the overviews
         file.write(self.overviews())
 
+        # Write the detailed planet system chapters
+        for star in self.starsystem.stars:
+            str = self.psdetails(star.planetsystem)
+            file.write(str)
+
         # Write the end of document
         file.write(self.end())
         # Close the file
@@ -358,6 +363,121 @@ class LatexWriter:
             str += '\end{landscape}\n\n'
         return str
 
+    def psdetails(self, planetsystem):
+        """Print details about the planet system
+
+        Every new section is a new orbiting object, be it terrestrial planet,
+        gas giant or major moon
+        """
+        letter = planetsystem.parentstar.getLetter()
+        oc = planetsystem.getOrbitcontents()
+        str = '\chapter{Planet System ' + letter + '}\n\n'
+        # Call for each celestial body the function to print its details
+        for key in sorted(oc):
+            type = oc[key].type()
+            if type == 'Terrestrial':
+                str += self.planetdetails(oc[key])
+            if type == 'Gas Giant':
+                str += self.gasgiantdetails(oc[key])
+        return str
+
+    def planetdetails(self, planet):
+        """Print details about terrestrial planets"""
+        str = '\section{Planet ' + planet.getName() + '}\n'
+        str += '\subsection{Summary}\n\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n\midrule\n'
+        str += 'Type & {} ({})\\\\ \n'.format(planet.getSize(), planet.getType())
+        atcomp = planet.atmcomp
+        atkeys = [key for key in planet.atmcomp.keys() if planet.atmcomp[key] == True]
+        abbr = ''
+        for k in atkeys:
+            abbr += AtmCompAbbr[k] + ', '
+        if len(atkeys) > 0:
+            str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
+        if planet.getPressure() == 0:
+            str += 'Pressure & None \\\\ \n'
+        else:
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(planet.getPressure(), planet.getPressCat())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(planet.getHydrocover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=planet.getAvSurf())
+        str += 'Climate Type & {} \\\\ \n'.format(planet.getClimate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(planet.getDiameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(planet.getGravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(planet.getAffinity())
+        if planet.numMoons() > 0:
+            str += 'Moons & {} \\\\ \n'.format(planet.numMoons())
+        if planet.numMoonlets() > 0:
+            str += 'Moonlets & {} \\\\ \n'.format(planet.numMoonlets())
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+        str += '\subsection{Social Parameters}\n'
+        str += '\subsection{Installations}\n\n'
+
+        if planet.numMoons() > 0:
+            moons = planet.getSatellites()
+            for m in moons:
+                str += self.moondetails(m)
+        return str
+
+    def gasgiantdetails(self, gasgiant):
+        """Print details about gas giants"""
+        str = '\section{Gas Giant ' + gasgiant.getName() + '}\n'
+        str += '\subsection{Summary}\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n'
+        str += '\midrule\n'
+        str += 'Mass & {} Earth Masses\\\\ \n'.format(gasgiant.getMass())
+        str += 'Density & {} Earth Densities \\\\ \n'.format(gasgiant.getDensity())
+        str += 'Diameter & {:.2f} Earth Diameters \\\\ \n'.format(gasgiant.getDiameter())
+        str += 'Cloud-Top Gravity & {:.2f} G \\\\ \n'.format(gasgiant.getGravity())
+        str += 'Satellites $1^\mathrm{st}$ Family & {num} \\\\ \n'.format(st='{st}', num=len(gasgiant.getFirstFamily()))
+        str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.getMoons()))
+        str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
+        str += '\\bottomrule\n'
+        str += '\end{tabular}\n\end{table}\n\n'
+
+        moons = gasgiant.getMoons()
+        for m in moons:
+            str += self.moondetails(m)
+        return str
+
+    def moondetails(self, moon):
+        """Print details about a major moon"""
+        str = '\section{Moon ' + moon.getName() + '}\n'
+        str += '\subsection{Summary}\n\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n\midrule\n'
+        str += 'Type & {} ({})\\\\ \n'.format(moon.getSize(), moon.getType())
+        atcomp = moon.atmcomp
+        atkeys = [key for key in moon.atmcomp.keys() if moon.atmcomp[key] == True]
+        abbr = ''
+        for k in atkeys:
+            abbr += AtmCompAbbr[k] + ', '
+        if len(atkeys) > 0:
+            str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
+        if moon.getPressure() == 0:
+            str += 'Pressure & None \\\\ \n'
+        else:
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(moon.getPressure(), moon.getPressCat())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(moon.getHydrocover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=moon.getAvSurf())
+        str += 'Climate Type & {} \\\\ \n'.format(moon.getClimate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(moon.getDiameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(moon.getGravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(moon.getAffinity())
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+        str += '\subsection{Social Parameters}\n'
+        str += '\subsection{Installations}\n\n'
+        return str
 
     def end(self):
         return "\n\n\\end{document}"

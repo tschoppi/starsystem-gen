@@ -31,7 +31,7 @@ class Moon(World):
         self.makecalendar()
 
     def printinfo(self):
-        print("         *** Moon Information *** ")
+        print("         *** Moon {} Information *** ".format(self.getName()))
         #print("Parent Planet:\t{}".format(self.parent))
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
@@ -99,7 +99,7 @@ class Moon(World):
         parent planets that are terrestrial or gas giants.
         """
         ptype = self.parent.type()
-        if ptype == 'Terrestrial World':
+        if ptype == 'Terrestrial':
             # Check for size difference and infer roll bonus from it
             psize = SizeToInt[self.parent.getSize()]
             osize = SizeToInt[self.getSize()]
@@ -202,6 +202,17 @@ class Moon(World):
     def getPlanetLength(self):
         return self.__alenplanet
 
+    def setName(self, name):
+        self.__name = name
+
+    def getName(self):
+        return self.__name
+
+    def setNumber(self, number):
+        self.__number = number
+
+    def getNumber(self):
+        return self.__number
 
 
 class Moonlet:
@@ -231,7 +242,7 @@ class Moonlet:
             multiplier = r.uniform(20, 200)
             self.__orbit = multiplier * self.parent.getDiameter()
 
-        if ptype == 'Terrestrial World':
+        if ptype == 'Terrestrial':
             self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
 
     def getOrbit(self):

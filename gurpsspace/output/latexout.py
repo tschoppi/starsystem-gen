@@ -363,23 +363,45 @@ class LatexWriter:
             str += '\end{landscape}\n\n'
         return str
 
-    def psdetails(planetsystem):
+    def psdetails(self, planetsystem):
         """Print details about the planet system
 
         Every new section is a new orbiting object, be it terrestrial planet,
         gas giant or major moon
         """
-        str = ''
+        letter = planetsystem.parentstar.getLetter()
+        oc = planetsystem.getOrbitcontents()
+        str = '\chapter{Planet System ' + letter + '}\n\n'
         # Call for each celestial body the function to print its details
+        for key in sorted(oc):
+            type = oc[key].type()
+            if type == 'Terrestrial':
+                str += self.planetdetails(oc[key])
+            if type == 'Gas Giant':
+                str += self.gasgiantdetails(oc[key])
         return str
 
-    def planetdetails(planet):
+    def planetdetails(self, planet):
         """Print details about terrestrial planets"""
-        return ''
+        str = '\section{Planet ' + planet.getName() + '}\n'
+        if planet.numMoons() > 0:
+            moons = planet.getSatellites()
+            for m in moons:
+                str += self.moondetails(m)
+        return str
 
-    def gasgiantdetails(gasgiant):
+    def gasgiantdetails(self, gasgiant):
         """Print details about gas giants"""
-        return ''
+        str = '\section{Gas Giant ' + gasgiant.getName() + '}\n'
+        moons = gasgiant.getMoons()
+        for m in moons:
+            str += self.moondetails(m)
+        return str
+
+    def moondetails(self, moon):
+        """Print details about a major moon"""
+        str = '\section{Moon ' + moon.getName() + '}\n'
+        return str
 
     def end(self):
         return "\n\n\\end{document}"

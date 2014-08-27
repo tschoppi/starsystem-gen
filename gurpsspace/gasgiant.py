@@ -138,3 +138,6 @@ class GasGiant(OrbitContent):
             letter = self.primarystar.getLetter()
             name = '<{}-{}-{}>'.format(letter, number, counter)
             moon.setName(name)
+
+    def getMoons(self):
+        return self.__secondfamily

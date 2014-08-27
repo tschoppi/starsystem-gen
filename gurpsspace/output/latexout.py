@@ -182,7 +182,7 @@ class LatexWriter:
         str += sequence + mass + temp + lum + rad + inner + outer + snowline
         if numstar > 1:
             str += fzinner + fzouter
-        str += '\\bottomrule\n\end{tabular} \n\end{table} \n\n'
+        str += '\\bottomrule\n\end{tabular} \n\end{table} \n\\vfill\n\n'
 
         return str
 
@@ -234,7 +234,7 @@ class LatexWriter:
                     str += '{} & '.format(oc[skey].numMoonlets())
                 str += '{:.0f}'.format(oc[skey].getBBTemp())
                 str += '\\\\ \n'
-            str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+            str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
 
             # Now gather all asteroid belts and print an overview table
             astable = '\section{List of Asteroid Belts}\n\n'
@@ -412,9 +412,9 @@ class LatexWriter:
             str += 'Moons & {} \\\\ \n'.format(planet.numMoons())
         if planet.numMoonlets() > 0:
             str += 'Moonlets & {} \\\\ \n'.format(planet.numMoonlets())
-        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
-        str += '\subsection{Social Parameters}\n'
-        str += '\subsection{Installations}\n\n'
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
+        str += '%\subsection{Social Parameters}\n'
+        str += '%\subsection{Installations}\n\n'
 
         if planet.numMoons() > 0:
             moons = planet.getSatellites()
@@ -440,7 +440,7 @@ class LatexWriter:
         str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.getMoons()))
         str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
         str += '\\bottomrule\n'
-        str += '\end{tabular}\n\end{table}\n\n'
+        str += '\end{tabular}\n\end{table}\n\\vfill\n\n'
 
         moons = gasgiant.getMoons()
         for m in moons:
@@ -450,7 +450,7 @@ class LatexWriter:
     def moondetails(self, moon):
         """Print details about a major moon"""
         str = '\section{Moon ' + moon.getName() + '}\n'
-        str += '\subsection{Summary}\n\n'
+        str += '%\subsection{Summary}\n\n'
         str += '\subsection{World Properties}\n'
         str += '\\begin{table}[H]\n\centering\n'
         str += '\\begin{tabular}{ll}\n'
@@ -474,9 +474,9 @@ class LatexWriter:
         str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(moon.getDiameter())
         str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(moon.getGravity())
         str += 'Affinity & {:+.0f} \\\\ \n'.format(moon.getAffinity())
-        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
-        str += '\subsection{Social Parameters}\n'
-        str += '\subsection{Installations}\n\n'
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
+        str += '%\subsection{Social Parameters}\n'
+        str += '%\subsection{Installations}\n\n'
         return str
 
     def end(self):

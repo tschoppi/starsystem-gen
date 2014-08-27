@@ -441,7 +441,7 @@ class LatexWriter:
         str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
         str += '\\bottomrule\n'
         str += '\end{tabular}\n\end{table}\n\n'
-        
+
         moons = gasgiant.getMoons()
         for m in moons:
             str += self.moondetails(m)
@@ -450,6 +450,33 @@ class LatexWriter:
     def moondetails(self, moon):
         """Print details about a major moon"""
         str = '\section{Moon ' + moon.getName() + '}\n'
+        str += '\subsection{Summary}\n\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n\midrule\n'
+        str += 'Type & {} ({})\\\\ \n'.format(moon.getSize(), moon.getType())
+        atcomp = moon.atmcomp
+        atkeys = [key for key in moon.atmcomp.keys() if moon.atmcomp[key] == True]
+        abbr = ''
+        for k in atkeys:
+            abbr += AtmCompAbbr[k] + ', '
+        if len(atkeys) > 0:
+            str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
+        if moon.getPressure() == 0:
+            str += 'Pressure & None \\\\ \n'
+        else:
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(moon.getPressure(), moon.getPressCat())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(moon.getHydrocover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=moon.getAvSurf())
+        str += 'Climate Type & {} \\\\ \n'.format(moon.getClimate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(moon.getDiameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(moon.getGravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(moon.getAffinity())
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+        str += '\subsection{Social Parameters}\n'
+        str += '\subsection{Installations}\n\n'
         return str
 
     def end(self):

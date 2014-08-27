@@ -384,6 +384,38 @@ class LatexWriter:
     def planetdetails(self, planet):
         """Print details about terrestrial planets"""
         str = '\section{Planet ' + planet.getName() + '}\n'
+        str += '\subsection{Summary}\n\n'
+        str += '\subsection{World Properties}\n'
+        str += '\\begin{table}[H]\n\centering\n'
+        str += '\\begin{tabular}{ll}\n'
+        str += '\\toprule\n'
+        str += 'Property & Value \\\\ \n\midrule\n'
+        str += 'Type & {} ({})\\\\ \n'.format(planet.getSize(), planet.getType())
+        atcomp = planet.atmcomp
+        atkeys = [key for key in planet.atmcomp.keys() if planet.atmcomp[key] == True]
+        abbr = ''
+        for k in atkeys:
+            abbr += AtmCompAbbr[k] + ', '
+        if len(atkeys) > 0:
+            str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
+        if planet.getPressure() == 0:
+            str += 'Pressure & None \\\\ \n'
+        else:
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(planet.getPressure(), planet.getPressCat())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(planet.getHydrocover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=planet.getAvSurf())
+        str += 'Climate Type & {} \\\\ \n'.format(planet.getClimate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(planet.getDiameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(planet.getGravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(planet.getAffinity())
+        if planet.numMoons() > 0:
+            str += 'Moons & {} \\\\ \n'.format(planet.numMoons())
+        if planet.numMoonlets() > 0:
+            str += 'Moonlets & {} \\\\ \n'.format(planet.numMoonlets())
+        str += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
+        str += '\subsection{Social Parameters}\n'
+        str += '\subsection{Installations}\n\n'
+
         if planet.numMoons() > 0:
             moons = planet.getSatellites()
             for m in moons:

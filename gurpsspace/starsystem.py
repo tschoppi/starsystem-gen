@@ -33,7 +33,7 @@ class StarSystem:
         self.makeforbiddenzones()
         self.createplanetsystem()
         self.makeperiods()
-        self.printinfo()
+        #self.printinfo()
 
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
@@ -228,7 +228,10 @@ class StarSystem:
 
     def writelatex(self):
         filename = input("Name of the file (include extension): ")
-        writer = LW(self, filename)
+        if filename == '':
+            writer = LW(self)
+        else:
+            writer = LW(self, filename)
         writer.write()
 
     def getAge(self):
@@ -240,3 +243,9 @@ class StarSystem:
 
     def getPeriod(self):
         return self.__periods
+
+    def hasgarden(self):
+        ret = False
+        for star in self.stars:
+            ret |= star.planetsystem.hasgarden()
+        return ret

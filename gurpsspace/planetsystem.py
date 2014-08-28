@@ -309,3 +309,10 @@ class PlanetSystem:
             else:
                 bonus = 0
             oc.seteccentricity(self.roll(3, bonus))
+
+    def hasgarden(self):
+        ret = False
+        for k, p in self.__orbitcontents.items():
+            if p.type() == 'Terrestrial' and p.getType() == 'Garden':
+                ret = True
+        return ret

@@ -76,6 +76,9 @@ class PlanetSystem:
             self.__gasarrangement = 'Eccentric'
         if dice > 14:
             self.__gasarrangement = 'Epistellar'
+        if self.__forbidden:
+            if self.__snowline > self.__innerforbidden and self.__snowline < self.__outerforbidden:
+                self.__gasarrangement = 'None'
 
     def placefirstgasgiant(self):
         orbit = 0

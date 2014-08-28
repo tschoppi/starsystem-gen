@@ -227,8 +227,9 @@ class StarSystem:
             self.__periods.append( (orbit**3 / m)**(0.5) )
 
     def writelatex(self):
-        filename = input("Name of the file: ")
+        filename = input("Name of the file (include extension): ")
         writer = LW(self, filename)
+        writer.write()
 
     def getAge(self):
         return self.__age

@@ -9,4 +9,14 @@ args = {
     'age': None # Number > 0
 }
 
-mysys = starsys.StarSystem(**args)
+# Generate starsystems until one is made that contains a Garden world.
+garden = False
+cyclenum = 0
+while garden is not True:
+    cyclenum += 1
+    mysys = starsys.StarSystem(**args)
+    garden = mysys.hasgarden()
+
+mysys.printinfo()
+print('Total number of cycles: {}'.format(cyclenum))
+mysys.writelatex()

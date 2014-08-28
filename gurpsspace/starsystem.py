@@ -1,6 +1,8 @@
 from . import star as GS
 from . import dice as GD
 from .tables import OrbSepTable, StOEccTable
+from .output import latexout
+LW = latexout.LatexWriter
 
 class StarSystem:
     roller = GD.DiceRoller()
@@ -25,12 +27,13 @@ class StarSystem:
         self.makeage(age)
         self.generatestars()
         self.sortstars()
+        self.namestars()
         self.makeorbits()
         self.makeminmaxseps()
         self.makeforbiddenzones()
         self.createplanetsystem()
         self.makeperiods()
-        self.printinfo()
+        #self.printinfo()
 
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
@@ -111,6 +114,15 @@ class StarSystem:
             del self.stars[highest]
 
         self.stars = newlist
+
+    def namestars(self):
+        """
+        Assign a letter to each star according to it's primaryness in the
+        stellar system.
+        """
+        letters = ['A', 'B', 'C']
+        for star in self.stars:
+            star.setLetter(letters[self.stars.index(star)])
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star
@@ -213,3 +225,27 @@ class StarSystem:
             m2 = self.stars[2].getMass()
             m = m1 + m2
             self.__periods.append( (orbit**3 / m)**(0.5) )
+
+    def writelatex(self):
+        filename = input("Name of the file (include extension): ")
+        if filename == '':
+            writer = LW(self)
+        else:
+            writer = LW(self, filename)
+        writer.write()
+
+    def getAge(self):
+        return self.__age
+
+    def getOrbits(self):
+        """Return tuple (orbital separation, eccentricity)"""
+        return self.__orbits
+
+    def getPeriod(self):
+        return self.__periods
+
+    def hasgarden(self):
+        ret = False
+        for star in self.stars:
+            ret |= star.planetsystem.hasgarden()
+        return ret

@@ -23,6 +23,7 @@ class PlanetSystem:
         self.makecontentlist()
         self.placegasgiants()
         self.fillorbits()
+        self.namecontents()
         self.makeeccentricities()
 
     def printinfo(self):
@@ -53,6 +54,9 @@ class PlanetSystem:
         for skey in sorted(self.__orbitcontents):
             self.__orbitcontents[skey].printinfo()
 
+    def getOrbitcontents(self):
+        return self.__orbitcontents
+
     def allowedorbit(self, testorbit):
         result  = testorbit >= self.__innerlimit
         result &= testorbit <= self.__outerlimit
@@ -72,6 +76,9 @@ class PlanetSystem:
             self.__gasarrangement = 'Eccentric'
         if dice > 14:
             self.__gasarrangement = 'Epistellar'
+        if self.__forbidden:
+            if self.__snowline > self.__innerforbidden and self.__snowline < self.__outerforbidden:
+                self.__gasarrangement = 'None'
 
     def placefirstgasgiant(self):
         orbit = 0
@@ -255,6 +262,13 @@ class PlanetSystem:
         orc = {k: v for k, v in self.__orbitcontents.items() if v is not None}
         self.__orbitcontents = orc
 
+    def namecontents(self):
+        counter = 0
+        for key in sorted(self.__orbitcontents):
+            counter += 1
+            name = '<{}-{}>'.format(self.parentstar.getLetter(), counter)
+            self.__orbitcontents[key].setName(name)
+            self.__orbitcontents[key].setNumber(counter)
 
     def orbitfillmodifier(self, orbitindex):
         modifier = 0
@@ -288,10 +302,17 @@ class PlanetSystem:
         for k, oc in self.__orbitcontents.items():
             if self.__gasarrangement == 'Conventional':
                 bonus = -6
-            elif k == self.__orbitcontents.keys()[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
+            elif k == list(self.__orbitcontents)[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
                 bonus = -6
             elif self.__gasarrangement == 'Eccentric' and oc.type() == 'Gas Giant' and k < self.__snowline:
                 bonus = +4
             else:
                 bonus = 0
             oc.seteccentricity(self.roll(3, bonus))
+
+    def hasgarden(self):
+        ret = False
+        for k, p in self.__orbitcontents.items():
+            if p.type() == 'Terrestrial' and p.getType() == 'Garden':
+                ret = True
+        return ret

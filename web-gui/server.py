@@ -19,8 +19,8 @@ import mimetypes
  
 class WebServer(object):
     @cherrypy.expose
-    def hello(self):
-        return "<h1>Hello world!</h1>"
+    def generate(self, mustHaveGarden=False):
+        return "<h1>Hello world!</h1> <br/>" + str(mustHaveGarden)
 
 if __name__ == '__main__':
    ## This line reads the global server config from the file

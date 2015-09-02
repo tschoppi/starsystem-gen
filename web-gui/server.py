@@ -49,8 +49,9 @@ class WebServer(object):
                 garden = mysys.hasgarden()
         else:
             mysys = starsys.StarSystem(**args)
-            
-        return {"message": mysys.getAge()}
+
+        print (mysys.getinfo())
+        return mysys.getinfo()
 
 if __name__ == '__main__':
    ## This line reads the global server config from the file

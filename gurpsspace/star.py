@@ -47,6 +47,11 @@ class Star:
         self.planetsystem.printinfo()
         print("  ---------\n")
 
+    def getinfo(self):
+        result = {}
+        result['letter'] = self.__letter
+        return result
+
     def getMass(self):
         return self.__mass
 

@@ -1,5 +1,7 @@
 import cherrypy, mimetypes
 import os, sys, json
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('templates'))
 
 ## This adds '..' to the search path for python, so that ../gurpsspace can be imported
 ## TODO: Fix Modules so this is no longer necessary, most likely by creating a top-level module
@@ -52,6 +54,18 @@ class WebServer(object):
 
         print (mysys.getinfo())
         return mysys.getinfo()
+
+    @cherrypy.expose
+    def jinja(self):
+        args = {
+            'opencluster': None, # True or False
+            'numstars': 3, # 1, 2 or 3
+            'age': None # Number > 0
+        }
+        mysys = starsys.StarSystem(**args)
+        tmpl = env.get_template('overview.html')
+        
+        return tmpl.render(stars=mysys.getinfo()['stars'])
 
 if __name__ == '__main__':
    ## This line reads the global server config from the file

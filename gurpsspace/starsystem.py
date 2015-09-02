@@ -63,8 +63,11 @@ class StarSystem:
             result['orbits'] = self.__orbits
             result['minmaxorbits'] = self.__minmaxorbits
             result['periods'] = self.__periods
-        for i in range(self.__numstars):
-            result['star' + str(i)] = self.stars[i].getinfo()
+            stars = []
+            for i in range(self.__numstars):
+                stars.append(self.stars[i].getinfo())
+                             
+            result['stars'] = stars
         return result
 
     def randomcluster(self):

@@ -31,17 +31,23 @@ from gurpsspace import starsystem as starsys
 
  
 class WebServer(object):
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def generate(self, mustHaveGarden=False):
-        # Change from None to a value if you want to set an argument
-        args = {
-            'opencluster': None, # True or False
-            'numstars': None, # 1, 2 or 3
-            'age': None # Number > 0
-        }
 
-        # Generate starsystems until one is made that contains a Garden world.
+    @cherrypy.expose
+    def starsystem(self, mustHaveGarden="False", opencluster=None, numstars=0, age=None):
+        if numstars == "":
+            numstars = None
+        elif int(numstars) < 1 or int(numstars) > 3:
+            numstars = None
+        else:
+            numstars = int(numstars)
+            
+        args = {
+            'opencluster': opencluster == "True",
+            'numstars': numstars,
+            'age': age
+        }
+        
+        # Generate starsystems until one is made that contains a Garden world if it's required.
         if mustHaveGarden == "True":
             garden = False
             cyclenum = 0
@@ -51,21 +57,10 @@ class WebServer(object):
                 garden = mysys.hasgarden()
         else:
             mysys = starsys.StarSystem(**args)
-
-        print (mysys.getinfo())
-        return mysys.getinfo()
-
-    @cherrypy.expose
-    def jinja(self):
-        args = {
-            'opencluster': None, # True or False
-            'numstars': 3, # 1, 2 or 3
-            'age': None # Number > 0
-        }
-        mysys = starsys.StarSystem(**args)
+            
         tmpl = env.get_template('overview.html')
         
-        return tmpl.render(stars=mysys.getinfo()['stars'])
+        return tmpl.render(starsystem=mysys.getinfo())
 
 if __name__ == '__main__':
    ## This line reads the global server config from the file

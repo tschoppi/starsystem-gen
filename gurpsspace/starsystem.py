@@ -52,24 +52,6 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars[i].printinfo()
 
-    # Maybe the values should be exposed instead here.
-    # Then the GUI could take care of what info it needs and when
-    def getinfo(self):
-        result = {}
-        result['age'] = self.__age
-        result['numstars'] = self.__numstars
-        result['opencluster'] = self.__opencluster
-        if self.__numstars > 1:
-            result['orbits'] = self.__orbits
-            result['minmaxorbits'] = self.__minmaxorbits
-            result['periods'] = self.__periods
-            stars = []
-            for i in range(self.__numstars):
-                stars.append(self.stars[i].getinfo())
-                             
-            result['stars'] = stars
-        return result
-
     def randomcluster(self):
         # Criteria for a success (star system in an open cluster):
         #    - Roll of 10 or less

@@ -60,7 +60,7 @@ class WebServer(object):
             
         tmpl = env.get_template('overview.html')
         
-        return tmpl.render(starsystem=mysys.getinfo())
+        return tmpl.render(starsystem=mysys)
 
 if __name__ == '__main__':
    ## This line reads the global server config from the file

@@ -6,38 +6,49 @@
 </head>
 <body>
     <h2>You have successfully generated the following star system:</h2>
-    <h3>It has no name yet</h3>
-    {{starsystem}}
+    <h3>Star system properties</h3>
     <ul>
-        <li>Star system age: {{starsystem.age}}</li>
-        <li>Open cluster: {{starsystem.opencluster}}</li>
+        <li>Stellar age: {{starsystem.getAge()|round(2, 'common')}} billion years</li>
+        <li>Open cluster: </li>
     </ul>
 
-    {% if starsystem.numstars == 1 %}
+    {% if starsystem.stars|count == 1 %}
     <div>
         There is a single star in the system.
     </div>
     {% else %}
     <div>
-        There are {{starsystem.numstars}} stars in the system. <br/>
-        The companion star{% if starsystem.numstars == 3 %}s{% endif %} orbit{% if starsystem.numstars == 2 %}s{% endif %} the main star at {{starsystem.orbits[0][0]}} AU {% if starsystem.numstars == 3 %} and {{starsystem.orbits[1][0]}} AU{% endif %} distance.
-        <ul>
-            {% for star in starsystem.stars %}
-            <li>Star Letter: {{star.letter}}</li>
-            {% endfor %}
-        </ul>
+        There are {{ starsystem.stars|count }} stars in the system. <br/>
+        The companion star{% if starsystem.stars|count == 3 %}s{% endif %} orbit{% if starsystem.stars|count == 2 %}s{% endif %} the main star at {{starsystem.getOrbits()[0][0]}} AU {% if starsystem.stars|count == 3 %} and {{starsystem.getOrbits()[1][0]}} AU{% endif %} distance. <br/>
+        <br/>
+        {% for star in starsystem.stars %}
+        <div>
+            Star {{star.getLetter()}} properties:
+            <ul>
+                <li>Star object: {{star}}</li>
+                <li>It is a {{star.getSequence()}} sequence star.</li>
+                <li>The star is as massive as {{star.getMass()|round(2, 'common')}} suns.</li>
+                <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
+
+            </ul>
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
-
-    <div id="question-text">
-        Do you want to generate a new star system?<br/>
+    <br/>
+    <br/>
+    <br/>
+    <div id="form-container">
+        <div id="question-text">
+            Do you want to generate a new star system?<br/>
+        </div>
+        <form id="generation" action="starsystem">
+            <input id="garden" type="checkbox" name="mustHaveGarden" value="True" /> Force star system with garden world? <br/>
+            <input id="opencluster" type="checkbox" name="opencluster" value="True" /> Should the star system be an open cluster? <br/>
+            <input id="numstars" type="number" name="numstars" />  Do you want to force a specific number of stars? 1-3 possible <br/>
+            <input id="generate" type="submit" value="Generate star system"/>
+        </form>
     </div>
-    <form id="generation" action="starsystem">
-        <input id="garden" type="checkbox" name="mustHaveGarden" value="True" /> Force star system with garden world? <br/>
-        <input id="opencluster" type="checkbox" name="opencluster" value="True" /> Should the star system be an open cluster? <br/>
-        <input id="numstars" type="number" name="numstars" />  Do you want to force a specific number of stars? 1-3 possible <br/>
-        <input id="generate" type="submit" value="Generate star system"/>
-    </form>
 
 
 </body>

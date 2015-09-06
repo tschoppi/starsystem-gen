@@ -9,24 +9,29 @@
     <h3>Star system properties</h3>
     <ul>
         <li>Stellar age: {{starsystem.getAge()|round(2, 'common')}} billion years</li>
-        <li>Open cluster: </li>
+        <li>Open cluster: {{starsystem.is_open_cluster()}}</li>
     </ul>
 
     {% if starsystem.stars|count == 1 %}
     <div>
-        There is a single star in the system.
-    </div>
+        There is a single star in the system. <br/>
+        <br/>
     {% else %}
     <div>
         There are {{ starsystem.stars|count }} stars in the system. <br/>
         The companion star{% if starsystem.stars|count == 3 %}s{% endif %} orbit{% if starsystem.stars|count == 2 %}s{% endif %} the main star at {{starsystem.getOrbits()[0][0]}} AU {% if starsystem.stars|count == 3 %} and {{starsystem.getOrbits()[1][0]}} AU{% endif %} distance. <br/>
         <br/>
+    {% endif %}
         {% for star in starsystem.stars %}
         <div>
             Star {{star.getLetter()}} properties:
             <ul>
                 <li>Star object: {{star}}</li>
-                <li>It is a {{star.getSequence()}} sequence star.</li>
+                {% if star.getSequence() == 'Main' %}
+                <li>It is a {{star.getSequence()|lower}} sequence star.</li>
+                {% else %}
+                <li>It is a {{star.getSequence()|lower}}.</li>
+                {% endif %}
                 <li>The star is as massive as {{star.getMass()|round(2, 'common')}} suns.</li>
                 <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
 
@@ -34,8 +39,9 @@
         </div>
         {% endfor %}
     </div>
-    {% endif %}
     <br/>
+    <br/>
+    <button id="planet-details">View planet details</button>
     <br/>
     <br/>
     <div id="form-container">

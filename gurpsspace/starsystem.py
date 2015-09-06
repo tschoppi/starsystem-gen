@@ -244,6 +244,10 @@ class StarSystem:
     def getPeriod(self):
         return self.__periods
 
+    # This is the PEP8 recommended style for function names
+    def is_open_cluster(self):
+        return self.__opencluster
+
     def hasgarden(self):
         ret = False
         for star in self.stars:

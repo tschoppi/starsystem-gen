@@ -11,12 +11,40 @@
     </p>
 
 <div id="planets-list">
-    This planetary system consists of the following planets:
-    <ul>
-    {% for orbit, planet in planetsystem.getOrbitcontents().items() %}
-        <li>A {{planet}} at {{orbit|round(2, 'common')}} AU distance.</li>
-    {% endfor %}
-    </ul>
+    This planetary system consists of the following planets and other astronomical objects:
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>World</th>
+            <th>Orbital Radius</th>
+            <th>Orbital Period</th>
+            <th>Orbital Eccentricity</th>
+            <th>Minimum Radius</th>
+            <th>Maximum Radius</th>
+            <th>Moons</th>
+            <th>Moonlets</th>
+            <th>Blackbody Temperature</th>
+        </tr>
+        {% for key, planet in planetsystem.getOrbitcontents().items()|sort %}
+        {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+        <tr>
+            <td>{{astro_body.getName()|e}}</td>
+            <td>{{astro_body.type()}}</td>
+            <td>{% if astro_body.getSize() != '' %}{{astro_body.getSize()}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.getType() != '' %}{{astro_body.getType()}}{% else %} N/A {% endif %}</td>
+            <td>{{astro_body.getOrbit()|round(2)}} AU</td>
+            <td>{{(astro_body.getPeriod() * 365)|round(2)}} days</td>
+            <td>{{astro_body.getEcc()}}</td>
+            <td>{{astro_body.getMinMax()[0]|round(2)}} AU</td>
+            <td>{{astro_body.getMinMax()[1]|round(2)}} AU</td>
+            <td>{% if astro_body.numMoons() != '' %}{{astro_body.numMoons()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.numMoonlets() != '' %}{{astro_body.numMoonlets()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{{astro_body.getBBTemp()|round(2)}} K</td>
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 </body>
 </html>

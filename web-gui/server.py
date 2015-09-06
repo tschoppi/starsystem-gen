@@ -50,8 +50,22 @@ class WebServer(object):
             mysys = starsys.StarSystem(**args)
 
         tmpl = env.get_template('overview.html')
-
+        cherrypy.session['starsystem'] = mysys
         return tmpl.render(starsystem=mysys)
+
+    @cherrypy.expose
+    def planetsystem(self, star_id):
+        starsystem = cherrypy.session.get('starsystem')
+        if starsystem is None:
+            raise cherrypy.HTTPError(500, "No star system was in the session store!")
+        if star_id == "":
+            raise cherrypy.HTTPError(500, "There was no star selected!")
+        else:
+            star_id = int(star_id)
+
+        tmpl = env.get_template('planetsystem.html')
+        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem)
+
 
 if __name__ == '__main__':
     # This line reads the global server config from the file

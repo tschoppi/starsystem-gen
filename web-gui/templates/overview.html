@@ -34,14 +34,18 @@
                 {% endif %}
                 <li>The star is as massive as {{star.getMass()|round(2, 'common')}} suns.</li>
                 <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
-
+                {% if star.planetsystem.getOrbitcontents()|count > 0 %}
+                <form id="planet{{star.getLetter()}}" action="planetsystem">
+                    <input type="number" style="display: none" name="starId" value={{loop.index0}} />
+                    <input type="submit" id="planet-details" value="View planet details" formtarget="_blank"/>
+                </form>
+                {% endif %}
             </ul>
         </div>
         {% endfor %}
     </div>
     <br/>
     <br/>
-    <button id="planet-details">View planet details</button>
     <br/>
     <br/>
     <div id="form-container">

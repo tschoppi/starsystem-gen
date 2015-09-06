@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Planetary system details - Starsystem Generator for GURPS</title>
+</head>
+<body>
+    <h3>Planetary system properties</h3>
+    <p id="star-info">
+        This planetary system orbits star {{planetsystem.parentstar.getLetter()}} of the star system.
+    </p>
+
+<div id="planets-list">
+    This planetary system consists of the following planets:
+    <ul>
+    {% for orbit, planet in planetsystem.getOrbitcontents().items() %}
+        <li>A {{planet}} at {{orbit|round(2, 'common')}} AU distance.</li>
+    {% endfor %}
+    </ul>
+</div>
+</body>
+</html>

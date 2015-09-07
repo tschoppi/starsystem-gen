@@ -30,7 +30,6 @@
             </p>
             {% endif %}
             <ul>
-                <li>Star object: {{star}}</li>
                 {% if star.getSequence() == 'Main' %}
                 <li>It is a {{star.getSequence()|lower}} sequence star.</li>
                 {% else %}
@@ -47,10 +46,10 @@
                     <li>The forbidden zone for planets lies between {{star.getForbidden()[0]|round(2)}} AU and {{star.getForbidden()[1]|round(2)}} AU.</li>
                 {% endif %}
                 {% if star.planetsystem.getOrbitcontents()|count > 0 %}
-                <form id="planet{{star.getLetter()}}" action="planetsystem">
+                <li><form id="planet{{star.getLetter()}}" action="planetsystem">
                     <input type="number" style="display: none" name="star_id" value={{loop.index0}} />
                     <input type="submit" id="planet-details" value="View orbiting objects" formtarget="_blank"/>
-                </form>
+                </form></li>
                 {% endif %}
             </ul>
         </div>

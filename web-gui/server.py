@@ -55,12 +55,12 @@ class WebServer(object):
         return tmpl.render(starsystem=mysys)
 
     @cherrypy.expose
-    def planetsystem(self, star_id):
+    def planetsystem(self, star_id=""):
         starsystem = cherrypy.session.get('starsystem')
         if starsystem is None:
-            raise cherrypy.HTTPError(500, "No star system was in the session store!")
+            raise cherrypy.HTTPRedirect('/index.html', 307)
         if star_id == "":
-            raise cherrypy.HTTPError(500, "There was no star selected!")
+            raise cherrypy.HTTPRedirect('/index.html', 307)
         else:
             star_id = int(star_id)
 
@@ -134,7 +134,7 @@ class WebServer(object):
         if row == 'Affinity':
             return planet.getAffinity()
         if row == 'Rotational Period':
-            return round(planet.getRotation(), 2)
+            return abs(round(planet.getRotation(), 2))
         else:
             return 'Not implemented yet'
 

@@ -3,13 +3,18 @@
     <script src="scripts/mainView.js"> </script>
 </head>
 <body>
+	<h1>Star System Generator for GURPS 4th. Edition</h1>
 	<div id="welcome-text">
-        Do you want to generate a star system?<br/>
+        <h4>Welcome!</h4>
+		<p>This is a little tool to generate star systems for use in any story or Pen \& Paper roleplaying game. <br/>
+		We use the rules from <a href="http://www.sjgames.com/gurps/books/space/" target="_blank">GURPS Space</a> in the background and generate some stats that are of use in GURPS Space games.</p>
+		<p>The majority of the information is not game-specific, however, and is useful to anyone.</p>
     </div>
     <form id="generation" action="starsystem">
-        <input id="garden" type="checkbox" name="must_have_garden" value="True" /> Force star system with garden world? <br/>
-        <input id="opencluster" type="checkbox" name="opencluster" value="True" /> Should the star system be an open cluster? <br/>
-        <input id="numstars" type="number" name="numstars" />  Do you want to force a specific number of stars? 1-3 possible <br/>
+		You can select some options about the star system, or leave it completely random. <br/>
+        Force star system with garden world? <input id="garden" type="checkbox" name="must_have_garden" value="True" /> <br/>
+        Should the star system be an open cluster? <input id="opencluster" type="checkbox" name="opencluster" value="True" /> <br/>
+        Do you want to force a specific number of stars? 1-3 are possible, other values are treated as random. <input id="numstars" type="number" name="numstars" /> <br/>
         <input id="generate" type="submit" value="Generate star system"/>
     </form>
 

@@ -2,6 +2,7 @@ import cherrypy
 
 import os
 import sys
+import operator
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
@@ -64,8 +65,78 @@ class WebServer(object):
             star_id = int(star_id)
 
         tmpl = env.get_template('planetsystem.html')
-        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem)
+        env.globals['translate_row'] = self.translate_row
+        count = 0
+        for key, _ in starsystem.stars[star_id].planetsystem.getOrbitcontents().items():
+                if starsystem.stars[star_id].planetsystem.getOrbitcontents()[key].type() == 'Terrestrial':
+                    count += 1
+        tcount = count
+        count = 0
+        for key, _ in starsystem.stars[star_id].planetsystem.getOrbitcontents().items():
+                if starsystem.stars[star_id].planetsystem.getOrbitcontents()[key].type() == 'Ast. Belt':
+                    count += 1
+        acount = count
+        cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
+        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=tcount, asteroid_count=acount)
 
+    def translate_row(self, key, row):
+        planetsystem = cherrypy.session.get('planetsystem')
+        planet = planetsystem.getOrbitcontents()[key]
+        if row == '':
+            return planet.getName().replace("<", "").replace(">", "")
+        if row == 'World Size':
+            return planet.getSize()
+        if row == 'World Type':
+            return planet.getType()
+        if row == 'Atm. Mass':
+            return str(planet.getAtmass())
+        if row == 'Atm. Composition' and planet.getAtmass() > 0:
+            retval = ''
+            atmospheric_components = sorted(planet.atmcomp.items(), key=operator.itemgetter(0))
+            for name, present in atmospheric_components:
+                if present:
+                    retval += name + '<br/>'
+            if len(retval) == 0:
+                retval = 'Breathable'
+            return retval
+        elif row == 'Atm. Composition' and planet.getAtmass() == 0:
+            return 'Trace or No Atmosphere'
+        if row == 'Hydr. Coverage':
+            return str(round(planet.getHydrocover(), 2)) + ' %'
+        if row == 'Avg. Surface Temperature':
+            return str(round(planet.getAvSurf(), 2)) + ' K / ' + str(round(planet.getAvSurf() - 273.15, 2)) + '°C'
+        if row == 'Climate Type':
+            return planet.getClimate()
+        if row == 'Axial Tilt':
+            return str(planet.getAxialTilt()) + '°'
+        if row == 'Density':
+            return planet.getDensity()
+        if row == 'Diameter':
+            return round(planet.getDiameter(), 2)
+        if row == 'Surface Gravity':
+            return round(planet.getGravity(), 2)
+        if row == 'Mass':
+            return round(planet.getMass(), 2)
+        if row == 'Atm. Pressure':
+            return round(planet.getPressure(), 2)
+        if row == 'Pressure Category':
+            return planet.getPressCat()
+        if row == 'Total Tidal Effect':
+            return round(planet.getTTE(), 2)
+        if row == 'Volcanics':
+            return planet.getVolcanism()
+        if row == 'Tectonics':
+            return planet.getTectonics()
+        if row == 'Resource Value Modifier':
+            return planet.getRVM()
+        if row == 'Habitability':
+            return planet.getHabitability()
+        if row == 'Affinity':
+            return planet.getAffinity()
+        if row == 'Rotational Period':
+            return round(planet.getRotation(), 2)
+        else:
+            return 'Not implemented yet'
 
 if __name__ == '__main__':
     # This line reads the global server config from the file

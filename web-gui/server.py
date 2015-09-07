@@ -134,7 +134,11 @@ class WebServer(object):
         if row == 'Affinity':
             return planet.getAffinity()
         if row == 'Rotational Period':
-            return abs(round(planet.getRotation(), 2))
+            retval = str(round(planet.getRotation(), 2))
+            retval += " days"
+            if planet.getRotation() < 0:
+                retval += " *"
+            return retval
         else:
             return 'Not implemented yet'
 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Planetary system details - Starsystem Generator for GURPS</title>
+</head>
+<body>
+    <h3>Planetary system properties</h3>
+    <p id="star-info">
+        This planetary system orbits star {{planetsystem.parentstar.getLetter()}} of the star system.
+    </p>
+
+<div id="objects-overview">
+    <h4>This planetary system consists of the following planets and other astronomical objects:</h4></h4>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>World</th>
+            <th>Orbital Radius</th>
+            <th>Orbital Period</th>
+            <th>Orbital Eccentricity</th>
+            <th>Minimum Radius</th>
+            <th>Maximum Radius</th>
+            <th>Moons</th>
+            <th>Moonlets</th>
+            <th>Blackbody Temperature</th>
+        </tr>
+        {% for key, planet in planetsystem.getOrbitcontents().items()|sort %}
+        {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+        <tr>
+            <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.type()}}</td>
+            <td>{% if astro_body.getSize() != '' %}{{astro_body.getSize()}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.getType() != '' %}{{astro_body.getType()}}{% else %} N/A {% endif %}</td>
+            <td>{{astro_body.getOrbit()|round(2)}} AU</td>
+            <td>{{(astro_body.getPeriod() * 365)|round(2)}} days</td>
+            <td>{{astro_body.getEcc()}}</td>
+            <td>{{astro_body.getMinMax()[0]|round(2)}} AU</td>
+            <td>{{astro_body.getMinMax()[1]|round(2)}} AU</td>
+            <td>{% if astro_body.numMoons() != '' %}{{astro_body.numMoons()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.numMoonlets() != '' %}{{astro_body.numMoonlets()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{{astro_body.getBBTemp()|round(2)}} K</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% if asteroid_count > 0 %}
+<div id="belts-list">
+    <h4>This is a more detailed overview of the asteroid belts:</h4>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Avg. Surface Temperature</th>
+            <th>Climate Type</th>
+            <th>Resource Value Modifier</th>
+            <th>Affinity</th>
+        </tr>
+        {% for key, _ in planetsystem.getOrbitcontents().items()|sort if planetsystem.getOrbitcontents()[key].type() == 'Ast. Belt'%}
+        {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+        <tr>
+            <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.getAvSurf()|round(2)}} K / {{(astro_body.getAvSurf()-273.15)|round(2)}}°C</td>
+            <td>{{astro_body.getClimate()}}</td>
+            <td>{{astro_body.getRVM()}}</td>
+            <td>{{astro_body.getAffinity()}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+    {% endif %}
+{% if terrestrial_count > 0 %}
+    <div id="planets-list">
+        <h4>This is a more detailed overview of the planets:</h4>
+        <table border="1">
+            {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density", "Diameter", "Surface Gravity", "Mass", "Atm. Pressure", "Pressure Category", "Total Tidal Effect", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period"] %}
+            {% for row in list_of_rows %}
+            <tr>
+                <td><b>{{row}}</b></td>
+                {% for key, _ in planetsystem.getOrbitcontents().items()|sort if planetsystem.getOrbitcontents()[key].type() == 'Terrestrial'%}
+                {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+                <td>
+                    {% if row == "" %}<b>{{translate_row(key, row)}}</b>{% else %}{{translate_row(key, row)}}{% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+		<p>*: retrograde rotation</p>
+    </div>
+{% endif %}
+</body>
+</html>

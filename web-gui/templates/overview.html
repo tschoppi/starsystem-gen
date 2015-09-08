@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Starsystem Generator for GURPS</title>
+</head>
+<body>
+    <h3>You have successfully generated the following star system:</h3>
+    <h3>Star system properties</h3>
+
+    {% if starsystem.is_open_cluster() %}
+    <p id="open-cluster">The star system is an open cluster.</p>
+    {% endif %}
+    {% if starsystem.stars|count == 1 %}
+    <div>
+        There is a single star in the system. <br/>
+    {% else %}
+    <div>
+        There are {{ starsystem.stars|count }} stars in the system. <br/>
+    {% endif %}
+        The stars in this system are {{starsystem.getAge()|round(2)}} billion years old. <br/>
+        <br/>
+        {% for star in starsystem.stars %}
+        <div>
+            Star {{star.getLetter()}} properties:
+            {% if star.getLetter() == 'B' or star.getLetter() == 'C' %}
+            <p>
+                Star {{star.getLetter()}} orbits the main star at {{starsystem.getOrbits()[loop.index0 - 1][0]|round(2)}} AU mean distance with an orbital eccentricity of {{starsystem.getOrbits()[loop.index0 - 1][1]|round(2)}}. <br/>
+                It has an orbital period of {{starsystem.getPeriod()[loop.index0 - 1]|round(1, 'common')}} days.
+            </p>
+            {% endif %}
+            <ul>
+                {% if star.getSequence() == 'Main' %}
+                <li>It is a {{star.getSequence()|lower}} sequence star.</li>
+                {% else %}
+                <li>It is a {{star.getSequence()|lower}}.</li>
+                {% endif %}
+                <li>The star is as massive as {{star.getMass()|round(2)}} suns.</li>
+                <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
+                <li>The luminosity of the star is {{star.getLuminosity()|round(6)}}.</li>
+                <li>The star's radius is {{star.getRadius()|round(6)}} times the sun's radius.</li>
+                <li>The inner limit for planets orbiting this star is at {{star.getOrbitlimits()[0]|round(2)}} AU. </li>
+                <li>The outer limit for planets orbiting this star is at {{star.getOrbitlimits()[1]|round(2)}} AU. </li>
+                <li>The snow line for planets orbiting this star is at {{star.getSnowline()|round(2)}} AU. </li>
+                {% if star.getLetter() != 'A' %}
+                    <li>The forbidden zone for planets lies between {{star.getForbidden()[0]|round(2)}} AU and {{star.getForbidden()[1]|round(2)}} AU.</li>
+                {% endif %}
+                {% if star.planetsystem.getOrbitcontents()|count > 0 %}
+                <li><form id="planet{{star.getLetter()}}" action="planetsystem">
+                    <input type="number" style="display: none" name="star_id" value={{loop.index0}} />
+                    <input type="submit" id="planet-details" value="View orbiting objects" formtarget="_blank"/>
+                </form></li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <div id="form-container">
+        <div id="question-text">
+            Do you want to generate a new star system?<br/>
+        </div>
+        <form id="generation" action="starsystem">
+            <input id="garden" type="checkbox" name="must_have_garden" value="True" /> Force star system with garden world? <br/>
+            <input id="opencluster" type="checkbox" name="opencluster" value="True" /> Should the star system be an open cluster? <br/>
+            <input id="numstars" type="number" name="numstars" />  Do you want to force a specific number of stars? 1-3 possible <br/>
+            <input id="generate" type="submit" value="Generate star system"/>
+        </form>
+    </div>
+
+
+</body>
+</html>

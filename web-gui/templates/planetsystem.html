@@ -32,8 +32,8 @@
         <tr>
             <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
             <td>{{astro_body.type()}}</td>
-            <td>{% if astro_body.getSize() != '' %}{{astro_body.getSize()}}{% else %} N/A {% endif %}</td>
-            <td>{% if astro_body.getType() != '' %}{{astro_body.getType()}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.get_size() != '' %}{{astro_body.get_size()}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.get_type() != '' %}{{astro_body.get_type()}}{% else %} N/A {% endif %}</td>
             <td>{{astro_body.getOrbit()|round(2)}} AU</td>
             <td>{{(astro_body.getPeriod() * 365)|round(2)}} days</td>
             <td>{{astro_body.getEcc()}}</td>
@@ -61,10 +61,10 @@
         {% set astro_body = planetsystem.getOrbitcontents()[key] %}
         <tr>
             <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
-            <td>{{astro_body.getAvSurf()|round(2)}} K / {{(astro_body.getAvSurf()-273.15)|round(2)}}°C</td>
-            <td>{{astro_body.getClimate()}}</td>
-            <td>{{astro_body.getRVM()}}</td>
-            <td>{{astro_body.getAffinity()}}</td>
+            <td>{{astro_body.get_average_surface_temp()|round(2)}} K / {{(astro_body.get_average_surface_temp()-273.15)|round(2)}}°C</td>
+            <td>{{astro_body.get_climate()}}</td>
+            <td>{{astro_body.get_rvm()}}</td>
+            <td>{{astro_body.get_affinity()}}</td>
         </tr>
         {% endfor %}
     </table>

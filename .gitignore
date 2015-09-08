@@ -1,3 +1,4 @@
 # Python bytecode files
 *.py[cod]
 web-gui/.idea/
+*.pdf

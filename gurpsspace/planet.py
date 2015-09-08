@@ -8,18 +8,18 @@ class Planet(World):
         self.generatemoons()
         self.maketidals()
         self.makerotation()
-        self.makevolcanism()
-        self.maketectonism()
-        self.makeresources()
-        self.makehabitability()
-        self.makeaffinity()
+        self.make_volcanism()
+        self.make_tectonism()
+        self.make_resources()
+        self.make_habitability()
+        self.make_affinity()
         self.makecalendar()
         self.makeaxialtilt()
 
     def printinfo(self):
         print("--- Planet {} Info ---".format(self.getName()))
         print("        Orbit:\t{}".format(self.getOrbit()))
-        print("   World Type:\t{} ({})".format(self.getSize(), self.getType()))
+        print("   World Type:\t{} ({})".format(self.get_size(), self.get_type()))
         if self.__nummoons > 0:
             print("      # Moons:\t{}".format(self.__nummoons))
             for moon in self.__moons:
@@ -27,20 +27,20 @@ class Planet(World):
         if self.__nummoonlets > 0:
             print("    # Moonlts:\t{}".format(self.__nummoonlets))
         self.printatmosphere()
-        print("  Hydrogr Cov:\t{}".format(self.getHydrocover()))
-        print("    Av Surf T:\t{}".format(self.getAvSurf()))
-        print("      Climate:\t{}".format(self.getClimate()))
-        print("      Density:\t{}".format(self.getDensity()))
-        print("     Diameter:\t{}".format(self.getDiameter()))
-        print("    Surf Grav:\t{}".format(self.getGravity()))
-        print("         Mass:\t{}".format(self.getMass()))
-        print("     Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
-        print("    Volcanism:\t{}".format(self.getVolcanism()))
-        print("    Tectonics:\t{}".format(self.getTectonics()))
-        print("          RVM:\t{}".format(self.getRVM()))
-        print("       Res. V:\t{}".format(self.getResources()))
-        print(" Habitability:\t{}".format(self.getHabitability()))
-        print("     Affinity:\t{}".format(self.getAffinity()))
+        print("  Hydrogr Cov:\t{}".format(self.get_hydrographic_cover()))
+        print("    Av Surf T:\t{}".format(self.get_average_surface_temp()))
+        print("      Climate:\t{}".format(self.get_climate()))
+        print("      Density:\t{}".format(self.get_density()))
+        print("     Diameter:\t{}".format(self.get_diameter()))
+        print("    Surf Grav:\t{}".format(self.get_gravity()))
+        print("         Mass:\t{}".format(self.get_mass()))
+        print("     Pressure:\t{} ({})".format(self.get_pressure(), self.get_pressure_category()))
+        print("    Volcanism:\t{}".format(self.get_volcanism()))
+        print("    Tectonics:\t{}".format(self.get_tectonics()))
+        print("          RVM:\t{}".format(self.get_rvm()))
+        print("       Res. V:\t{}".format(self.get_resources()))
+        print(" Habitability:\t{}".format(self.get_habitability()))
+        print("     Affinity:\t{}".format(self.get_affinity()))
         print("     Orb Per.:\t{}".format(self.getPeriod()))
         print("     Orb Ecc.:\t{}".format(self.getEcc()))
         print("          TTE:\t{}".format(self.getTTE()))
@@ -53,7 +53,7 @@ class Planet(World):
 
     def printatmosphere(self):
         atcomp = self.atmcomp
-        bmarg, marg = self.getMarginal()
+        bmarg, marg = self.get_marginal()
         atmcomp = [key for key in atcomp.keys() if atcomp[key] == True]
         if len(atmcomp) > 0:
             print("     Atm Comp:\t{}".format(atmcomp))
@@ -61,7 +61,7 @@ class Planet(World):
             print("     Marginal:\t{}".format(marg))
 
     def __repr__(self):
-        return repr("{} Terrestrial Planet".format(self.getSize()))
+        return repr("{} Terrestrial Planet".format(self.get_size()))
 
     def type(self):
         return "Terrestrial"
@@ -98,7 +98,7 @@ class Planet(World):
             modifier -= 3
         if orbit > 0.75 and orbit <= 1.5:
             modifier -= 1
-        modifier += (SizeToInt[self.getSize()] - 2)
+        modifier += (SizeToInt[self.get_size()] - 2)
         return modifier
 
     def getSatellites(self):
@@ -107,14 +107,14 @@ class Planet(World):
         if self.__nummoonlets > 0:
             return self.__moonlets
 
-    def volcanicbonus(self):
+    def get_volcanicbonus(self):
         if self.__nummoons == 1:
             return 5
         if self.__nummoons > 1:
             return 10
         return 0
 
-    def tectonicbonus(self):
+    def get_tectonicbonus(self):
         if self.__nummoons == 1:
             return 2
         if self.__nummoons > 1:
@@ -129,14 +129,14 @@ class Planet(World):
             for moon in moons:
                 m = moon.getMass()
                 r = moon.getOrbit()
-                d = self.getDiameter()
+                d = self.get_diameter()
                 moontide += 2230000 * m * d / r**3
         # Make tidal effect for star
-        sunmass = self.primarystar.getMass()
-        diameter = self.getDiameter()
+        sunmass = self.primarystar.get_mass()
+        diameter = self.get_diameter()
         orbit = self.getOrbit()
         startide = 0.46 * sunmass * diameter / orbit**3
-        totaltide = (moontide + startide) * self.primarystar.getAge() / self.getMass()
+        totaltide = (moontide + startide) * self.primarystar.getAge() / self.get_mass()
         self.__tte = round(totaltide)
 
     def getTTE(self):
@@ -152,13 +152,13 @@ class Planet(World):
                 innermoon = moons[0]
                 rotperiod = innermoon.getPeriod()
         else:
-            if self.getSize() == 'Large':
+            if self.get_size() == 'Large':
                 bonus = 6
-            if self.getSize() == 'Standard':
+            if self.get_size() == 'Standard':
                 bonus = 10
-            if self.getSize() == 'Small':
+            if self.get_size() == 'Small':
                 bonus = 14
-            if self.getSize() == 'Tiny':
+            if self.get_size() == 'Tiny':
                 bonus = 18
             diceroll = self.roll(3, bonus)
             rotperiod = (diceroll + self.getTTE()) / 24.

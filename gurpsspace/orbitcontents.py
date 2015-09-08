@@ -25,7 +25,7 @@ class OrbitContent:
         return self.__orbit
 
     def makeorbitperiod(self):
-        m = self.primarystar.getMass()
+        m = self.primarystar.get_mass()
         self.__period = (self.__orbit**3 / m)**(0.5)
 
     def getPeriod(self):
@@ -85,9 +85,9 @@ class OrbitContent:
         return self.__number
 
     # Overload in subclasses if applicable
-    def getType(self):
+    def get_type(self):
         return ''
-    def getSize(self):
+    def get_size(self):
         return ''
     def numMoons(self):
         return ''

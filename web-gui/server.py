@@ -85,12 +85,12 @@ class WebServer(object):
         if row == '':
             return planet.getName().replace("<", "").replace(">", "")
         if row == 'World Size':
-            return planet.getSize()
+            return planet.get_size()
         if row == 'World Type':
-            return planet.getType()
+            return planet.get_type()
         if row == 'Atm. Mass':
-            return str(planet.getAtmass())
-        if row == 'Atm. Composition' and planet.getAtmass() > 0:
+            return str(planet.get_atmospheric_mass())
+        if row == 'Atm. Composition' and planet.get_atmospheric_mass() > 0:
             retval = ''
             atmospheric_components = sorted(planet.atmcomp.items(), key=operator.itemgetter(0))
             for name, present in atmospheric_components:
@@ -99,40 +99,40 @@ class WebServer(object):
             if len(retval) == 0:
                 retval = 'Breathable'
             return retval
-        elif row == 'Atm. Composition' and planet.getAtmass() == 0:
+        elif row == 'Atm. Composition' and planet.get_atmospheric_mass() == 0:
             return 'Trace or No Atmosphere'
         if row == 'Hydr. Coverage':
-            return str(round(planet.getHydrocover(), 2)) + ' %'
+            return str(round(planet.get_hydrographic_cover(), 2)) + ' %'
         if row == 'Avg. Surface Temperature':
-            return str(round(planet.getAvSurf(), 2)) + ' K / ' + str(round(planet.getAvSurf() - 273.15, 2)) + '°C'
+            return str(round(planet.get_average_surface_temp(), 2)) + ' K / ' + str(round(planet.get_average_surface_temp() - 273.15, 2)) + '°C'
         if row == 'Climate Type':
-            return planet.getClimate()
+            return planet.get_climate()
         if row == 'Axial Tilt':
             return str(planet.getAxialTilt()) + '°'
         if row == 'Density':
-            return planet.getDensity()
+            return planet.get_density()
         if row == 'Diameter':
-            return round(planet.getDiameter(), 2)
+            return round(planet.get_diameter(), 2)
         if row == 'Surface Gravity':
-            return round(planet.getGravity(), 2)
+            return round(planet.get_gravity(), 2)
         if row == 'Mass':
-            return round(planet.getMass(), 2)
+            return round(planet.get_mass(), 2)
         if row == 'Atm. Pressure':
-            return round(planet.getPressure(), 2)
+            return round(planet.get_pressure(), 2)
         if row == 'Pressure Category':
-            return planet.getPressCat()
+            return planet.get_pressure_category()
         if row == 'Total Tidal Effect':
             return round(planet.getTTE(), 2)
         if row == 'Volcanics':
-            return planet.getVolcanism()
+            return planet.get_volcanism()
         if row == 'Tectonics':
-            return planet.getTectonics()
+            return planet.get_tectonics()
         if row == 'Resource Value Modifier':
-            return planet.getRVM()
+            return planet.get_rvm()
         if row == 'Habitability':
-            return planet.getHabitability()
+            return planet.get_habitability()
         if row == 'Affinity':
-            return planet.getAffinity()
+            return planet.get_affinity()
         if row == 'Rotational Period':
             retval = str(round(planet.getRotation(), 2))
             retval += " days"

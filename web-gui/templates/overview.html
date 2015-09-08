@@ -35,7 +35,7 @@
                 {% else %}
                 <li>It is a {{star.getSequence()|lower}}.</li>
                 {% endif %}
-                <li>The star is as massive as {{star.getMass()|round(2)}} suns.</li>
+                <li>The star is as massive as {{star.get_mass()|round(2)}} suns.</li>
                 <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
                 <li>The luminosity of the star is {{star.getLuminosity()|round(6)}}.</li>
                 <li>The star's radius is {{star.getRadius()|round(6)}} times the sun's radius.</li>

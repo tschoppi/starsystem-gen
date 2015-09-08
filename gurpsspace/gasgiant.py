@@ -27,7 +27,7 @@ class GasGiant(OrbitContent):
         if dice > 16:
             self.__size = "Large"
 
-    def getSize(self):
+    def get_size(self):
         return self.__size
 
     def printinfo(self):
@@ -104,7 +104,7 @@ class GasGiant(OrbitContent):
         self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(nummoonlets)]
 
     def makemass(self):
-        size = self.getSize()
+        size = self.get_size()
         diceroll = self.roll(3, 0)
         mass, density = GGSizeTable[size][diceroll]
         self.__mass = mass

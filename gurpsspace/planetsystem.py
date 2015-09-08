@@ -313,6 +313,6 @@ class PlanetSystem:
     def hasgarden(self):
         ret = False
         for k, p in self.__orbitcontents.items():
-            if p.type() == 'Terrestrial' and p.getType() == 'Garden':
+            if p.type() == 'Terrestrial' and p.get_type() == 'Garden':
                 ret = True
         return ret

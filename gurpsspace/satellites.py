@@ -10,20 +10,20 @@ class Moon(World):
         self.makebbtemp()
         self.__orbit = None
         self.makesize()
-        self.maketype()
+        self.make_type()
         self.makeatmosphere()
-        self.makehydrographics()
-        self.makeclimate()
-        self.makedensity()
-        self.makediameter()
-        self.makegravity()
-        self.makemass()
-        self.makepressure()
-        self.makevolcanism()
-        self.maketectonism()
-        self.makeresources()
-        self.makehabitability()
-        self.makeaffinity()
+        self.make_hydrographics()
+        self.make_climate()
+        self.make_density()
+        self.make_diameter()
+        self.make_gravity()
+        self.make_mass()
+        self.make_pressure()
+        self.make_volcanism()
+        self.make_tectonism()
+        self.make_resources()
+        self.make_habitability()
+        self.make_affinity()
         self.makeorbit()
         self.makeperiod()
         self.maketidals()
@@ -33,26 +33,26 @@ class Moon(World):
     def printinfo(self):
         print("         *** Moon {} Information *** ".format(self.getName()))
         #print("Parent Planet:\t{}".format(self.parent))
-        print("           World Type:\t{} ({})".format(self.__sizeclass, self.getType()))
+        print("           World Type:\t{} ({})".format(self.__sizeclass, self.get_type()))
         print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
         print("             Orb Per.:\t{} d".format(self.getPeriod()))
         print("             Rot Per.:\t{} d".format(self.getRotation()))
         print("           Len of day:\t{} d".format(self.getDayLength()))
         print("         Len of Plday:\t{} d".format(self.getPlanetLength()))
-        print("          Hydrogr Cov:\t{}".format(self.getHydrocover()))
-        print("            Av Surf T:\t{}".format(self.getAvSurf()))
-        print("              Climate:\t{}".format(self.getClimate()))
-        print("              Density:\t{}".format(self.getDensity()))
-        print("             Diameter:\t{}".format(self.getDiameter()))
-        print("            Surf Grav:\t{}".format(self.getGravity()))
-        print("                 Mass:\t{}".format(self.getMass()))
-        print("             Pressure:\t{} ({})".format(self.getPressure(), self.getPressCat()))
-        print("            Volcanism:\t{}".format(self.getVolcanism()))
-        print("            Tectonics:\t{}".format(self.getTectonics()))
-        print("                  RVM:\t{}".format(self.getRVM()))
-        print("               Res. V:\t{}".format(self.getResources()))
-        print("         Habitability:\t{}".format(self.getHabitability()))
-        print("             Affinity:\t{}".format(self.getAffinity()))
+        print("          Hydrogr Cov:\t{}".format(self.get_hydrographic_cover()))
+        print("            Av Surf T:\t{}".format(self.get_average_surface_temp()))
+        print("              Climate:\t{}".format(self.get_climate()))
+        print("              Density:\t{}".format(self.get_density()))
+        print("             Diameter:\t{}".format(self.get_diameter()))
+        print("            Surf Grav:\t{}".format(self.get_gravity()))
+        print("                 Mass:\t{}".format(self.get_mass()))
+        print("             Pressure:\t{} ({})".format(self.get_pressure(), self.get_pressure_category()))
+        print("            Volcanism:\t{}".format(self.get_volcanism()))
+        print("            Tectonics:\t{}".format(self.get_tectonics()))
+        print("                  RVM:\t{}".format(self.get_rvm()))
+        print("               Res. V:\t{}".format(self.get_resources()))
+        print("         Habitability:\t{}".format(self.get_habitability()))
+        print("             Affinity:\t{}".format(self.get_affinity()))
         print("                  TTE:\t{}".format(self.getTTE()))
         print("         --- **************** --- \n")
 
@@ -63,7 +63,7 @@ class Moon(World):
 
     def makesize(self):
         parent = self.parent
-        parentsize = SizeToInt[parent.getSize()]
+        parentsize = SizeToInt[parent.get_size()]
         if parent.type() == "Gas Giant":
             parentsize = SizeToInt["Large"]
         diceroll = self.roll(3,0)
@@ -77,7 +77,7 @@ class Moon(World):
             childsize = 0
         self.__sizeclass = IntToSize[childsize]
 
-    def getSize(self):
+    def get_size(self):
         return self.__sizeclass
 
     def setOrbit(self, orbit):
@@ -86,8 +86,8 @@ class Moon(World):
     def roll(self, ndice, modifier):
         return self.roller.roll(ndice, modifier)
 
-    def volcanicbonus(self):
-        if self.getType() == 'Sulfur':
+    def get_volcanicbonus(self):
+        if self.get_type() == 'Sulfur':
             return 60
         if self.parent.type() == "Gas Giant":
             return 5
@@ -101,8 +101,8 @@ class Moon(World):
         ptype = self.parent.type()
         if ptype == 'Terrestrial':
             # Check for size difference and infer roll bonus from it
-            psize = SizeToInt[self.parent.getSize()]
-            osize = SizeToInt[self.getSize()]
+            psize = SizeToInt[self.parent.get_size()]
+            osize = SizeToInt[self.get_size()]
             diff = psize - osize
             bonus = 0
             if diff == 2:
@@ -110,19 +110,19 @@ class Moon(World):
             if diff == 1:
                 bonus = 4
             dice = self.roll(2, bonus)
-            self.__orbit = dice * 2.5 * self.parent.getDiameter()
+            self.__orbit = dice * 2.5 * self.parent.get_diameter()
         if ptype == 'Gas Giant':
             roll = self.roll(3, 3)
             if roll >= 15:
                 roll += self.roll(2, 0)
-            self.__orbit = roll / 2. * self.parent.getDiameter()
+            self.__orbit = roll / 2. * self.parent.get_diameter()
 
     def getOrbit(self):
         return self.__orbit
 
     def makeperiod(self):
-        m1 = self.getMass()
-        mp = self.parent.getMass()
+        m1 = self.get_mass()
+        mp = self.parent.get_mass()
         m = m1 + mp
         orbit = self.getOrbit()
         self.__period = 0.166 * (orbit**3 / m)**(0.5)
@@ -131,8 +131,8 @@ class Moon(World):
         return self.__period
 
     def maketidals(self):
-        m = self.parent.getMass()
-        d = self.getDiameter()
+        m = self.parent.get_mass()
+        d = self.get_diameter()
         r = self.getOrbit()
         tidal = 2230000 * m * d / r**3
         tte = tidal * self.primarystar.getAge() / m
@@ -145,13 +145,13 @@ class Moon(World):
         if self.getTTE() > 50:
             rotperiod = self.getPeriod()  # [d]
         else:
-            if self.getSize() == 'Large':
+            if self.get_size() == 'Large':
                 bonus = 6
-            if self.getSize() == 'Standard':
+            if self.get_size() == 'Standard':
                 bonus = 10
-            if self.getSize() == 'Small':
+            if self.get_size() == 'Small':
                 bonus = 14
-            if self.getSize() == 'Tiny':
+            if self.get_size() == 'Tiny':
                 bonus = 18
             diceroll = self.roll(3, bonus)
             rotperiod = (diceroll + self.getTTE()) / 24.
@@ -235,21 +235,21 @@ class Moonlet:
     def makeorbit(self):
         ptype = self.parent.type()
         if ptype == 'Gas Giant' and self.family == 'first':
-            self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
+            self.__orbit = self.roll(1, 4) / 4. * self.parent.get_diameter()
         if ptype == 'Gas Giant' and self.family == 'third':
             # Make random orbits between 20 and 200 planetary diameters
             import random as r
             multiplier = r.uniform(20, 200)
-            self.__orbit = multiplier * self.parent.getDiameter()
+            self.__orbit = multiplier * self.parent.get_diameter()
 
         if ptype == 'Terrestrial':
-            self.__orbit = self.roll(1, 4) / 4. * self.parent.getDiameter()
+            self.__orbit = self.roll(1, 4) / 4. * self.parent.get_diameter()
 
     def getOrbit(self):
         return self.__orbit
 
     def makeperiod(self):
-        m = self.parent.getMass()
+        m = self.parent.get_mass()
         orbit = self.getOrbit()
         self.__period = 0.166 * (orbit**3 / m)**(0.5)
 

@@ -4,8 +4,9 @@ Module for saving all the information about a StarSystem to a LaTeX file for
 processing towards a nicely formatted PDF file.
 """
 
-#from ..starsystem import StarSystem
+# from ..starsystem import StarSystem
 from ..tables import AtmCompAbbr
+
 
 class LatexWriter:
     def __init__(self, starsystem, filename='starsystem.tex'):
@@ -154,7 +155,7 @@ class LatexWriter:
             fzouter = 'FZ Outer   '
         for star in self.starsystem.stars:
             sequence += ' & ' + star.getSequence()
-            mass += ' & {:7.2f}'.format(star.getMass())
+            mass += ' & {:7.2f}'.format(star.get_mass())
             temp += ' & {:7.0f}'.format(star.getTemp())
             lum += ' & {:7.4f}'.format(star.getLuminosity())
             rad += ' & {:7.5f}'.format(star.getRadius())
@@ -164,7 +165,8 @@ class LatexWriter:
             if numstar > 1:
                 fzinner += ' & {:6.1f} '.format(star.getForbidden()[0])
                 fzouter += ' & {:6.1f} '.format(star.getForbidden()[1])
-        #for string in [sequence, mass, temp, lum, rad, inner, outer, snowline]:
+
+        # for string in [sequence, mass, temp, lum, rad, inner, outer, snowline]:
         #    string += '\\\\ \n'
         eol = ' \\\\ \n'
         sequence += eol
@@ -185,7 +187,6 @@ class LatexWriter:
         str += '\\bottomrule\n\end{tabular} \n\end{table} \n\\vfill\n\n'
 
         return str
-
 
     def overviews(self):
         # Gather number of planet systems
@@ -215,8 +216,8 @@ class LatexWriter:
             for skey in sorted(oc):
                 str += '{} & '.format(oc[skey].getName())
                 str += '{} & '.format(oc[skey].type())
-                str += '{} & '.format(oc[skey].getSize())
-                str += '{} & '.format(oc[skey].getType())
+                str += '{} & '.format(oc[skey].get_size())
+                str += '{} & '.format(oc[skey].get_type())
                 str += '{:.2f} & '.format(oc[skey].getOrbit())
                 str += '{:.2f} & '.format(oc[skey].getPeriod())
                 str += '{:.2f} & '.format(oc[skey].getEcc())
@@ -246,10 +247,10 @@ class LatexWriter:
                 if oc[skey].type() != 'Ast. Belt':
                     continue
                 astable += '{} & '.format(oc[skey].getName())
-                astable += '{:.0f} & '.format(oc[skey].getAvSurf())
-                astable += '{} & '.format(oc[skey].getClimate())
-                astable += '{:+.0f} & '.format(oc[skey].getRVM())
-                astable += '{:+.0f} '.format(oc[skey].getAffinity())
+                astable += '{:.0f} & '.format(oc[skey].get_average_surface_temp())
+                astable += '{} & '.format(oc[skey].get_climate())
+                astable += '{:+.0f} & '.format(oc[skey].get_rvm())
+                astable += '{:+.0f} '.format(oc[skey].get_affinity())
                 astable += '\\\\ \n'
             astable += '\\bottomrule\n\end{tabular}\n\end{table}\n\n'
 
@@ -292,40 +293,40 @@ class LatexWriter:
             for skey in sorted(oc):
                 if oc[skey].type() != 'Terrestrial':
                     continue
-                wtype += ' & {:10}'.format(oc[skey].getType())
-                size += ' & {:10}'.format(oc[skey].getSize())
-                if oc[skey].getAtmass() == 0:
+                wtype += ' & {:10}'.format(oc[skey].get_type())
+                size += ' & {:10}'.format(oc[skey].get_size())
+                if oc[skey].get_atmospheric_mass() == 0:
                     atmass += ' &           '
                     atcom += ' &           '
                     press += ' &           '
                 else:
-                    atmass += ' & {:10}'.format(oc[skey].getAtmass())
-                    #atcom += ' &           '
+                    atmass += ' & {:10}'.format(oc[skey].get_atmospheric_mass())
+                    # atcom += ' &           '
                     atcomp = oc[skey].atmcomp
-                    atkeys = [key for key in atcomp.keys() if atcomp[key] == True]
+                    atkeys = [key for key in atcomp.keys() if atcomp[key] is True]
                     abbr = ''
                     for k in atkeys:
                         abbr += AtmCompAbbr[k] + ', '
                     atcom += ' & {:10}'.format(abbr[:-2])
-                    press += ' & {:10.3f}'.format(oc[skey].getPressure())
-                if oc[skey].getHydrocover() == 0:
+                    press += ' & {:10.3f}'.format(oc[skey].get_pressure())
+                if oc[skey].get_hydrographic_cover() == 0:
                     hydro += ' &           '
                 else:
-                    hydro += ' & {:10}'.format(oc[skey].getHydrocover())
-                tsurf += ' & {:10.0f}'.format(oc[skey].getAvSurf())
-                climate += ' & {:10}'.format(oc[skey].getClimate())
+                    hydro += ' & {:10}'.format(oc[skey].get_hydrographic_cover())
+                tsurf += ' & {:10.0f}'.format(oc[skey].get_average_surface_temp())
+                climate += ' & {:10}'.format(oc[skey].get_climate())
                 axtilt += ' & {:10}'.format(oc[skey].getAxialTilt())
-                dens += ' & {:10}'.format(oc[skey].getDensity())
-                diam += ' & {:10.2f}'.format(oc[skey].getDiameter())
-                grav += ' & {:10.2f}'.format(oc[skey].getGravity())
-                mass += ' & {:10.3f}'.format(oc[skey].getMass())
-                presscat += ' & {:10}'.format(oc[skey].getPressCat())
+                dens += ' & {:10}'.format(oc[skey].get_density())
+                diam += ' & {:10.2f}'.format(oc[skey].get_diameter())
+                grav += ' & {:10.2f}'.format(oc[skey].get_gravity())
+                mass += ' & {:10.3f}'.format(oc[skey].get_mass())
+                presscat += ' & {:10}'.format(oc[skey].get_pressure_category())
                 tte += ' & {:10.0f}'.format(oc[skey].getTTE())
-                volc += ' & {:10}'.format(oc[skey].getVolcanism())
-                tect += ' & {:10}'.format(oc[skey].getTectonics())
-                rvm += ' & {:+10.0f}'.format(oc[skey].getRVM())
-                hab += ' & {:+10.0f}'.format(oc[skey].getHabitability())
-                aff += ' & {:+10.0f}'.format(oc[skey].getAffinity())
+                volc += ' & {:10}'.format(oc[skey].get_volcanism())
+                tect += ' & {:10}'.format(oc[skey].get_tectonics())
+                rvm += ' & {:+10.0f}'.format(oc[skey].get_rvm())
+                hab += ' & {:+10.0f}'.format(oc[skey].get_habitability())
+                aff += ' & {:+10.0f}'.format(oc[skey].get_affinity())
                 prot += ' & {:10.2f}'.format(oc[skey].getRotation())
             lend = '\\\\ \n'
             tertable += size + lend
@@ -356,10 +357,6 @@ class LatexWriter:
             if 'Terrestrial' in types:
                 str += tertable
             del tertable
-
-
-
-
             str += '\end{landscape}\n\n'
         return str
 
@@ -390,24 +387,23 @@ class LatexWriter:
         str += '\\begin{tabular}{ll}\n'
         str += '\\toprule\n'
         str += 'Property & Value \\\\ \n\midrule\n'
-        str += 'Type & {} ({})\\\\ \n'.format(planet.getSize(), planet.getType())
-        atcomp = planet.atmcomp
-        atkeys = [key for key in planet.atmcomp.keys() if planet.atmcomp[key] == True]
+        str += 'Type & {} ({})\\\\ \n'.format(planet.get_size(), planet.get_type())
+        atkeys = [key for key in planet.atmcomp.keys() if planet.atmcomp[key] is True]
         abbr = ''
         for k in atkeys:
             abbr += AtmCompAbbr[k] + ', '
         if len(atkeys) > 0:
             str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
-        if planet.getPressure() == 0:
+        if planet.get_pressure() == 0:
             str += 'Pressure & None \\\\ \n'
         else:
-            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(planet.getPressure(), planet.getPressCat())
-        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(planet.getHydrocover())
-        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=planet.getAvSurf())
-        str += 'Climate Type & {} \\\\ \n'.format(planet.getClimate())
-        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(planet.getDiameter())
-        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(planet.getGravity())
-        str += 'Affinity & {:+.0f} \\\\ \n'.format(planet.getAffinity())
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(planet.get_pressure(), planet.get_pressure_category())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(planet.get_hydrographic_cover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}', temp=planet.get_average_surface_temp())
+        str += 'Climate Type & {} \\\\ \n'.format(planet.get_climate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(planet.get_diameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(planet.get_gravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(planet.get_affinity())
         if planet.numMoons() > 0:
             str += 'Moons & {} \\\\ \n'.format(planet.numMoons())
         if planet.numMoonlets() > 0:
@@ -432,10 +428,10 @@ class LatexWriter:
         str += '\\toprule\n'
         str += 'Property & Value \\\\ \n'
         str += '\midrule\n'
-        str += 'Mass & {} Earth Masses\\\\ \n'.format(gasgiant.getMass())
-        str += 'Density & {} Earth Densities \\\\ \n'.format(gasgiant.getDensity())
-        str += 'Diameter & {:.2f} Earth Diameters \\\\ \n'.format(gasgiant.getDiameter())
-        str += 'Cloud-Top Gravity & {:.2f} G \\\\ \n'.format(gasgiant.getGravity())
+        str += 'Mass & {} Earth Masses\\\\ \n'.format(gasgiant.get_mass())
+        str += 'Density & {} Earth Densities \\\\ \n'.format(gasgiant.get_density())
+        str += 'Diameter & {:.2f} Earth Diameters \\\\ \n'.format(gasgiant.get_diameter())
+        str += 'Cloud-Top Gravity & {:.2f} G \\\\ \n'.format(gasgiant.get_gravity())
         str += 'Satellites $1^\mathrm{st}$ Family & {num} \\\\ \n'.format(st='{st}', num=len(gasgiant.getFirstFamily()))
         str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.getMoons()))
         str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
@@ -456,24 +452,23 @@ class LatexWriter:
         str += '\\begin{tabular}{ll}\n'
         str += '\\toprule\n'
         str += 'Property & Value \\\\ \n\midrule\n'
-        str += 'Type & {} ({})\\\\ \n'.format(moon.getSize(), moon.getType())
-        atcomp = moon.atmcomp
-        atkeys = [key for key in moon.atmcomp.keys() if moon.atmcomp[key] == True]
+        str += 'Type & {} ({})\\\\ \n'.format(moon.get_size(), moon.get_type())
+        atkeys = [key for key in moon.atmcomp.keys() if moon.atmcomp[key] is True]
         abbr = ''
         for k in atkeys:
             abbr += AtmCompAbbr[k] + ', '
         if len(atkeys) > 0:
             str += 'Atm. Comp. & {} \\\\ \n'.format(abbr[:-2])
-        if moon.getPressure() == 0:
+        if moon.get_pressure() == 0:
             str += 'Pressure & None \\\\ \n'
         else:
-            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(moon.getPressure(), moon.getPressCat())
-        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(moon.getHydrocover())
-        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}',temp=moon.getAvSurf())
-        str += 'Climate Type & {} \\\\ \n'.format(moon.getClimate())
-        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(moon.getDiameter())
-        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(moon.getGravity())
-        str += 'Affinity & {:+.0f} \\\\ \n'.format(moon.getAffinity())
+            str += 'Pressure & {:.2f} atm, {} \\\\ \n'.format(moon.get_pressure(), moon.get_pressure_category())
+        str += 'Hydrographic Coverage & {:.0f} \% \\\\ \n'.format(moon.get_hydrographic_cover())
+        str += 'Average $T_\mathrm{surf}$ & {temp:.1f} K \\\\ \n'.format(surf='{surf}', temp=moon.get_average_surface_temp())
+        str += 'Climate Type & {} \\\\ \n'.format(moon.get_climate())
+        str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(moon.get_diameter())
+        str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(moon.get_gravity())
+        str += 'Affinity & {:+.0f} \\\\ \n'.format(moon.get_affinity())
         str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
         str += '%\subsection{Social Parameters}\n'
         str += '%\subsection{Installations}\n\n'

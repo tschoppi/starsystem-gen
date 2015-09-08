@@ -108,7 +108,7 @@ class StarSystem:
         for i in range(num):
             highest = 0    # Index of the star with the highest mass, reset to 0
             for j in range(len(self.stars)):
-                if self.stars[highest].getMass() < self.stars[j].getMass():
+                if self.stars[highest].get_mass() < self.stars[j].get_mass():
                     highest = j
             newlist.append(self.stars[highest])
             del self.stars[highest]
@@ -215,14 +215,14 @@ class StarSystem:
         self.__periods = []
         if self.__numstars >= 2:
             orbit, ecc = self.__orbits[0]
-            m1 = self.stars[0].getMass()
-            m2 = self.stars[1].getMass()
+            m1 = self.stars[0].get_mass()
+            m2 = self.stars[1].get_mass()
             m = m1 + m2
             self.__periods.append( (orbit**3 / m)**(0.5) )
         if self.__numstars == 3:
             orbit, ecc = self.__orbits[1]
-            m1 = self.stars[0].getMass() + self.stars[1].getMass()
-            m2 = self.stars[2].getMass()
+            m1 = self.stars[0].get_mass() + self.stars[1].get_mass()
+            m2 = self.stars[2].get_mass()
             m = m1 + m2
             self.__periods.append( (orbit**3 / m)**(0.5) )
 

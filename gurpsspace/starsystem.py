@@ -4,36 +4,37 @@ from .tables import OrbSepTable, StOEccTable
 from .output import latexout
 LW = latexout.LatexWriter
 
+
 class StarSystem:
     roller = GD.DiceRoller()
 
     def __init__(self, **kwargs):
-        opencluster = kwargs.get('opencluster', None)
-        if opencluster is not None:
-            self.__opencluster = opencluster
+        open_cluster = kwargs.get('open_cluster', None)
+        if open_cluster is not None:
+            self.__opencluster = open_cluster
         else:
-            self.__opencluster = self.randomcluster()
+            self.__opencluster = self.random_cluster()
 
-        numstars = kwargs.get('numstars', None)
-        if numstars is not None:
-            if numstars > 0 and numstars <= 3:
-                self.__numstars = numstars
+        num_stars = kwargs.get('num_stars', None)
+        if num_stars is not None:
+            if 0 < num_stars <= 3:
+                self.__numstars = num_stars
             else:
-                self.__numstars = self.randomstarnum()
+                self.__numstars = self.random_star_number()
         else:
-            self.__numstars = self.randomstarnum()
+            self.__numstars = self.random_star_number()
 
         age = kwargs.get('age', None)
-        self.makeage(age)
-        self.generatestars()
+        self.make_age(age)
+        self.generate_stars()
         self.sortstars()
-        self.namestars()
-        self.makeorbits()
-        self.makeminmaxseps()
-        self.makeforbiddenzones()
-        self.createplanetsystem()
-        self.makeperiods()
-        #self.printinfo()
+        self.name_stars()
+        self.make_orbits()
+        self.make_min_max_separations()
+        self.make_forbidden_zones()
+        self.create_planetsystem()
+        self.make_periods()
+        # self.print_info()
 
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
@@ -50,56 +51,56 @@ class StarSystem:
             print(" Orbit Per.:\t{}".format(self.__periods))
         print("================\n")
         for i in range(self.__numstars):
-            self.stars[i].printinfo()
+            self.stars[i].print_info()
 
-    def randomcluster(self):
+    def random_cluster(self):
         # Criteria for a success (star system in an open cluster):
         #    - Roll of 10 or less
-        return self.roll(3,0) <= 10
+        return self.roll(3, 0) <= 10
 
-    def randomstarnum(self):
+    def random_star_number(self):
         if self.__opencluster:
-            rollmod = 3
+            roll_mod = 3
         else:
-            rollmod = 0
-        diceroll = self.roll(3,rollmod)
+            roll_mod = 0
+        dice_roll = self.roll(3, roll_mod)
 
-        if diceroll >= 16:
+        if dice_roll >= 16:
             return 3
-        elif diceroll <= 10:
+        elif dice_roll <= 10:
             return 1
         else:
             return 2
 
-    def generatestars(self):
+    def generate_stars(self):
         self.stars = []
         for i in range(self.__numstars):
             self.stars.append(GS.Star(age=self.__age))
 
-    def makeage(self, age):
+    def make_age(self, age):
         if age is None:
-            provage = self.randomage()
+            provage = self.random_age()
             while self.__opencluster and provage > 2:
-                provage = self.randomage()
+                provage = self.random_age()
             self.__age = provage
         else:
             self.__age = age
 
-    def randomage(self):
-        diceroll = self.roll(3,0)
-        if diceroll == 3:
+    def random_age(self):
+        dice_roll = self.roll(3, 0)
+        if dice_roll == 3:
             # Extreme Population I: Age is set to 1 million years
             return 0.001
-        elif diceroll <= 6:
-            return 0.1 + self.roll(1,-1) * 0.3 + self.roll(1,-1) * 0.05
-        elif diceroll <= 10:
-            return 2.0 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
-        elif diceroll <= 14:
-            return 5.6 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
-        elif diceroll <= 17:
-            return 8.0 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
+        elif dice_roll <= 6:
+            return 0.1 + self.roll(1, -1) * 0.3 + self.roll(1, -1) * 0.05
+        elif dice_roll <= 10:
+            return 2.0 + self.roll(1, -1) * 0.6 + self.roll(1, -1) * 0.1
+        elif dice_roll <= 14:
+            return 5.6 + self.roll(1, -1) * 0.6 + self.roll(1, -1) * 0.1
+        elif dice_roll <= 17:
+            return 8.0 + self.roll(1, -1) * 0.6 + self.roll(1, -1) * 0.1
         else:
-            return 10 + self.roll(1,-1) * 0.6 + self.roll(1,-1) * 0.1
+            return 10 + self.roll(1, -1) * 0.6 + self.roll(1, -1) * 0.1
 
     # Sort the stars according to mass. Higher mass is placed first.
     def sortstars(self):
@@ -115,31 +116,31 @@ class StarSystem:
 
         self.stars = newlist
 
-    def namestars(self):
+    def name_stars(self):
         """
         Assign a letter to each star according to it's primaryness in the
         stellar system.
         """
         letters = ['A', 'B', 'C']
         for star in self.stars:
-            star.setLetter(letters[self.stars.index(star)])
+            star.set_letter(letters[self.stars.index(star)])
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star
-    def makeorbits(self):
+    def make_orbits(self):
         self.__orbsepentry = []
         self.__orbits = []
         if self.__numstars == 1:
             # Don't do anything for just one star
             return None
         if self.__numstars >= 2:
-            dice = self.roll(3,0)
-            osepindex = self.findorbsepindex(dice)
+            dice = self.roll(3, 0)
+            osepindex = self.find_orbital_separation_index(dice)
             orbsep = OrbSepTable[osepindex]
-            orbit = self.roll(2,0) * orbsep[1]
+            orbit = self.roll(2, 0) * orbsep[1]
 
             eccmod = orbsep[2]
-            eccroll = self.roll(3,eccmod)
+            eccroll = self.roll(3, eccmod)
             if eccroll < 3:
                 eccroll = 3
             if eccroll > 18:
@@ -149,13 +150,13 @@ class StarSystem:
             self.__orbsepentry.append(orbsep)
             self.__orbits.append((orbit, eccentricity))
         if self.__numstars == 3:
-            dice = self.roll(3,6)
-            osepindex = self.findorbsepindex(dice)
+            dice = self.roll(3, 6)
+            osepindex = self.find_orbital_separation_index(dice)
             orbsep = OrbSepTable[osepindex]
-            orbit = self.roll(2,0) * orbsep[1]
+            orbit = self.roll(2, 0) * orbsep[1]
 
             eccmod = orbsep[2]
-            eccroll = self.roll(3,eccmod)
+            eccroll = self.roll(3, eccmod)
             if eccroll < 3:
                 eccroll = 3
             if eccroll > 18:
@@ -168,23 +169,21 @@ class StarSystem:
             # Recursively contine until second companion is significantly
             # further away than the first
             if self.__orbsepentry[0][1] >= self.__orbsepentry[1][1]:
-                return self.makeorbits()
+                return self.make_orbits()
 
-
-
-    def findorbsepindex(self, diceroll):
-        if diceroll <= 6:
+    def find_orbital_separation_index(self, dice_roll):
+        if dice_roll <= 6:
             return 0
-        if diceroll <= 9:
+        if dice_roll <= 9:
             return 1
-        if diceroll <= 11:
+        if dice_roll <= 11:
             return 2
-        if diceroll <= 14:
+        if dice_roll <= 14:
             return 3
         else:
             return 4
 
-    def makeminmaxseps(self):
+    def make_min_max_separations(self):
         self.__minmaxorbits = []
         for i in range(len(self.__orbits)):
             orbit, ecc = self.__orbits[i]
@@ -192,41 +191,41 @@ class StarSystem:
             max = (1 + ecc) * orbit
             self.__minmaxorbits.append((min, max))
 
-    def makeforbiddenzones(self):
+    def make_forbidden_zones(self):
         self.__forbiddenzones = []
         for i in range(len(self.__minmaxorbits)):
-            min, max = self.__minmaxorbits[i]
-            start = min / 3.
-            end = max * 3.
+            min_, max_ = self.__minmaxorbits[i]
+            start = min_ / 3.
+            end = max_ * 3.
             self.__forbiddenzones.append((start, end))
 
             # Tell the stars their forbidden zones
-            if i == 0: # For the first two stars
-                self.stars[0].setForbiddenZone(start, end)
-                self.stars[1].setForbiddenZone(start, end)
-            if i == 1: # For the third star
-                self.stars[2].setForbiddenZone(start, end)
+            if i == 0:  # For the first two stars
+                self.stars[0].set_forbidden_zone(start, end)
+                self.stars[1].set_forbidden_zone(start, end)
+            if i == 1:  # For the third star
+                self.stars[2].set_forbidden_zone(start, end)
 
-    def createplanetsystem(self):
+    def create_planetsystem(self):
         for star in self.stars:
-            star.makeplanetsystem()
+            star.make_planetsystem()
 
-    def makeperiods(self):
+    def make_periods(self):
         self.__periods = []
         if self.__numstars >= 2:
             orbit, ecc = self.__orbits[0]
             m1 = self.stars[0].get_mass()
             m2 = self.stars[1].get_mass()
             m = m1 + m2
-            self.__periods.append( (orbit**3 / m)**(0.5) )
+            self.__periods.append((orbit ** 3 / m) ** 0.5)
         if self.__numstars == 3:
             orbit, ecc = self.__orbits[1]
             m1 = self.stars[0].get_mass() + self.stars[1].get_mass()
             m2 = self.stars[2].get_mass()
             m = m1 + m2
-            self.__periods.append( (orbit**3 / m)**(0.5) )
+            self.__periods.append((orbit ** 3 / m) ** 0.5)
 
-    def writelatex(self):
+    def write_latex(self):
         filename = input("Name of the file (include extension): ")
         if filename == '':
             writer = LW(self)
@@ -234,22 +233,22 @@ class StarSystem:
             writer = LW(self, filename)
         writer.write()
 
-    def getAge(self):
+    def get_age(self):
         return self.__age
 
-    def getOrbits(self):
+    def get_orbits(self):
         """Return tuple (orbital separation, eccentricity)"""
         return self.__orbits
 
-    def getPeriod(self):
+    def get_period(self):
         return self.__periods
 
     # This is the PEP8 recommended style for function names
     def is_open_cluster(self):
         return self.__opencluster
 
-    def hasgarden(self):
+    def has_garden(self):
         ret = False
         for star in self.stars:
-            ret |= star.planetsystem.hasgarden()
+            ret |= star.planetsystem.has_garden()
         return ret

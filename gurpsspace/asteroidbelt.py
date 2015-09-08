@@ -1,14 +1,14 @@
 from .orbitcontents import OrbitContent
-from .tables import WorldClimate
+from .tables import world_climate
 
 
 class AsteroidBelt(OrbitContent):
     """Class for asteroid belts."""
     def __init__(self, primarystar, orbitalradius):
         OrbitContent.__init__(self, primarystar, orbitalradius)
-        self.makeresources()
-        self.makesurftemp()
-        self.makeclimate()
+        self.make_resources()
+        self.make_surface_temp()
+        self.make_climate()
         self.__habitability = 0
         self.__affinity = self.__habitability + self.__rvm
 
@@ -18,17 +18,17 @@ class AsteroidBelt(OrbitContent):
     def type(self):
         return "Ast. Belt"
 
-    def printinfo(self):
-        print("Asteroid Belt {}".format(self.getName()))
-        print("    Orbit:\t{}".format(self.getOrbit()))
-        print("  Orb Per:\t{}".format(self.getPeriod()))
-        print("  Orb Ecc:\t{}".format(self.getEcc()))
+    def print_info(self):
+        print("Asteroid Belt {}".format(self.get_name()))
+        print("    Orbit:\t{}".format(self.get_orbit()))
+        print("  Orb Per:\t{}".format(self.get_period()))
+        print("  Orb Ecc:\t{}".format(self.get_eccentricity()))
         print("      RVM:\t{}".format(self.__rvm))
         print("   Res. V:\t{}".format(self.__resources))
         print("     Aff.:\t{}".format(self.__affinity))
         print("")
 
-    def makeresources(self):
+    def make_resources(self):
         dice = self.roll(3,0)
         rvm = -5
         value = 'Worthless'
@@ -38,19 +38,19 @@ class AsteroidBelt(OrbitContent):
         if dice == 5:
             rvm = -3
             value = 'Scant'
-        if dice >= 6 and dice <= 7:
+        if 6 <= dice <= 7:
             rvm = -2
             value = 'Very Poor'
-        if dice >= 8 and dice <= 9:
+        if 8 <= dice <= 9:
             rvm = -1
             value = 'Poor'
-        if dice >= 10 and dice <= 11:
+        if 10 <= dice <= 11:
             rvm = 0
             value = 'Average'
-        if dice >= 12 and dice <= 13:
+        if 12 <= dice <= 13:
             rvm = 1
             value = 'Abundant'
-        if dice >= 14 and dice <= 15:
+        if 14 <= dice <= 15:
             rvm = 2
             value = 'Very Abundant'
         if dice == 16:
@@ -65,23 +65,23 @@ class AsteroidBelt(OrbitContent):
         self.__rvm = rvm
         self.__resources = value
 
-    def makesurftemp(self):
-        self.__avsurf = self.getBBTemp() * 0.97
+    def make_surface_temp(self):
+        self.__avsurf = self.get_blackbody_temp() * 0.97
 
-    def getAvSurf(self):
+    def get_average_surface_temp(self):
         return self.__avsurf
 
-    def makeclimate(self):
-        self.__climate = WorldClimate(self.getAvSurf())
+    def make_climate(self):
+        self.__climate = world_climate(self.get_average_surface_temp())
 
-    def getClimate(self):
+    def get_climate(self):
         return self.__climate
 
-    def getResources(self):
+    def get_resources(self):
         return self.__resources
 
-    def getRVM(self):
+    def get_rvm(self):
         return self.__rvm
 
-    def getAffinity(self):
+    def get_affinity(self):
         return self.__affinity

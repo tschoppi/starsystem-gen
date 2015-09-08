@@ -11,12 +11,12 @@ class PlanetSystem:
     def __init__(self, parentstar):
         self.roller = GD.DiceRoller()
         self.parentstar = parentstar
-        self.__innerlimit, self.__outerlimit = parentstar.getOrbitlimits()
-        self.__snowline = parentstar.getSnowline()
-        self.__primarylum = parentstar.getLuminosity()
-        self.__forbidden = parentstar.hasForbidden()
+        self.__innerlimit, self.__outerlimit = parentstar.get_orbit_limits()
+        self.__snowline = parentstar.get_snowline()
+        self.__primarylum = parentstar.get_luminosity()
+        self.__forbidden = parentstar.has_forbidden_zone()
         if self.__forbidden:
-            self.__innerforbidden, self.__outerforbidden = parentstar.getForbidden()
+            self.__innerforbidden, self.__outerforbidden = parentstar.get_forbidden_zone()
         self.makegasgiantarrangement()
         self.placefirstgasgiant()
         self.createorbits()
@@ -24,7 +24,7 @@ class PlanetSystem:
         self.placegasgiants()
         self.fillorbits()
         self.namecontents()
-        self.makeeccentricities()
+        self.make_eccentricities()
 
     def printinfo(self):
         print("--------------------")
@@ -52,7 +52,7 @@ class PlanetSystem:
 
     def listorbcontentdetails(self):
         for skey in sorted(self.__orbitcontents):
-            self.__orbitcontents[skey].printinfo()
+            self.__orbitcontents[skey].print_info()
 
     def getOrbitcontents(self):
         return self.__orbitcontents
@@ -266,9 +266,9 @@ class PlanetSystem:
         counter = 0
         for key in sorted(self.__orbitcontents):
             counter += 1
-            name = '<{}-{}>'.format(self.parentstar.getLetter(), counter)
-            self.__orbitcontents[key].setName(name)
-            self.__orbitcontents[key].setNumber(counter)
+            name = '<{}-{}>'.format(self.parentstar.get_letter(), counter)
+            self.__orbitcontents[key].set_name(name)
+            self.__orbitcontents[key].set_number(counter)
 
     def orbitfillmodifier(self, orbitindex):
         modifier = 0
@@ -298,7 +298,7 @@ class PlanetSystem:
 
         return modifier
 
-    def makeeccentricities(self):
+    def make_eccentricities(self):
         for k, oc in self.__orbitcontents.items():
             if self.__gasarrangement == 'Conventional':
                 bonus = -6
@@ -310,7 +310,7 @@ class PlanetSystem:
                 bonus = 0
             oc.seteccentricity(self.roll(3, bonus))
 
-    def hasgarden(self):
+    def has_garden(self):
         ret = False
         for k, p in self.__orbitcontents.items():
             if p.type() == 'Terrestrial' and p.get_type() == 'Garden':

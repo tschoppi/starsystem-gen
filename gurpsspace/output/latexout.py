@@ -95,7 +95,7 @@ class LatexWriter:
 """
         numstar = len(self.starsystem.stars)
         str += "Number of stars: {}\\\\ \n".format(numstar)
-        age = self.starsystem.getAge()
+        age = self.starsystem.get_age()
         str += "Stellar age: {} billion years \n\n".format(age)
 
         # Only put table (about the properties of the stellar system) if
@@ -113,7 +113,7 @@ class LatexWriter:
             str += "Property & " + header
             str += "\midrule\n"
             # Extract orbit and eccentricities
-            oecc = self.starsystem.getOrbits()
+            oecc = self.starsystem.get_orbits()
             orb = ''
             ecc = ''
             for o, e in oecc:
@@ -122,7 +122,7 @@ class LatexWriter:
             str += "Orbital Separation [AU] " + orb + ' \\\\ \n'
             str += "Orbital Eccentricity    " + ecc + ' \\\\ \n'
             str += "Orbital Period [d]      "
-            for per in self.starsystem.getPeriod():
+            for per in self.starsystem.get_period():
                 str += ' & {:7.1f} '.format(round(per, 1))
             str += " \\\\ \n"
             str += "\\bottomrule\n\end{tabular} \n\end{table}\n\n"
@@ -139,7 +139,7 @@ class LatexWriter:
         str += '\\toprule\n'
         str += 'Property '
         for star in self.starsystem.stars:
-            str += '& Star ' + star.getLetter() + ' '
+            str += '& Star ' + star.get_letter() + ' '
         str += '\\\\ \n\midrule\n'
 
         sequence = 'Sequence   '
@@ -154,17 +154,17 @@ class LatexWriter:
             fzinner = 'FZ Inner   '
             fzouter = 'FZ Outer   '
         for star in self.starsystem.stars:
-            sequence += ' & ' + star.getSequence()
+            sequence += ' & ' + star.get_sequence()
             mass += ' & {:7.2f}'.format(star.get_mass())
             temp += ' & {:7.0f}'.format(star.getTemp())
-            lum += ' & {:7.4f}'.format(star.getLuminosity())
-            rad += ' & {:7.5f}'.format(star.getRadius())
-            inner += ' & {:7.2f}'.format(star.getOrbitlimits()[0])
-            outer += ' & {:6.1f} '.format(star.getOrbitlimits()[1])
-            snowline += ' & {:7.2f}'.format(star.getSnowline())
+            lum += ' & {:7.4f}'.format(star.get_luminosity())
+            rad += ' & {:7.5f}'.format(star.get_radius())
+            inner += ' & {:7.2f}'.format(star.get_orbit_limits()[0])
+            outer += ' & {:6.1f} '.format(star.get_orbit_limits()[1])
+            snowline += ' & {:7.2f}'.format(star.get_snowline())
             if numstar > 1:
-                fzinner += ' & {:6.1f} '.format(star.getForbidden()[0])
-                fzouter += ' & {:6.1f} '.format(star.getForbidden()[1])
+                fzinner += ' & {:6.1f} '.format(star.get_forbidden_zone()[0])
+                fzouter += ' & {:6.1f} '.format(star.get_forbidden_zone()[1])
 
         # for string in [sequence, mass, temp, lum, rad, inner, outer, snowline]:
         #    string += '\\\\ \n'
@@ -197,7 +197,7 @@ class LatexWriter:
         #  - List Asteroid Belts
         str = ''
         for star in self.starsystem.stars:
-            lettr = star.getLetter()
+            lettr = star.get_letter()
             ps = star.planetsystem
             oc = ps.getOrbitcontents()
             types = [pl.type() for key, pl in oc.items()]
@@ -214,26 +214,26 @@ class LatexWriter:
             str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
             str += '\midrule\n'
             for skey in sorted(oc):
-                str += '{} & '.format(oc[skey].getName())
+                str += '{} & '.format(oc[skey].get_name())
                 str += '{} & '.format(oc[skey].type())
                 str += '{} & '.format(oc[skey].get_size())
                 str += '{} & '.format(oc[skey].get_type())
-                str += '{:.2f} & '.format(oc[skey].getOrbit())
-                str += '{:.2f} & '.format(oc[skey].getPeriod())
-                str += '{:.2f} & '.format(oc[skey].getEcc())
+                str += '{:.2f} & '.format(oc[skey].get_orbit())
+                str += '{:.2f} & '.format(oc[skey].get_period())
+                str += '{:.2f} & '.format(oc[skey].get_eccentricity())
                 str += '{:.2f} & '.format(oc[skey].getMinMax()[0])
                 str += '{:.2f} & '.format(oc[skey].getMinMax()[1])
-                nmoon = oc[skey].numMoons()
-                nmoonlts = oc[skey].numMoonlets()
+                nmoon = oc[skey].num_moons()
+                nmoonlts = oc[skey].num_moonlets()
                 if nmoon is 0:
                     str += ' & '
                 else:
-                    str += '{} & '.format(oc[skey].numMoons())
+                    str += '{} & '.format(oc[skey].num_moons())
                 if nmoonlts is 0:
                     str += ' & '
                 else:
-                    str += '{} & '.format(oc[skey].numMoonlets())
-                str += '{:.0f}'.format(oc[skey].getBBTemp())
+                    str += '{} & '.format(oc[skey].num_moonlets())
+                str += '{:.0f}'.format(oc[skey].get_blackbody_temp())
                 str += '\\\\ \n'
             str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
 
@@ -246,7 +246,7 @@ class LatexWriter:
             for skey in sorted(oc):
                 if oc[skey].type() != 'Ast. Belt':
                     continue
-                astable += '{} & '.format(oc[skey].getName())
+                astable += '{} & '.format(oc[skey].get_name())
                 astable += '{:.0f} & '.format(oc[skey].get_average_surface_temp())
                 astable += '{} & '.format(oc[skey].get_climate())
                 astable += '{:+.0f} & '.format(oc[skey].get_rvm())
@@ -267,7 +267,7 @@ class LatexWriter:
             for skey in sorted(oc):
                 if oc[skey].type() != 'Terrestrial':
                     continue
-                tertable += ' & {}'.format(oc[skey].getName())
+                tertable += ' & {}'.format(oc[skey].get_name())
             tertable += '\\\\ \n\midrule\n'
             wtype = '{:22}'.format('World Type')
             size = '{:22}'.format('World Size')
@@ -321,13 +321,13 @@ class LatexWriter:
                 grav += ' & {:10.2f}'.format(oc[skey].get_gravity())
                 mass += ' & {:10.3f}'.format(oc[skey].get_mass())
                 presscat += ' & {:10}'.format(oc[skey].get_pressure_category())
-                tte += ' & {:10.0f}'.format(oc[skey].getTTE())
+                tte += ' & {:10.0f}'.format(oc[skey].get_total_tidal_effect())
                 volc += ' & {:10}'.format(oc[skey].get_volcanism())
                 tect += ' & {:10}'.format(oc[skey].get_tectonics())
                 rvm += ' & {:+10.0f}'.format(oc[skey].get_rvm())
                 hab += ' & {:+10.0f}'.format(oc[skey].get_habitability())
                 aff += ' & {:+10.0f}'.format(oc[skey].get_affinity())
-                prot += ' & {:10.2f}'.format(oc[skey].getRotation())
+                prot += ' & {:10.2f}'.format(oc[skey].get_rotation())
             lend = '\\\\ \n'
             tertable += size + lend
             tertable += wtype + lend
@@ -366,7 +366,7 @@ class LatexWriter:
         Every new section is a new orbiting object, be it terrestrial planet,
         gas giant or major moon
         """
-        letter = planetsystem.parentstar.getLetter()
+        letter = planetsystem.parentstar.get_letter()
         oc = planetsystem.getOrbitcontents()
         str = '\chapter{Planet System ' + letter + '}\n\n'
         # Call for each celestial body the function to print its details
@@ -380,7 +380,7 @@ class LatexWriter:
 
     def planetdetails(self, planet):
         """Print details about terrestrial planets"""
-        str = '\section{Planet ' + planet.getName() + '}\n'
+        str = '\section{Planet ' + planet.get_name() + '}\n'
         str += '\subsection{Summary}\n\n'
         str += '\subsection{World Properties}\n'
         str += '\\begin{table}[H]\n\centering\n'
@@ -404,15 +404,15 @@ class LatexWriter:
         str += 'Diameter & {:.3f} Earth Diameters\\\\ \n'.format(planet.get_diameter())
         str += 'Surface Gravity & {:.2f} G \\\\ \n'.format(planet.get_gravity())
         str += 'Affinity & {:+.0f} \\\\ \n'.format(planet.get_affinity())
-        if planet.numMoons() > 0:
-            str += 'Moons & {} \\\\ \n'.format(planet.numMoons())
-        if planet.numMoonlets() > 0:
-            str += 'Moonlets & {} \\\\ \n'.format(planet.numMoonlets())
+        if planet.num_moons() > 0:
+            str += 'Moons & {} \\\\ \n'.format(planet.num_moons())
+        if planet.num_moonlets() > 0:
+            str += 'Moonlets & {} \\\\ \n'.format(planet.num_moonlets())
         str += '\\bottomrule\n\end{tabular}\n\end{table}\n\\vfill\n\n'
         str += '%\subsection{Social Parameters}\n'
         str += '%\subsection{Installations}\n\n'
 
-        if planet.numMoons() > 0:
+        if planet.num_moons() > 0:
             moons = planet.getSatellites()
             for m in moons:
                 str += self.moondetails(m)
@@ -420,7 +420,7 @@ class LatexWriter:
 
     def gasgiantdetails(self, gasgiant):
         """Print details about gas giants"""
-        str = '\section{Gas Giant ' + gasgiant.getName() + '}\n'
+        str = '\section{Gas Giant ' + gasgiant.get_name() + '}\n'
         str += '\subsection{Summary}\n'
         str += '\subsection{World Properties}\n'
         str += '\\begin{table}[H]\n\centering\n'
@@ -432,20 +432,20 @@ class LatexWriter:
         str += 'Density & {} Earth Densities \\\\ \n'.format(gasgiant.get_density())
         str += 'Diameter & {:.2f} Earth Diameters \\\\ \n'.format(gasgiant.get_diameter())
         str += 'Cloud-Top Gravity & {:.2f} G \\\\ \n'.format(gasgiant.get_gravity())
-        str += 'Satellites $1^\mathrm{st}$ Family & {num} \\\\ \n'.format(st='{st}', num=len(gasgiant.getFirstFamily()))
-        str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.getMoons()))
-        str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.getThirdFamily()))
+        str += 'Satellites $1^\mathrm{st}$ Family & {num} \\\\ \n'.format(st='{st}', num=len(gasgiant.get_first_family()))
+        str += 'Satellites $2^\mathrm{nd}$ Family & {num} \\\\ \n'.format(nd='{nd}', num=len(gasgiant.get_moons()))
+        str += 'Satellites $3^\mathrm{rd}$ Family & {num} \\\\ \n'.format(rd='{rd}', num=len(gasgiant.get_third_family()))
         str += '\\bottomrule\n'
         str += '\end{tabular}\n\end{table}\n\\vfill\n\n'
 
-        moons = gasgiant.getMoons()
+        moons = gasgiant.get_moons()
         for m in moons:
             str += self.moondetails(m)
         return str
 
     def moondetails(self, moon):
         """Print details about a major moon"""
-        str = '\section{Moon ' + moon.getName() + '}\n'
+        str = '\section{Moon ' + moon.get_name() + '}\n'
         str += '%\subsection{Summary}\n\n'
         str += '\subsection{World Properties}\n'
         str += '\\begin{table}[H]\n\centering\n'

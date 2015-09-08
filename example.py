@@ -4,19 +4,19 @@ import gurpsspace.starsystem as starsys
 
 # Change from None to a value if you want to set an argument
 args = {
-    'opencluster': None, # True or False
-    'numstars': None, # 1, 2 or 3
+    'open_cluster': None, # True or False
+    'num_stars': None, # 1, 2 or 3
     'age': None # Number > 0
 }
 
 # Generate starsystems until one is made that contains a Garden world.
 garden = False
-cyclenum = 0
+cycle_num = 0
 while garden is not True:
-    cyclenum += 1
+    cycle_num += 1
     mysys = starsys.StarSystem(**args)
-    garden = mysys.hasgarden()
+    garden = mysys.has_garden()
 
 mysys.printinfo()
-print('Total number of cycles: {}'.format(cyclenum))
-mysys.writelatex()
+print('Total number of cycles: {}'.format(cycle_num))
+mysys.write_latex()

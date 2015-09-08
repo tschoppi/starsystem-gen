@@ -10,25 +10,25 @@ class OrbitContent:
                  orbitalradius):
         self.roller = GD.DiceRoller()
         self.__orbit = orbitalradius
-        self.primarystar = primary
-        primarylum = self.primarystar.getLuminosity()
-        self.makebbtemp(primarylum, self.__orbit)
+        self.primary_star = primary
+        primarylum = self.primary_star.get_luminosity()
+        self.make_blackbody_temperature(primarylum, self.__orbit)
         self.makeorbitperiod()
 
-    def makebbtemp(self, lum, orb):
+    def make_blackbody_temperature(self, lum, orb):
         self.__bbtemp = 278 * lum**(0.25) * orb**(-0.5)
 
-    def getBBTemp(self):
+    def get_blackbody_temp(self):
         return self.__bbtemp
 
-    def getOrbit(self):
+    def get_orbit(self):
         return self.__orbit
 
     def makeorbitperiod(self):
-        m = self.primarystar.get_mass()
+        m = self.primary_star.get_mass()
         self.__period = (self.__orbit**3 / m)**(0.5)
 
-    def getPeriod(self):
+    def get_period(self):
         return self.__period
 
     def seteccentricity(self, droll):
@@ -58,27 +58,27 @@ class OrbitContent:
         self.__eccset = True
         self.makeminmax()
 
-    def getEcc(self):
+    def get_eccentricity(self):
         if self.__eccset:
             return self.__ecc
         else:
             return None
 
     def makeminmax(self):
-        min = self.getOrbit() * (1 - self.__ecc)
-        max = self.getOrbit() * (1 + self.__ecc)
+        min = self.get_orbit() * (1 - self.__ecc)
+        max = self.get_orbit() * (1 + self.__ecc)
         self.__minmax = (min, max)
 
     def getMinMax(self):
         return self.__minmax
 
-    def setName(self, name):
+    def set_name(self, name):
         self.__name = name
 
-    def getName(self):
+    def get_name(self):
         return self.__name
 
-    def setNumber(self, number):
+    def set_number(self, number):
         self.__number = number
 
     def getNumber(self):
@@ -89,7 +89,7 @@ class OrbitContent:
         return ''
     def get_size(self):
         return ''
-    def numMoons(self):
+    def num_moons(self):
         return ''
-    def numMoonlets(self):
+    def num_moonlets(self):
         return ''

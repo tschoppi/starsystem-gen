@@ -46,7 +46,7 @@ class WebServer(object):
             while garden is not True:
                 cyclenum += 1
                 mysys = starsys.StarSystem(**args)
-                garden = mysys.hasgarden()
+                garden = mysys.has_garden()
         else:
             mysys = starsys.StarSystem(**args)
 
@@ -83,7 +83,7 @@ class WebServer(object):
         planetsystem = cherrypy.session.get('planetsystem')
         planet = planetsystem.getOrbitcontents()[key]
         if row == '':
-            return planet.getName().replace("<", "").replace(">", "")
+            return planet.get_name().replace("<", "").replace(">", "")
         if row == 'World Size':
             return planet.get_size()
         if row == 'World Type':
@@ -122,7 +122,7 @@ class WebServer(object):
         if row == 'Pressure Category':
             return planet.get_pressure_category()
         if row == 'Total Tidal Effect':
-            return round(planet.getTTE(), 2)
+            return round(planet.get_total_tidal_effect(), 2)
         if row == 'Volcanics':
             return planet.get_volcanism()
         if row == 'Tectonics':
@@ -134,9 +134,9 @@ class WebServer(object):
         if row == 'Affinity':
             return planet.get_affinity()
         if row == 'Rotational Period':
-            retval = str(round(planet.getRotation(), 2))
+            retval = str(round(planet.get_rotation(), 2))
             retval += " days"
-            if planet.getRotation() < 0:
+            if planet.get_rotation() < 0:
                 retval += " *"
             return retval
         else:

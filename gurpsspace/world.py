@@ -1,6 +1,6 @@
 from .orbitcontents import OrbitContent
-from .tables import MAtmoTable, TempFactor, WorldClimate
-from .tables import SizeConstrTable, PressureCategory
+from .tables import MAtmoTable, TempFactor, world_climate
+from .tables import SizeConstraintsTable, pressure_category
 from math import floor
 
 
@@ -28,9 +28,9 @@ class World(OrbitContent):
         return self.__sizeclass
 
     def make_type(self):
-        bbtemp = self.getBBTemp()
+        bbtemp = self.get_blackbody_temp()
         size = self.get_size()
-        primmass = self.primarystar.get_mass()
+        primmass = self.primary_star.get_mass()
         type = 'Ice'
         if size == 'Tiny' and bbtemp >= 141:
             type = 'Rock'
@@ -46,7 +46,7 @@ class World(OrbitContent):
             if bbtemp > 150 and bbtemp <= 230 and primmass <= 0.65:
                 type = 'Ammonia'
             if bbtemp > 240 and bbtemp <= 320:
-                age = self.primarystar.getAge()
+                age = self.primary_star.get_age()
                 if size == 'Standard':
                     cap = 10
                 if size == 'Large':
@@ -176,8 +176,8 @@ class World(OrbitContent):
         abs, green = self.get_absorption_greenhouse()
         matm = self.get_atmospheric_mass()
         bbcorr = abs * (1 + (matm * green))
-        self.__averagesurface = bbcorr * self.getBBTemp()
-        self.__climatetype = WorldClimate(self.__averagesurface)
+        self.__averagesurface = bbcorr * self.get_blackbody_temp()
+        self.__climatetype = world_climate(self.__averagesurface)
 
     def get_average_surface_temp(self):
         return self.__averagesurface
@@ -230,9 +230,9 @@ class World(OrbitContent):
 
     def make_diameter(self):
         size = self.get_size()
-        bb = self.getBBTemp()
+        bb = self.get_blackbody_temp()
         dens = self.get_density()
-        smin, smax = SizeConstrTable[size]
+        smin, smax = SizeConstraintsTable[size]
         term = (bb / dens) ** (0.5)
         min = term * smin
         max = term * smax
@@ -274,7 +274,7 @@ class World(OrbitContent):
             if type == 'Greenhouse':
                 factor *= 100
             pressure = self.get_mass() * factor * self.get_gravity()
-            category = PressureCategory(pressure)
+            category = pressure_category(pressure)
         self.__pressure = pressure
         self.__presscat = category
 
@@ -285,8 +285,8 @@ class World(OrbitContent):
         return self.__presscat
 
     def make_volcanism(self):
-        bonus = round(self.get_gravity() / self.primarystar.getAge() * 40)
-        bonus += self.get_volcanicbonus()
+        bonus = round(self.get_gravity() / self.primary_star.get_age() * 40)
+        bonus += self.get_volcanic_bonus()
         volcanoroll = self.roll(3, bonus)
         activity = 'None'
         if volcanoroll > 16:
@@ -302,7 +302,7 @@ class World(OrbitContent):
     def get_volcanism(self):
         return self.__volcanism
 
-    def get_volcanicbonus(self):
+    def get_volcanic_bonus(self):
         return 0
 
     def make_tectonism(self):

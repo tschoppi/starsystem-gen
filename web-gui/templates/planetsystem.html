@@ -7,7 +7,7 @@
 <body>
     <h3>Planetary system properties</h3>
     <p id="star-info">
-        This planetary system orbits star {{planetsystem.parentstar.getLetter()}} of the star system.
+        This planetary system orbits star {{planetsystem.parentstar.get_letter()}} of the star system.
     </p>
 
 <div id="objects-overview">
@@ -30,18 +30,18 @@
         {% for key, planet in planetsystem.getOrbitcontents().items()|sort %}
         {% set astro_body = planetsystem.getOrbitcontents()[key] %}
         <tr>
-            <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
             <td>{{astro_body.type()}}</td>
             <td>{% if astro_body.get_size() != '' %}{{astro_body.get_size()}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.get_type() != '' %}{{astro_body.get_type()}}{% else %} N/A {% endif %}</td>
-            <td>{{astro_body.getOrbit()|round(2)}} AU</td>
-            <td>{{(astro_body.getPeriod() * 365)|round(2)}} days</td>
-            <td>{{astro_body.getEcc()}}</td>
+            <td>{{astro_body.get_orbit()|round(2)}} AU</td>
+            <td>{{(astro_body.get_period() * 365)|round(2)}} days</td>
+            <td>{{astro_body.get_eccentricity()}}</td>
             <td>{{astro_body.getMinMax()[0]|round(2)}} AU</td>
             <td>{{astro_body.getMinMax()[1]|round(2)}} AU</td>
-            <td>{% if astro_body.numMoons() != '' %}{{astro_body.numMoons()|round(2)}}{% else %} N/A {% endif %}</td>
-            <td>{% if astro_body.numMoonlets() != '' %}{{astro_body.numMoonlets()|round(2)}}{% else %} N/A {% endif %}</td>
-            <td>{{astro_body.getBBTemp()|round(2)}} K</td>
+            <td>{% if astro_body.num_moons() != '' %}{{astro_body.num_moons()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{% if astro_body.num_moonlets() != '' %}{{astro_body.num_moonlets()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>{{astro_body.get_blackbody_temp()|round(2)}} K</td>
         </tr>
         {% endfor %}
     </table>
@@ -60,7 +60,7 @@
         {% for key, _ in planetsystem.getOrbitcontents().items()|sort if planetsystem.getOrbitcontents()[key].type() == 'Ast. Belt'%}
         {% set astro_body = planetsystem.getOrbitcontents()[key] %}
         <tr>
-            <td>{{astro_body.getName().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
             <td>{{astro_body.get_average_surface_temp()|round(2)}} K / {{(astro_body.get_average_surface_temp()-273.15)|round(2)}}°C</td>
             <td>{{astro_body.get_climate()}}</td>
             <td>{{astro_body.get_rvm()}}</td>

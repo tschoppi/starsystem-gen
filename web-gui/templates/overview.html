@@ -18,35 +18,35 @@
     <div>
         There are {{ starsystem.stars|count }} stars in the system. <br/>
     {% endif %}
-        The stars in this system are {{starsystem.getAge()|round(2)}} billion years old. <br/>
+        The stars in this system are {{starsystem.get_age()|round(2)}} billion years old. <br/>
         <br/>
         {% for star in starsystem.stars %}
         <div>
-            Star {{star.getLetter()}} properties:
-            {% if star.getLetter() == 'B' or star.getLetter() == 'C' %}
+            Star {{star.get_letter()}} properties:
+            {% if star.get_letter() == 'B' or star.get_letter() == 'C' %}
             <p>
-                Star {{star.getLetter()}} orbits the main star at {{starsystem.getOrbits()[loop.index0 - 1][0]|round(2)}} AU mean distance with an orbital eccentricity of {{starsystem.getOrbits()[loop.index0 - 1][1]|round(2)}}. <br/>
-                It has an orbital period of {{starsystem.getPeriod()[loop.index0 - 1]|round(1, 'common')}} days.
+                Star {{star.get_letter()}} orbits the main star at {{starsystem.get_orbits()[loop.index0 - 1][0]|round(2)}} AU mean distance with an orbital eccentricity of {{starsystem.get_orbits()[loop.index0 - 1][1]|round(2)}}. <br/>
+                It has an orbital period of {{starsystem.get_period()[loop.index0 - 1]|round(1, 'common')}} days.
             </p>
             {% endif %}
             <ul>
-                {% if star.getSequence() == 'Main' %}
-                <li>It is a {{star.getSequence()|lower}} sequence star.</li>
+                {% if star.get_sequence() == 'Main' %}
+                <li>It is a {{star.get_sequence()|lower}} sequence star.</li>
                 {% else %}
-                <li>It is a {{star.getSequence()|lower}}.</li>
+                <li>It is a {{star.get_sequence()|lower}}.</li>
                 {% endif %}
                 <li>The star is as massive as {{star.get_mass()|round(2)}} suns.</li>
                 <li>The surface temperature of the star is {{star.getTemp()}} degrees K.</li>
-                <li>The luminosity of the star is {{star.getLuminosity()|round(6)}}.</li>
-                <li>The star's radius is {{star.getRadius()|round(6)}} times the sun's radius.</li>
-                <li>The inner limit for planets orbiting this star is at {{star.getOrbitlimits()[0]|round(2)}} AU. </li>
-                <li>The outer limit for planets orbiting this star is at {{star.getOrbitlimits()[1]|round(2)}} AU. </li>
-                <li>The snow line for planets orbiting this star is at {{star.getSnowline()|round(2)}} AU. </li>
-                {% if star.getLetter() != 'A' %}
-                    <li>The forbidden zone for planets lies between {{star.getForbidden()[0]|round(2)}} AU and {{star.getForbidden()[1]|round(2)}} AU.</li>
+                <li>The luminosity of the star is {{star.get_luminosity()|round(6)}}.</li>
+                <li>The star's radius is {{star.get_radius()|round(6)}} times the sun's radius.</li>
+                <li>The inner limit for planets orbiting this star is at {{star.get_orbit_limits()[0]|round(2)}} AU. </li>
+                <li>The outer limit for planets orbiting this star is at {{star.get_orbit_limits()[1]|round(2)}} AU. </li>
+                <li>The snow line for planets orbiting this star is at {{star.get_snowline()|round(2)}} AU. </li>
+                {% if star.get_letter() != 'A' %}
+                    <li>The forbidden zone for planets lies between {{star.get_forbidden_zone()[0]|round(2)}} AU and {{star.get_forbidden_zone()[1]|round(2)}} AU.</li>
                 {% endif %}
                 {% if star.planetsystem.getOrbitcontents()|count > 0 %}
-                <li><form id="planet{{star.getLetter()}}" action="planetsystem">
+                <li><form id="planet{{star.get_letter()}}" action="planetsystem">
                     <input type="number" style="display: none" name="star_id" value={{loop.index0}} />
                     <input type="submit" id="planet-details" value="View orbiting objects" formtarget="_blank"/>
                 </form></li>

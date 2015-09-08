@@ -2,6 +2,7 @@ from . import dice as GD
 from . import planetsystem as PS
 from .tables import StEvoTable, IndexTable, SequenceTable
 
+
 class Star:
     roller = GD.DiceRoller()
 
@@ -10,29 +11,29 @@ class Star:
 
     def __init__(self, age):
         self.__hasforbiddenzone = False
-        roller = GD.DiceRoller()
+        # roller = GD.DiceRoller()
         self.__age = age
-        self.makeindex()
-        self.makemass()
-        self.findsequence()
-        self.makeluminosity()
-        self.maketemperature()
-        self.makeradius()
-        self.computeorbitlimits()
-        self.computesnowline()
+        self.make_index()
+        self.make_mass()
+        self.find_sequence()
+        self.make_luminosity()
+        self.make_temperature()
+        self.make_radius()
+        self.compute_orbit_limits()
+        self.compute_snow_line()
 
     def __repr__(self):
         return repr((self.__mass, self.__luminosity, self.__temperature))
 
-    def printinfo(self):
+    def print_info(self):
         print("  Star {} Info".format(self.__letter))
         print("  ---------")
         print("       Mass:\t{}".format(self.__mass))
         print("   Sequence:\t{}".format(SequenceTable[self.__SeqIndex]))
         print(" Luminosity:\t{}".format(self.__luminosity))
         print("Temperature:\t{}".format(self.__temperature))
-        print("     Radius:\t{}".format(round(self.__radius,6)))
-        #print("       Type:\t{}".format(self.__type))
+        print("     Radius:\t{}".format(round(self.__radius, 6)))
+        # print("       Type:\t{}".format(self.__type))
 
         # Nicely formatted orbital zone
         norzone = (round(self.__innerlimit, 3), round(self.__outerlimit, 3))
@@ -47,26 +48,26 @@ class Star:
         self.planetsystem.printinfo()
         print("  ---------\n")
 
-    def getMass(self):
+    def get_mass(self):
         return self.__mass
 
-    def getAge(self):
+    def get_age(self):
         return self.__age
 
-    def setAge(self, age):
+    def set_age(self, age):
         self.__age = age
         # Eventually some recalculations will have to be done
 
-    def makeindex(self):
+    def make_index(self):
         # Roll to randomly select the index for the StEvoTable
         diceroll1 = self.roll(3, 0)
         diceroll2 = self.roll(3, 0)
         self.__StEvoIndex = IndexTable[diceroll1][diceroll2]
 
-    def makemass(self):
+    def make_mass(self):
         self.__mass = StEvoTable['mass'][self.__StEvoIndex]
 
-    def findsequence(self):
+    def find_sequence(self):
         # Check what sequences are available
         seq = StEvoTable['internaltype'][self.__StEvoIndex]
         age = self.__age
@@ -98,12 +99,12 @@ class Star:
                 self.__SeqIndex = 0
         # For a white dwarf we have to regenerate the mass
         if self.__SeqIndex == 3:
-            self.__mass = self.roll(2,-2) * 0.05 + 0.9
+            self.__mass = self.roll(2, -2) * 0.05 + 0.9
 
-    def getSequence(self):
+    def get_sequence(self):
         return SequenceTable[self.__SeqIndex]
 
-    def makeluminosity(self):
+    def make_luminosity(self):
         seq = self.__SeqIndex
         age = self.__age
         lmin = StEvoTable['Lmin'][self.__StEvoIndex]
@@ -115,56 +116,56 @@ class Star:
                 lum = lmin
             else:
                 lum = lmin + (age / mspan * (lmax - lmin))
-        elif seq == 1: # Subgiant star
+        elif seq == 1:  # Subgiant star
             lum = lmax
-        elif seq == 2: # Giant star
+        elif seq == 2:  # Giant star
             lum = 25 * lmax
-        elif seq == 3: # White dwarf
+        elif seq == 3:  # White dwarf
             lum = 0.001
 
         self.__luminosity = lum
 
-    def maketemperature(self):
+    def make_temperature(self):
         seq = self.__SeqIndex
         age = self.__age
-        lmin = StEvoTable['Lmin'][self.__StEvoIndex]
-        lmax = StEvoTable['Lmax'][self.__StEvoIndex]
+        #  lmin = StEvoTable['Lmin'][self.__StEvoIndex]
+        #  lmax = StEvoTable['Lmax'][self.__StEvoIndex]
         mspan = StEvoTable['Mspan'][self.__StEvoIndex]
         sspan = StEvoTable['Sspan'][self.__StEvoIndex]
-        gspan = StEvoTable['Gspan'][self.__StEvoIndex]
+        #  gspan = StEvoTable['Gspan'][self.__StEvoIndex]
         if seq == 0:
             temp = StEvoTable['temp'][self.__StEvoIndex]
-        elif seq == 1: # Subgiant star
+        elif seq == 1:  # Subgiant star
             m = StEvoTable['temp'][self.__StEvoIndex]
             a = age - mspan
             s = sspan
             temp = m - (a / s * (m - 4800))
-        elif seq == 2: # Giant star
-            temp = self.roll(2,-2) * 200 + 3000
-        elif seq == 3: # White dwarf
-            temp = 8000 # Not defined in the rulebook, so arbitrarily assigned
+        elif seq == 2:  # Giant star
+            temp = self.roll(2, -2) * 200 + 3000
+        elif seq == 3:  # White dwarf
+            temp = 8000  # Not defined in the rulebook, so arbitrarily assigned
 
         self.__temperature = temp
 
     def getTemp(self):
         return self.__temperature
 
-    def makeradius(self):
+    def make_radius(self):
         lum = self.__luminosity
         temp = self.__temperature
-        rad = 155000 * lum**(0.5) / temp**2
-        if self.__SeqIndex == 3: # If we're a white dwarf
-            rad = 0.000043 # The size is comparable to the one of Earth
+        rad = 155000 * lum ** 0.5 / temp ** 2
+        if self.__SeqIndex == 3:  # If we're a white dwarf
+            rad = 0.000043  # The size is comparable to the one of Earth
 
         self.__radius = rad
 
-    def computeorbitlimits(self):
+    def compute_orbit_limits(self):
         mass = self.__mass
         lum = self.__luminosity
 
         # Inner Orbital Limit
         inner1 = 0.1 * mass
-        inner2 = 0.01 * lum**(0.5)
+        inner2 = 0.01 * lum ** 0.5
         if inner1 > inner2:
             self.__innerlimit = inner1
         else:
@@ -173,37 +174,37 @@ class Star:
         # Outer Orbital Limit
         self.__outerlimit = 40 * mass
 
-    def computesnowline(self):
+    def compute_snow_line(self):
         initlum = StEvoTable['Lmin'][self.__StEvoIndex]
-        self.__snowline = 4.85 * initlum**(0.5)
+        self.__snowline = 4.85 * initlum ** 0.5
 
-    def setForbiddenZone(self, inner, outer):
+    def set_forbidden_zone(self, inner, outer):
         self.__forbiddenzone = (inner, outer)
         self.__hasforbiddenzone = True
 
-    def makeplanetsystem(self):
+    def make_planetsystem(self):
         self.planetsystem = PS.PlanetSystem(self)
 
-    def getOrbitlimits(self):
+    def get_orbit_limits(self):
         return (self.__innerlimit, self.__outerlimit)
 
-    def getSnowline(self):
+    def get_snowline(self):
         return self.__snowline
 
-    def getLuminosity(self):
+    def get_luminosity(self):
         return self.__luminosity
 
-    def hasForbidden(self):
+    def has_forbidden_zone(self):
         return self.__hasforbiddenzone
 
-    def getForbidden(self):
+    def get_forbidden_zone(self):
         return self.__forbiddenzone
 
-    def getRadius(self):
+    def get_radius(self):
         return self.__radius
 
-    def setLetter(self, letter):
+    def set_letter(self, letter):
         self.__letter = letter
 
-    def getLetter(self):
+    def get_letter(self):
         return self.__letter

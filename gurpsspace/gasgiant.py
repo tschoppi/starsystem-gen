@@ -5,17 +5,17 @@ from .tables import GGSizeTable
 class GasGiant(OrbitContent):
     def __init__(self, primary, orbitalradius, rollbonus=True):
         OrbitContent.__init__(self, primary, orbitalradius)
-        self.makesize(rollbonus)
-        self.makemass()
-        self.makediameter()
-        self.makecloudtopgrav()
-        self.makemoons()
-        #self.printinfo()
+        self.make_size(rollbonus)
+        self.make_mass()
+        self.make_diameter()
+        self.make_cloudtop_gravity()
+        self.make_moons()
+        #self.print_info()
 
     def __repr__(self):
         return repr("{} Gas Giant".format(self.__size))
 
-    def makesize(self, rollbonus):
+    def make_size(self, rollbonus):
         if rollbonus:
             modifier = 4
         else:
@@ -30,33 +30,33 @@ class GasGiant(OrbitContent):
     def get_size(self):
         return self.__size
 
-    def printinfo(self):
-        print("---- Gas Giant {} Properties ----".format(self.getName()))
+    def print_info(self):
+        print("---- Gas Giant {} Properties ----".format(self.get_name()))
         print("     Size:\t{}".format(self.__size))
-        print("  BB Temp:\t{}".format(self.getBBTemp()))
+        print("  BB Temp:\t{}".format(self.get_blackbody_temp()))
         print("     Mass:\t{}".format(self.__mass))
         print("     Dens:\t{}".format(self.__density))
         print("     Diam:\t{}".format(self.__diameter))
-        print("  Orb Per:\t{}".format(self.getPeriod()))
-        print("  Orb Ecc:\t{}".format(self.getEcc()))
+        print("  Orb Per:\t{}".format(self.get_period()))
+        print("  Orb Ecc:\t{}".format(self.get_eccentricity()))
         print(" Cl Top G:\t{}".format(self.__gravity))
         print("  # 1st M:\t{}".format(len(self.__firstfamily)))
         print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
         print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
         for moon in self.__secondfamily:
-            moon.printinfo()
+            moon.print_info()
         print("------------------------------\n")
 
     def type(self):
         return "Gas Giant"
 
-    def makemoons(self):
-        self.makefirstfamily()
-        self.makesecondfamily()
-        self.makethirdfamily()
+    def make_moons(self):
+        self.make_first_family()
+        self.make_second_family()
+        self.make_third_family()
 
-    def makefirstfamily(self):
-        orbit = self.getOrbit()
+    def make_first_family(self):
+        orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.1:
             modifier = -10
@@ -71,8 +71,8 @@ class GasGiant(OrbitContent):
             nummoonlets = 0
         self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(nummoonlets)]
 
-    def makesecondfamily(self):
-        orbit = self.getOrbit()
+    def make_second_family(self):
+        orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.1:
             modifier = -200 # Equivalent to "do not roll"
@@ -85,10 +85,10 @@ class GasGiant(OrbitContent):
         nummoons = self.roll(1, modifier)
         if nummoons < 0:
             nummoons = 0
-        self.__secondfamily = sorted([Moon(self, self.primarystar) for nummoon in range(nummoons)], key = lambda moon: moon.getOrbit())
+        self.__secondfamily = sorted([Moon(self, self.primary_star) for nummoon in range(nummoons)], key = lambda moon: moon.get_orbit())
 
-    def makethirdfamily(self):
-        orbit = self.getOrbit()
+    def make_third_family(self):
+        orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.5:
             modifier = -200 # Equivalent to "do not roll"
@@ -98,58 +98,58 @@ class GasGiant(OrbitContent):
             modifier = -4
         if orbit > 1.5 and orbit <= 3:
             modifier = -1
-        nummoonlets = self.roll(1, modifier)
-        if nummoonlets < 0:
-            nummoonlets = 0
-        self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(nummoonlets)]
+        num_moonlets = self.roll(1, modifier)
+        if num_moonlets < 0:
+            num_moonlets = 0
+        self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(num_moonlets)]
 
-    def makemass(self):
+    def make_mass(self):
         size = self.get_size()
         diceroll = self.roll(3, 0)
         mass, density = GGSizeTable[size][diceroll]
         self.__mass = mass
         self.__density = density
 
-    def getMass(self):
+    def get_mass(self):
         return self.__mass
 
-    def makediameter(self):
+    def make_diameter(self):
         self.__diameter = (self.__mass / self.__density) ** (1/3.)
 
-    def getDiameter(self):
+    def get_diameter(self):
         return self.__diameter
 
-    def makecloudtopgrav(self):
+    def make_cloudtop_gravity(self):
         self.__gravity = self.__density * self.__diameter
 
-    def numMoons(self):
+    def num_moons(self):
         return len(self.__secondfamily)
 
-    def numMoonlets(self):
+    def num_moonlets(self):
         return len(self.__firstfamily) + len(self.__thirdfamily)
 
-    def setNumber(self, number):
-        OrbitContent.setNumber(self, number)
+    def set_number(self, number):
+        OrbitContent.set_number(self, number)
         # Name the moons
         counter = 0
         for moon in self.__secondfamily:
             counter += 1
-            moon.setNumber(counter)
-            letter = self.primarystar.getLetter()
+            moon.set_number(counter)
+            letter = self.primary_star.get_letter()
             name = '<{}-{}-{}>'.format(letter, number, counter)
-            moon.setName(name)
+            moon.set_name(name)
 
-    def getMoons(self):
+    def get_moons(self):
         return self.__secondfamily
 
-    def getDensity(self):
+    def get_density(self):
         return self.__density
 
-    def getGravity(self):
+    def get_gravity(self):
         return self.__gravity
 
-    def getFirstFamily(self):
+    def get_first_family(self):
         return self.__firstfamily
 
-    def getThirdFamily(self):
+    def get_third_family(self):
         return self.__thirdfamily

@@ -108,7 +108,7 @@ class WebServer(object):
         if row == 'Climate Type':
             return planet.get_climate()
         if row == 'Axial Tilt':
-            return str(planet.getAxialTilt()) + '°'
+            return str(planet.get_axial_tilt()) + '°'
         if row == 'Density':
             return planet.get_density()
         if row == 'Diameter':

@@ -12,7 +12,7 @@ class Moon(World):
         self.__orbit = None
         self.make_size()
         self.make_type()
-        self.makeatmosphere()
+        self.make_atmosphere()
         self.make_hydrographics()
         self.make_climate()
         self.make_density()

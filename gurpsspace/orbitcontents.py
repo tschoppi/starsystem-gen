@@ -1,9 +1,10 @@
 from . import dice as GD
 
+
 class OrbitContent:
     """Generic class for contents of orbits."""
-    def roll(self, dicenum, modifier):
-        return self.roller.roll(dicenum, modifier)
+    def roll(self, dice_num, modifier):
+        return self.roller.roll(dice_num, modifier)
 
     def __init__(self,
                  primary,    # Primary star
@@ -13,10 +14,10 @@ class OrbitContent:
         self.primary_star = primary
         primarylum = self.primary_star.get_luminosity()
         self.make_blackbody_temperature(primarylum, self.__orbit)
-        self.makeorbitperiod()
+        self.make_orbital_period()
 
     def make_blackbody_temperature(self, lum, orb):
-        self.__bbtemp = 278 * lum**(0.25) * orb**(-0.5)
+        self.__bbtemp = 278 * lum ** 0.25 * orb ** -0.5
 
     def get_blackbody_temp(self):
         return self.__bbtemp
@@ -24,14 +25,14 @@ class OrbitContent:
     def get_orbit(self):
         return self.__orbit
 
-    def makeorbitperiod(self):
+    def make_orbital_period(self):
         m = self.primary_star.get_mass()
-        self.__period = (self.__orbit**3 / m)**(0.5)
+        self.__period = (self.__orbit ** 3 / m) ** 0.5
 
     def get_period(self):
         return self.__period
 
-    def seteccentricity(self, droll):
+    def set_eccentricity(self, droll):
         """Determine eccentricity of orbit with the roll result."""
         ecc = 0
         if droll > 3:
@@ -56,7 +57,7 @@ class OrbitContent:
             ecc = 0.8
         self.__ecc = ecc
         self.__eccset = True
-        self.makeminmax()
+        self.make_min_max()
 
     def get_eccentricity(self):
         if self.__eccset:
@@ -64,12 +65,12 @@ class OrbitContent:
         else:
             return None
 
-    def makeminmax(self):
+    def make_min_max(self):
         min = self.get_orbit() * (1 - self.__ecc)
         max = self.get_orbit() * (1 + self.__ecc)
         self.__minmax = (min, max)
 
-    def getMinMax(self):
+    def get_min_max(self):
         return self.__minmax
 
     def set_name(self, name):
@@ -87,9 +88,12 @@ class OrbitContent:
     # Overload in subclasses if applicable
     def get_type(self):
         return ''
+
     def get_size(self):
         return ''
+
     def num_moons(self):
         return ''
+
     def num_moonlets(self):
         return ''

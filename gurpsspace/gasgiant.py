@@ -2,6 +2,7 @@ from .orbitcontents import OrbitContent
 from .satellites import Moon, Moonlet
 from .tables import GGSizeTable
 
+
 class GasGiant(OrbitContent):
     def __init__(self, primary, orbitalradius, rollbonus=True):
         OrbitContent.__init__(self, primary, orbitalradius)
@@ -10,7 +11,7 @@ class GasGiant(OrbitContent):
         self.make_diameter()
         self.make_cloudtop_gravity()
         self.make_moons()
-        #self.print_info()
+        # self.print_info()
 
     def __repr__(self):
         return repr("{} Gas Giant".format(self.__size))
@@ -60,48 +61,48 @@ class GasGiant(OrbitContent):
         modifier = 0
         if orbit <= 0.1:
             modifier = -10
-        if orbit > 0.1 and orbit <= 0.5:
+        if 0.1 < orbit <= 0.5:
             modifier = -8
-        if orbit > 0.5 and orbit <= 0.75:
+        if 0.5 < orbit <= 0.75:
             modifier = -6
-        if orbit > 0.75 and orbit <= 1.5:
+        if 0.75 < orbit <= 1.5:
             modifier = -3
-        nummoonlets = self.roll(2, modifier)
-        if nummoonlets < 0:
-            nummoonlets = 0
-        self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(nummoonlets)]
+        num_moonlets = self.roll(2, modifier)
+        if num_moonlets < 0:
+            num_moonlets = 0
+        self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(num_moonlets)]
 
     def make_second_family(self):
         orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.1:
-            modifier = -200 # Equivalent to "do not roll"
-        if orbit > 0.1 and orbit <= 0.5:
+            modifier = -200  # Equivalent to "do not roll"
+        if 0.1 < orbit <= 0.5:
             modifier = -5
-        if orbit > 0.5 and orbit <= 0.75:
+        if 0.5 < orbit <= 0.75:
             modifier = -3
-        if orbit > 0.75 and orbit <= 1.5:
+        if 0.75 < orbit <= 1.5:
             modifier = -1
-        nummoons = self.roll(1, modifier)
-        if nummoons < 0:
-            nummoons = 0
-        self.__secondfamily = sorted([Moon(self, self.primary_star) for nummoon in range(nummoons)], key = lambda moon: moon.get_orbit())
+        num_moons = self.roll(1, modifier)
+        if num_moons < 0:
+            num_moons = 0
+        self.__secondfamily = sorted([Moon(self, self.primary_star) for _ in range(num_moons)], key=lambda moon: moon.get_orbit())
 
     def make_third_family(self):
         orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.5:
-            modifier = -200 # Equivalent to "do not roll"
-        if orbit > 0.5 and orbit <= 0.75:
+            modifier = -200  # Equivalent to "do not roll"
+        if 0.5 < orbit <= 0.75:
             modifier = -5
-        if orbit > 0.75 and orbit <= 1.5:
+        if 0.75 < orbit <= 1.5:
             modifier = -4
-        if orbit > 1.5 and orbit <= 3:
+        if 1.5 < orbit <= 3:
             modifier = -1
         num_moonlets = self.roll(1, modifier)
         if num_moonlets < 0:
             num_moonlets = 0
-        self.__thirdfamily = [Moonlet(self, 'third') for nummoonlet in range(num_moonlets)]
+        self.__thirdfamily = [Moonlet(self, 'third') for _ in range(num_moonlets)]
 
     def make_mass(self):
         size = self.get_size()
@@ -114,7 +115,7 @@ class GasGiant(OrbitContent):
         return self.__mass
 
     def make_diameter(self):
-        self.__diameter = (self.__mass / self.__density) ** (1/3.)
+        self.__diameter = (self.__mass / self.__density) ** (1 / 3.)
 
     def get_diameter(self):
         return self.__diameter

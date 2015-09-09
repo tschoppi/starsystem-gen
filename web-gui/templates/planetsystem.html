@@ -37,8 +37,8 @@
             <td>{{astro_body.get_orbit()|round(2)}} AU</td>
             <td>{{(astro_body.get_period() * 365)|round(2)}} days</td>
             <td>{{astro_body.get_eccentricity()}}</td>
-            <td>{{astro_body.getMinMax()[0]|round(2)}} AU</td>
-            <td>{{astro_body.getMinMax()[1]|round(2)}} AU</td>
+            <td>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
+            <td>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
             <td>{% if astro_body.num_moons() != '' %}{{astro_body.num_moons()|round(2)}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.num_moonlets() != '' %}{{astro_body.num_moonlets()|round(2)}}{% else %} N/A {% endif %}</td>
             <td>{{astro_body.get_blackbody_temp()|round(2)}} K</td>

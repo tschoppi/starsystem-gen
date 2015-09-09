@@ -4,9 +4,9 @@ import gurpsspace.starsystem as starsys
 
 # Change from None to a value if you want to set an argument
 args = {
-    'open_cluster': None, # True or False
-    'num_stars': None, # 1, 2 or 3
-    'age': None # Number > 0
+    'open_cluster': None,  # True or False
+    'num_stars': None,  # 1, 2 or 3
+    'age': None  # Number > 0
 }
 
 # Generate starsystems until one is made that contains a Garden world.

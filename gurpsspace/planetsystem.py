@@ -4,6 +4,7 @@ from .asteroidbelt import AsteroidBelt
 from .planet import Planet
 from .tables import OrbitalSpace
 
+
 class PlanetSystem:
     def roll(self, dicenum, modifier):
         return self.roller.roll(dicenum, modifier)
@@ -20,9 +21,9 @@ class PlanetSystem:
         self.makegasgiantarrangement()
         self.placefirstgasgiant()
         self.createorbits()
-        self.makecontentlist()
-        self.placegasgiants()
-        self.fillorbits()
+        self.make_content_list()
+        self.place_gas_giants()
+        self.fill_orbits()
         self.namecontents()
         self.make_eccentricities()
 
@@ -45,10 +46,10 @@ class PlanetSystem:
         first = True
         for skey in sorted(self.__orbitcontents):
             if first:
-                print("Orb Content:\t{}: {}".format(round(skey,3), self.__orbitcontents[skey]))
+                print("Orb Content:\t{}: {}".format(round(skey, 3), self.__orbitcontents[skey]))
                 first = False
             else:
-                print("\t\t{}: {}".format(round(skey,3), self.__orbitcontents[skey]))
+                print("\t\t{}: {}".format(round(skey, 3), self.__orbitcontents[skey]))
 
     def listorbcontentdetails(self):
         for skey in sorted(self.__orbitcontents):
@@ -58,7 +59,7 @@ class PlanetSystem:
         return self.__orbitcontents
 
     def allowedorbit(self, testorbit):
-        result  = testorbit >= self.__innerlimit
+        result = testorbit >= self.__innerlimit
         result &= testorbit <= self.__outerlimit
         if self.__forbidden and result:
             result2 = testorbit <= self.__innerforbidden
@@ -68,7 +69,7 @@ class PlanetSystem:
             return result
 
     def makegasgiantarrangement(self):
-        dice = self.roll(3,0)
+        dice = self.roll(3, 0)
         self.__gasarrangement = 'None'
         if dice > 10:
             self.__gasarrangement = 'Conventional'
@@ -83,13 +84,12 @@ class PlanetSystem:
     def placefirstgasgiant(self):
         orbit = 0
         if self.__gasarrangement == 'Conventional':
-            orbit = (1 + (self.roll(2,-2) * 0.05)) * self.__snowline
+            orbit = (1 + (self.roll(2, -2) * 0.05)) * self.__snowline
         if self.__gasarrangement == 'Eccentric':
-            orbit = self.roll(1,0) * 0.125 * self.__snowline
+            orbit = self.roll(1, 0) * 0.125 * self.__snowline
         if self.__gasarrangement == 'Epistellar':
-            orbit = self.roll(3,0) * 0.1 * self.__innerlimit
+            orbit = self.roll(3, 0) * 0.1 * self.__innerlimit
         self.__firstgasorbit = orbit
-
 
     def createorbits(self):
         orbits = []
@@ -100,7 +100,7 @@ class PlanetSystem:
             else:
                 innermost = self.__innerlimit
             orbits += [innermost]
-            orbitsout = self.orbitoutward(innermost)
+            orbitsout = self.orbit_outward(innermost)
             orbits += orbitsout
         elif self.__gasarrangement == 'Epistellar':
             # Create orbits outwards. Since the epistellar GasGiant is closer to
@@ -112,62 +112,61 @@ class PlanetSystem:
             if not self.allowedorbit(startorbit):
                 startorbit = self.__innerlimit
             orbits += [startorbit]
-            orbitsout = self.orbitoutward(startorbit)
+            orbitsout = self.orbit_outward(startorbit)
             orbits += orbitsout
         else:
             # Create orbits inwards then outwards from first gas giant
             orbits += [self.__firstgasorbit]
-            orbitsin = self.orbitinward(self.__firstgasorbit)
-            orbitsout = self.orbitoutward(self.__firstgasorbit)
+            orbitsin = self.orbit_inward(self.__firstgasorbit)
+            orbitsout = self.orbit_outward(self.__firstgasorbit)
             orbits = orbitsin + orbits
             orbits += orbitsout
         self.__orbitarray = orbits
 
-    def orbitoutward(self, startorbit):
+    def orbit_outward(self, startorbit):
         allowed = True
         orbits = []
-        oldorbit = startorbit
-        neworbit = 0
-        while(allowed):
-            orbsep = OrbitalSpace[self.roll(3,0)]
-            neworbit = oldorbit * orbsep
-            if self.allowedorbit(neworbit) and neworbit - oldorbit >= 0.15:
-                orbits += [neworbit]
-                oldorbit = neworbit
+        old_orbit = startorbit
+        new_orbit = 0
+        while (allowed):
+            orbital_separation = OrbitalSpace[self.roll(3, 0)]
+            new_orbit = old_orbit * orbital_separation
+            if self.allowedorbit(new_orbit) and new_orbit - old_orbit >= 0.15:
+                orbits += [new_orbit]
+                old_orbit = new_orbit
             else:
                 allowed = False
-                neworbits = [oldorbit * 1.4, oldorbit * 2.0]
+                new_orbits = [old_orbit * 1.4, old_orbit * 2.0]
                 success = False
                 # Check 1.4 and 2.0 if allowed, take the first
-                for neworb in neworbits:
-                    if self.allowedorbit(neworb):
-                        if neworb - oldorbit >= 0.15:
+                for possible_orbit in new_orbits:
+                    if self.allowedorbit(possible_orbit):
+                        if possible_orbit - old_orbit >= 0.15:
                             success = True
-                            neworbit = neworb
-                            oldorbit = neworb
+                            new_orbit = possible_orbit
+                            old_orbit = possible_orbit
                             break
                 if success:
-                    orbits += [neworbit]
+                    orbits += [new_orbit]
                     allowed = True
                 else:
                     # If our searching yielded nothing, check if there is an
                     # allowed orbit with the minimal distance, and put that
-                    if self.allowedorbit(oldorbit + 0.15) and self.allowedorbit(oldorbit * 1.4):
-                        neworbit = oldorbit + 0.15
-                        orbits += [neworbit]
-                        oldorbit = neworbit
+                    if self.allowedorbit(old_orbit + 0.15) and self.allowedorbit(old_orbit * 1.4):
+                        new_orbit = old_orbit + 0.15
+                        orbits += [new_orbit]
+                        old_orbit = new_orbit
                         allowed = True
-
 
         return orbits
 
-    def orbitinward(self, startorbit):
+    def orbit_inward(self, startorbit):
         allowed = True
         orbits = []
         oldorbit = startorbit
         neworbit = 0
-        while(allowed):
-            orbsep = OrbitalSpace[self.roll(3,0)]
+        while (allowed):
+            orbsep = OrbitalSpace[self.roll(3, 0)]
             neworbit = oldorbit / orbsep
             if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
                 orbits = [neworbit] + orbits
@@ -183,80 +182,79 @@ class PlanetSystem:
                     allowed = True
         return orbits
 
-
-    def makecontentlist(self):
+    def make_content_list(self):
         # Make a dictionary: Orbit: Content. Initially this will only contain
         # the first gas giant. (If gas giant arrangement is not "None")
-        orbits = self.__orbitarray
+        # orbits = self.__orbitarray
         self.__orbitcontents = dict.fromkeys(self.__orbitarray)
 
         # Put the first gas giant
         if self.__gasarrangement is not 'None':
             # Check whether roll bonus for size is applicable here
-            bonus = self.gasgiantbonus(self.__firstgasorbit)
+            bonus = self.gas_giant_bonus(self.__firstgasorbit)
 
             # Add a GasGiant to the dict
             self.__orbitcontents[self.__firstgasorbit] = GasGiant(
                 self.parentstar, self.__firstgasorbit, bonus)
 
-    def placegasgiants(self):
+    def place_gas_giants(self):
         # Iterate through all orbits necessary and decide whether to place a
         # gas giant there. Also check whether the orbit is eligible for a bonus
 
         rollorbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
-        smallorbits = [orb for orb in rollorbits if orb < self.__snowline]
-        largeorbits = [orb for orb in rollorbits if orb > self.__snowline]
+        small_orbits = [orb for orb in rollorbits if orb < self.__snowline]
+        large_orbits = [orb for orb in rollorbits if orb > self.__snowline]
         if self.__gasarrangement is 'Epistellar':
-            for so in smallorbits:
-                if self.roll(3,0) <= 6:
-                    self.__orbitcontents[so] = GasGiant(self.parentstar,
-                        so, True)
-            for so in largeorbits:
-                if self.roll(3,0) <= 14:
-                    self.__orbitcontents[so] = GasGiant(self.parentstar,
-                        so, self.gasgiantbonus(so))
+            for stellar_orbit in small_orbits:
+                if self.roll(3, 0) <= 6:
+                    self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
+                                                                   stellar_orbit, True)
+            for stellar_orbit in large_orbits:
+                if self.roll(3, 0) <= 14:
+                    self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
+                                                                   stellar_orbit, self.gas_giant_bonus(stellar_orbit))
         elif self.__gasarrangement is 'Eccentric':
-            for so in smallorbits:
-                if self.roll(3,0) <= 8:
-                    self.__orbitcontents[so] = GasGiant(self.parentstar,
-                        so, True)
-            for so in largeorbits:
-                if self.roll(3,0) <= 14:
-                    self.__orbitcontents[so] = GasGiant(self.parentstar,
-                        so, self.gasgiantbonus(so))
+            for stellar_orbit in small_orbits:
+                if self.roll(3, 0) <= 8:
+                    self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
+                                                                   stellar_orbit, True)
+            for stellar_orbit in large_orbits:
+                if self.roll(3, 0) <= 14:
+                    self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
+                                                                   stellar_orbit, self.gas_giant_bonus(stellar_orbit))
         elif self.__gasarrangement is 'Conventional':
-            for so in largeorbits:
-                if self.roll(3,0) <= 15:
-                    self.__orbitcontents[so] = GasGiant(self.parentstar,
-                        so, self.gasgiantbonus(so))
+            for stellar_orbit in large_orbits:
+                if self.roll(3, 0) <= 15:
+                    self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
+                                                                   stellar_orbit, self.gas_giant_bonus(stellar_orbit))
 
-    def gasgiantbonus(self, orbit):
+    def gas_giant_bonus(self, orbit):
         bonus = orbit <= self.__snowline
         if not bonus:
-            ggindex = self.__orbitarray.index(orbit)
-            if ggindex > 0:
-                bonus = self.__orbitarray[ggindex-1] < self.__snowline
+            gg_index = self.__orbitarray.index(orbit)
+            if gg_index > 0:
+                bonus = self.__orbitarray[gg_index - 1] < self.__snowline
         return bonus
 
-    def fillorbits(self):
+    def fill_orbits(self):
         # Determine eligible orbits to roll for
-        rollorbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
-        rollorbits.sort()
+        roll_orbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
+        roll_orbits.sort()
         # Go through these orbits and determine the contents
-        for orbit in rollorbits:
-            rollmod = self.orbitfillmodifier(self.__orbitarray.index(orbit))
-            diceroll = self.roll(3, rollmod)
-            if diceroll >= 4 and diceroll <= 6:
+        for orbit in roll_orbits:
+            roll_mod = self.orbitfillmodifier(self.__orbitarray.index(orbit))
+            dice_roll = self.roll(3, roll_mod)
+            if 4 <= dice_roll <= 6:
                 obj = AsteroidBelt(self.parentstar, orbit)
-            if diceroll >= 7 and diceroll <= 8:
+            if 7 <= dice_roll <= 8:
                 obj = Planet(self.parentstar, orbit, "Tiny")
-            if diceroll >= 9 and diceroll <= 11:
+            if 9 <= dice_roll <= 11:
                 obj = Planet(self.parentstar, orbit, "Small")
-            if diceroll >= 12 and diceroll <= 15:
+            if 12 <= dice_roll <= 15:
                 obj = Planet(self.parentstar, orbit, "Standard")
-            if diceroll >= 16:
+            if dice_roll >= 16:
                 obj = Planet(self.parentstar, orbit, "Large")
-            if not diceroll <= 3:
+            if not dice_roll <= 3:
                 self.__orbitcontents[orbit] = obj
         # Now remove all orbits that still have None as content
         orc = {k: v for k, v in self.__orbitcontents.items() if v is not None}
@@ -277,15 +275,15 @@ class PlanetSystem:
         if self.__forbidden:
             if orbitindex == 0 and self.__outerforbidden < orbits[orbitindex]:
                 modifier -= 6
-            if orbitindex == len(orbits)-1 and self.__innerforbidden > orbits[orbitindex]:
+            if orbitindex == len(orbits) - 1 and self.__innerforbidden > orbits[orbitindex]:
                 modifier -= 6
 
         # If the orbit is adjacent to the inner or outer limit
-        if orbitindex == 0 or orbitindex == len(orbits)-1:
+        if orbitindex == 0 or orbitindex == len(orbits) - 1:
             modifier -= 3
 
         # If the next orbit outward is occupied by a gas giant
-        if orbitindex is not len(orbits)-1:
+        if orbitindex is not len(orbits) - 1:
             if self.__orbitcontents[orbits[orbitindex + 1]] is not None:
                 if self.__orbitcontents[orbits[orbitindex + 1]].type() is "Gas Giant":
                     modifier -= 6
@@ -302,13 +300,14 @@ class PlanetSystem:
         for k, oc in self.__orbitcontents.items():
             if self.__gasarrangement == 'Conventional':
                 bonus = -6
-            elif k == list(self.__orbitcontents)[0] and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
+            elif k == list(self.__orbitcontents)[0] \
+                    and self.__gasarrangement == 'Epistellar' and oc.type() == 'Gas Giant':
                 bonus = -6
             elif self.__gasarrangement == 'Eccentric' and oc.type() == 'Gas Giant' and k < self.__snowline:
                 bonus = +4
             else:
                 bonus = 0
-            oc.seteccentricity(self.roll(3, bonus))
+            oc.set_eccentricity(self.roll(3, bonus))
 
     def has_garden(self):
         ret = False

@@ -9,7 +9,7 @@ class World(OrbitContent):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
         self.make_type()
-        self.makeatmosphere()
+        self.make_atmosphere()
         self.make_hydrographics()
         self.make_climate()
         self.make_density()
@@ -71,7 +71,7 @@ class World(OrbitContent):
     def get_atmospheric_mass(self):
         return self.__atmmass
 
-    def makeatmosphere(self):
+    def make_atmosphere(self):
         size = self.get_size()
         type = self.get_type()
         # Determine atmospheric mass
@@ -321,7 +321,7 @@ class World(OrbitContent):
                 bonus += 8
             if self.get_hydrographic_cover() < 50:
                 bonus -= 2
-            bonus += self.get_tectonicbonus()
+            bonus += self.get_tectonic_bonus()
             tect = self.roll(3, bonus)
             activity = 'None'
             if tect > 6:
@@ -334,7 +334,7 @@ class World(OrbitContent):
                 activity = 'Extreme'
             self.__tectonic = activity
 
-    def get_tectonicbonus(self):
+    def get_tectonic_bonus(self):
         return 0
 
     def get_tectonics(self):

@@ -29,7 +29,7 @@ class AsteroidBelt(OrbitContent):
         print("")
 
     def make_resources(self):
-        dice = self.roll(3,0)
+        dice = self.roll(3, 0)
         rvm = -5
         value = 'Worthless'
         if dice == 4:

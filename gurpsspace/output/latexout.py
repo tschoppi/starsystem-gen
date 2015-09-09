@@ -207,11 +207,11 @@ class LatexWriter:
             str += '\section{Summary}\n% A small amount of short sentences describing the general feel of this planet system.\n\n'
             str += '\section{Description}\n% A more in-depth description of the planet system.\n\n'
             str += '\section{GM Notes}\n% Notes about the planet system and eventual adventures that can be undertaken.\n\n'
-            str += '\\begin{landscape}\n\section{List of Orbits and their Occupants}\n\\begin{table}[H]\n\\begin{tabular}{llllrrrrrrrrr}\n'
+            str += '\\begin{landscape}\n\section{List of Orbits and their Occupants}\n\\begin{table}[H]\n\\begin{tabular}{llllrrrrrrrrr}\n'  # noqa
             str += '\\toprule\n'
-            str += '\multirow{2}{*}{Name} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & $R_\mathrm{orb}$ & $P_\mathrm{orb}$ & \multirow{2}{*}{Ecc.} & $R_\mathrm{min}$ & $R_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & $T_\mathrm{BB}$ \\\\ \n'
+            str += '\multirow{2}{*}{Name} & \multirow{2}{*}{Type} & \multirow{2}{*}{Size} & \multirow{2}{*}{World} & $R_\mathrm{orb}$ & $P_\mathrm{orb}$ & \multirow{2}{*}{Ecc.} & $R_\mathrm{min}$ & $R_\mathrm{max}$ & \multirow{2}{*}{Moons} & \multirow{2}{*}{Moonlets} & $T_\mathrm{BB}$ \\\\ \n'  # noqa
             str += '\cmidrule(lr){5-5} \cmidrule(lr){6-6} \cmidrule(lr){8-8} \cmidrule(lr){9-9} \cmidrule(lr){12-12}\n'
-            str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'
+            str += '& & & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{Year} & & \multicolumn{1}{c}{AU} & \multicolumn{1}{c}{AU} & & & \multicolumn{1}{c}{K} \\\\ \n'  # noqa
             str += '\midrule\n'
             for skey in sorted(oc):
                 str += '{} & '.format(oc[skey].get_name())
@@ -221,8 +221,8 @@ class LatexWriter:
                 str += '{:.2f} & '.format(oc[skey].get_orbit())
                 str += '{:.2f} & '.format(oc[skey].get_period())
                 str += '{:.2f} & '.format(oc[skey].get_eccentricity())
-                str += '{:.2f} & '.format(oc[skey].getMinMax()[0])
-                str += '{:.2f} & '.format(oc[skey].getMinMax()[1])
+                str += '{:.2f} & '.format(oc[skey].get_min_max()[0])
+                str += '{:.2f} & '.format(oc[skey].get_min_max()[1])
                 nmoon = oc[skey].num_moons()
                 nmoonlts = oc[skey].num_moonlets()
                 if nmoon is 0:
@@ -263,7 +263,7 @@ class LatexWriter:
             tertable = '\section{List of Planets and their Properties}\n'
             tertable += '\\begin{table}[H]\n\\begin{tabular}{l ' + ('l' * types.count('Terrestrial')) + '}\n'
             tertable += '\\toprule\n'
-            tertable += '\multirow{2}{*}{Property} & \multicolumn{' + '{}'.format(types.count('Terrestrial')) + '}{c}{Planet Name}\\\\ \n'
+            tertable += '\multirow{2}{*}{Property} & \multicolumn{' + '{}'.format(types.count('Terrestrial')) + '}{c}{Planet Name}\\\\ \n'  # noqa
             for skey in sorted(oc):
                 if oc[skey].type() != 'Terrestrial':
                     continue
@@ -315,7 +315,7 @@ class LatexWriter:
                     hydro += ' & {:10}'.format(oc[skey].get_hydrographic_cover())
                 tsurf += ' & {:10.0f}'.format(oc[skey].get_average_surface_temp())
                 climate += ' & {:10}'.format(oc[skey].get_climate())
-                axtilt += ' & {:10}'.format(oc[skey].getAxialTilt())
+                axtilt += ' & {:10}'.format(oc[skey].get_axial_tilt())
                 dens += ' & {:10}'.format(oc[skey].get_density())
                 diam += ' & {:10.2f}'.format(oc[skey].get_diameter())
                 grav += ' & {:10.2f}'.format(oc[skey].get_gravity())
@@ -350,7 +350,7 @@ class LatexWriter:
             tertable += prot + lend
             tertable += '\\bottomrule\n\end{tabular}\n\n'
             tertable += '\\footnotesize\n$^1$ '
-            tertable += '\\textbf{C}: Corrosive, \\textbf{LT}: Lethally Toxic, \\textbf{HT}: Highly Toxic, \\textbf{MT}: Mildly Toxic, \\textbf{S}: Suffocating\\\\ \n'
+            tertable += '\\textbf{C}: Corrosive, \\textbf{LT}: Lethally Toxic, \\textbf{HT}: Highly Toxic, \\textbf{MT}: Mildly Toxic, \\textbf{S}: Suffocating\\\\ \n'  # noqa
             tertable += '$^2$ Total Tidal Effect\\\\ \n'
             tertable += '$^3$ Resource Value Modifier \n'
             tertable += '\end{table}\n\n'
@@ -413,7 +413,7 @@ class LatexWriter:
         str += '%\subsection{Installations}\n\n'
 
         if planet.num_moons() > 0:
-            moons = planet.getSatellites()
+            moons = planet.get_satellites()
             for m in moons:
                 str += self.moondetails(m)
         return str

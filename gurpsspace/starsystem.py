@@ -1,12 +1,12 @@
-from . import star as GS
-from . import dice as GD
+from . import star
+from . import dice
 from .tables import OrbSepTable, StOEccTable
 from .output import latexout
 LW = latexout.LatexWriter
 
 
 class StarSystem:
-    roller = GD.DiceRoller()
+    roller = dice.DiceRoller()
 
     def __init__(self, **kwargs):
         open_cluster = kwargs.get('open_cluster', None)
@@ -36,8 +36,8 @@ class StarSystem:
         self.make_periods()
         # self.print_info()
 
-    def roll(self, dicenum, modifier):
-        return self.roller.roll(dicenum, modifier)
+    def roll(self, dicenum, modifier, sides=6):
+        return self.roller.roll(dicenum, modifier, sides)
 
     def printinfo(self):
         print("Star System Info")
@@ -75,7 +75,7 @@ class StarSystem:
     def generate_stars(self):
         self.stars = []
         for i in range(self.__numstars):
-            self.stars.append(GS.Star(age=self.__age))
+            self.stars.append(star.Star(age=self.__age))
 
     def make_age(self, age):
         if age is None:
@@ -122,8 +122,8 @@ class StarSystem:
         stellar system.
         """
         letters = ['A', 'B', 'C']
-        for star in self.stars:
-            star.set_letter(letters[self.stars.index(star)])
+        for star_ in self.stars:
+            star_.set_letter(letters[self.stars.index(star_)])
 
     # Generate stellar orbits for multiple-star systems
     # Missing: Sub-companion star for distant second companion star
@@ -207,8 +207,8 @@ class StarSystem:
                 self.stars[2].set_forbidden_zone(start, end)
 
     def create_planetsystem(self):
-        for star in self.stars:
-            star.make_planetsystem()
+        for star_ in self.stars:
+            star_.make_planetsystem()
 
     def make_periods(self):
         self.__periods = []
@@ -249,6 +249,6 @@ class StarSystem:
 
     def has_garden(self):
         ret = False
-        for star in self.stars:
-            ret |= star.planetsystem.has_garden()
+        for star_ in self.stars:
+            ret |= star_.planetsystem.has_garden()
         return ret

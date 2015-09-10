@@ -25,17 +25,17 @@ from gurpsspace import starsystem as starsys
 class WebServer(object):
 
     @cherrypy.expose
-    def starsystem(self, must_have_garden="False", opencluster=None, numstars=0, age=None):
-        if numstars == "":
-            numstars = None
-        elif int(numstars) < 1 or int(numstars) > 3:
-            numstars = None
+    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None):
+        if num_stars == "":
+            num_stars = None
+        elif int(num_stars) < 1 or int(num_stars) > 3:
+            num_stars = None
         else:
-            numstars = int(numstars)
+            num_stars = int(num_stars)
 
         args = {
-            'opencluster': opencluster == "True",
-            'numstars': numstars,
+            'open_cluster': open_cluster == "True",
+            'num_stars': num_stars,
             'age': age
         }
 
@@ -67,13 +67,13 @@ class WebServer(object):
         tmpl = env.get_template('planetsystem.html')
         env.globals['translate_row'] = self.translate_row
         count = 0
-        for key, _ in starsystem.stars[star_id].planetsystem.getOrbitcontents().items():
-                if starsystem.stars[star_id].planetsystem.getOrbitcontents()[key].type() == 'Terrestrial':
+        for key, _ in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
+                if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
                     count += 1
         tcount = count
         count = 0
-        for key, _ in starsystem.stars[star_id].planetsystem.getOrbitcontents().items():
-                if starsystem.stars[star_id].planetsystem.getOrbitcontents()[key].type() == 'Ast. Belt':
+        for key, _ in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
+                if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
                     count += 1
         acount = count
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
@@ -81,7 +81,7 @@ class WebServer(object):
 
     def translate_row(self, key, row):
         planetsystem = cherrypy.session.get('planetsystem')
-        planet = planetsystem.getOrbitcontents()[key]
+        planet = planetsystem.get_orbitcontents()[key]
         if row == '':
             return planet.get_name().replace("<", "").replace(">", "")
         if row == 'World Size':

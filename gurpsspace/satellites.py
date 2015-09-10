@@ -1,11 +1,11 @@
-from . import dice as GD
+from . import dice
 from .world import World
 from .tables import SizeToInt, IntToSize
 
 
 class Moon(World):
     def __init__(self, parent_planet, primary_star):
-        self.roller = GD.DiceRoller()
+        self.roller = dice.DiceRoller()
         self.parent = parent_planet
         self.primary_star = primary_star
         self.make_blackbody_temperature()
@@ -85,8 +85,8 @@ class Moon(World):
     def set_orbit(self, orbit):
         self.__orbit = orbit
 
-    def roll(self, ndice, modifier):
-        return self.roller.roll(ndice, modifier)
+    def roll(self, ndice, modifier, sides=6):
+        return self.roller.roll(ndice, modifier, sides)
 
     def get_volcanic_bonus(self):
         if self.get_type() == 'Sulfur':
@@ -213,17 +213,17 @@ class Moon(World):
     def set_number(self, number):
         self.__number = number
 
-    def getNumber(self):
+    def get_number(self):
         return self.__number
 
 
 class Moonlet:
-    def roll(self, ndice, modifier):
-        return self.roller.roll(ndice, modifier)
+    def roll(self, ndice, modifier, sides=6):
+        return self.roller.roll(ndice, modifier, sides)
 
     def __init__(self, parentplanet, family=None):
         self.parent = parentplanet
-        self.roller = GD.DiceRoller()
+        self.roller = dice.DiceRoller()
         self.family = family
         self.make_orbit()
         self.make_period()

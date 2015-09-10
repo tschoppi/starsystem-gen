@@ -1,15 +1,15 @@
-from . import dice as GD
+from . import dice
 
 
 class OrbitContent:
     """Generic class for contents of orbits."""
-    def roll(self, dice_num, modifier):
-        return self.roller.roll(dice_num, modifier)
+    def roll(self, dice_num, modifier, sides=6):
+        return self.roller.roll(dice_num, modifier, sides)
 
     def __init__(self,
                  primary,    # Primary star
                  orbitalradius):
-        self.roller = GD.DiceRoller()
+        self.roller = dice.DiceRoller()
         self.__orbit = orbitalradius
         self.primary_star = primary
         primarylum = self.primary_star.get_luminosity()
@@ -82,7 +82,7 @@ class OrbitContent:
     def set_number(self, number):
         self.__number = number
 
-    def getNumber(self):
+    def get_number(self):
         return self.__number
 
     # Overload in subclasses if applicable

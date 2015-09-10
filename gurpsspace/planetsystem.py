@@ -1,4 +1,4 @@
-from . import dice as GD
+from . import dice
 from .gasgiant import GasGiant
 from .asteroidbelt import AsteroidBelt
 from .planet import Planet
@@ -6,11 +6,11 @@ from .tables import OrbitalSpace
 
 
 class PlanetSystem:
-    def roll(self, dicenum, modifier):
-        return self.roller.roll(dicenum, modifier)
+    def roll(self, dicenum, modifier, sides=6):
+        return self.roller.roll(dicenum, modifier, sides)
 
     def __init__(self, parentstar):
-        self.roller = GD.DiceRoller()
+        self.roller = dice.DiceRoller()
         self.parentstar = parentstar
         self.__innerlimit, self.__outerlimit = parentstar.get_orbit_limits()
         self.__snowline = parentstar.get_snowline()
@@ -18,13 +18,13 @@ class PlanetSystem:
         self.__forbidden = parentstar.has_forbidden_zone()
         if self.__forbidden:
             self.__innerforbidden, self.__outerforbidden = parentstar.get_forbidden_zone()
-        self.makegasgiantarrangement()
-        self.placefirstgasgiant()
+        self.make_gasgiant_arrangement()
+        self.place_first_gasgiant()
         self.createorbits()
         self.make_content_list()
         self.place_gas_giants()
         self.fill_orbits()
-        self.namecontents()
+        self.name_contents()
         self.make_eccentricities()
 
     def printinfo(self):
@@ -55,10 +55,10 @@ class PlanetSystem:
         for skey in sorted(self.__orbitcontents):
             self.__orbitcontents[skey].print_info()
 
-    def getOrbitcontents(self):
+    def get_orbitcontents(self):
         return self.__orbitcontents
 
-    def allowedorbit(self, testorbit):
+    def allowed_orbit(self, testorbit):
         result = testorbit >= self.__innerlimit
         result &= testorbit <= self.__outerlimit
         if self.__forbidden and result:
@@ -68,7 +68,7 @@ class PlanetSystem:
         else:
             return result
 
-    def makegasgiantarrangement(self):
+    def make_gasgiant_arrangement(self):
         dice = self.roll(3, 0)
         self.__gasarrangement = 'None'
         if dice > 10:
@@ -81,7 +81,7 @@ class PlanetSystem:
             if self.__snowline > self.__innerforbidden and self.__snowline < self.__outerforbidden:
                 self.__gasarrangement = 'None'
 
-    def placefirstgasgiant(self):
+    def place_first_gasgiant(self):
         orbit = 0
         if self.__gasarrangement == 'Conventional':
             orbit = (1 + (self.roll(2, -2) * 0.05)) * self.__snowline
@@ -109,7 +109,7 @@ class PlanetSystem:
             startorbit = self.__firstgasorbit + 0.15
             # If the minimal distance is not within the orbital zone make the
             # next orbit right at the border
-            if not self.allowedorbit(startorbit):
+            if not self.allowed_orbit(startorbit):
                 startorbit = self.__innerlimit
             orbits += [startorbit]
             orbitsout = self.orbit_outward(startorbit)
@@ -131,7 +131,7 @@ class PlanetSystem:
         while (allowed):
             orbital_separation = OrbitalSpace[self.roll(3, 0)]
             new_orbit = old_orbit * orbital_separation
-            if self.allowedorbit(new_orbit) and new_orbit - old_orbit >= 0.15:
+            if self.allowed_orbit(new_orbit) and new_orbit - old_orbit >= 0.15:
                 orbits += [new_orbit]
                 old_orbit = new_orbit
             else:
@@ -140,7 +140,7 @@ class PlanetSystem:
                 success = False
                 # Check 1.4 and 2.0 if allowed, take the first
                 for possible_orbit in new_orbits:
-                    if self.allowedorbit(possible_orbit):
+                    if self.allowed_orbit(possible_orbit):
                         if possible_orbit - old_orbit >= 0.15:
                             success = True
                             new_orbit = possible_orbit
@@ -152,7 +152,7 @@ class PlanetSystem:
                 else:
                     # If our searching yielded nothing, check if there is an
                     # allowed orbit with the minimal distance, and put that
-                    if self.allowedorbit(old_orbit + 0.15) and self.allowedorbit(old_orbit * 1.4):
+                    if self.allowed_orbit(old_orbit + 0.15) and self.allowed_orbit(old_orbit * 1.4):
                         new_orbit = old_orbit + 0.15
                         orbits += [new_orbit]
                         old_orbit = new_orbit
@@ -168,14 +168,14 @@ class PlanetSystem:
         while (allowed):
             orbsep = OrbitalSpace[self.roll(3, 0)]
             neworbit = oldorbit / orbsep
-            if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
+            if self.allowed_orbit(neworbit) and oldorbit - neworbit >= 0.15:
                 orbits = [neworbit] + orbits
                 oldorbit = neworbit
             else:
                 allowed = False
                 # Check to fit one last orbit
                 neworbit = oldorbit / 1.4
-                if self.allowedorbit(neworbit) and oldorbit - neworbit >= 0.15:
+                if self.allowed_orbit(neworbit) and oldorbit - neworbit >= 0.15:
                     orbits = [oldorbit / 1.4] + orbits
                     # Because this worked we'll try to do this one more time
                     oldorbit = oldorbit / 1.4
@@ -242,7 +242,7 @@ class PlanetSystem:
         roll_orbits.sort()
         # Go through these orbits and determine the contents
         for orbit in roll_orbits:
-            roll_mod = self.orbitfillmodifier(self.__orbitarray.index(orbit))
+            roll_mod = self.orbit_fill_modifier(self.__orbitarray.index(orbit))
             dice_roll = self.roll(3, roll_mod)
             if 4 <= dice_roll <= 6:
                 obj = AsteroidBelt(self.parentstar, orbit)
@@ -260,7 +260,7 @@ class PlanetSystem:
         orc = {k: v for k, v in self.__orbitcontents.items() if v is not None}
         self.__orbitcontents = orc
 
-    def namecontents(self):
+    def name_contents(self):
         counter = 0
         for key in sorted(self.__orbitcontents):
             counter += 1
@@ -268,7 +268,7 @@ class PlanetSystem:
             self.__orbitcontents[key].set_name(name)
             self.__orbitcontents[key].set_number(counter)
 
-    def orbitfillmodifier(self, orbitindex):
+    def orbit_fill_modifier(self, orbitindex):
         modifier = 0
         orbits = self.__orbitarray
         # If the orbit is adjacent to a forbidden zone

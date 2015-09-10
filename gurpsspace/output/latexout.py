@@ -156,7 +156,7 @@ class LatexWriter:
         for star in self.starsystem.stars:
             sequence += ' & ' + star.get_sequence()
             mass += ' & {:7.2f}'.format(star.get_mass())
-            temp += ' & {:7.0f}'.format(star.getTemp())
+            temp += ' & {:7.0f}'.format(star.get_temp())
             lum += ' & {:7.4f}'.format(star.get_luminosity())
             rad += ' & {:7.5f}'.format(star.get_radius())
             inner += ' & {:7.2f}'.format(star.get_orbit_limits()[0])
@@ -199,7 +199,7 @@ class LatexWriter:
         for star in self.starsystem.stars:
             lettr = star.get_letter()
             ps = star.planetsystem
-            oc = ps.getOrbitcontents()
+            oc = ps.get_orbitcontents()
             types = [pl.type() for key, pl in oc.items()]
 
             title = 'Overview -- Planet System ' + lettr
@@ -367,7 +367,7 @@ class LatexWriter:
         gas giant or major moon
         """
         letter = planetsystem.parentstar.get_letter()
-        oc = planetsystem.getOrbitcontents()
+        oc = planetsystem.get_orbitcontents()
         str = '\chapter{Planet System ' + letter + '}\n\n'
         # Call for each celestial body the function to print its details
         for key in sorted(oc):

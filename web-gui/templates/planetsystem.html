@@ -27,8 +27,8 @@
             <th>Moonlets</th>
             <th>Blackbody Temperature</th>
         </tr>
-        {% for key, planet in planetsystem.getOrbitcontents().items()|sort %}
-        {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+        {% for key, planet in planetsystem.get_orbitcontents().items()|sort %}
+        {% set astro_body = planetsystem.get_orbitcontents()[key] %}
         <tr>
             <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
             <td>{{astro_body.type()}}</td>
@@ -57,8 +57,8 @@
             <th>Resource Value Modifier</th>
             <th>Affinity</th>
         </tr>
-        {% for key, _ in planetsystem.getOrbitcontents().items()|sort if planetsystem.getOrbitcontents()[key].type() == 'Ast. Belt'%}
-        {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+        {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt'%}
+        {% set astro_body = planetsystem.get_orbitcontents()[key] %}
         <tr>
             <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
             <td>{{astro_body.get_average_surface_temp()|round(2)}} K / {{(astro_body.get_average_surface_temp()-273.15)|round(2)}}°C</td>
@@ -78,8 +78,8 @@
             {% for row in list_of_rows %}
             <tr>
                 <td><b>{{row}}</b></td>
-                {% for key, _ in planetsystem.getOrbitcontents().items()|sort if planetsystem.getOrbitcontents()[key].type() == 'Terrestrial'%}
-                {% set astro_body = planetsystem.getOrbitcontents()[key] %}
+                {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Terrestrial'%}
+                {% set astro_body = planetsystem.get_orbitcontents()[key] %}
                 <td>
                     {% if row == "" %}<b>{{translate_row(key, row)}}</b>{% else %}{{translate_row(key, row)}}{% endif %}
                 </td>

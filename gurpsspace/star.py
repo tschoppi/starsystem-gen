@@ -1,13 +1,13 @@
-from . import dice as GD
-from . import planetsystem as PS
+from . import dice
+from . import planetsystem
 from .tables import StEvoTable, IndexTable, SequenceTable
 
 
 class Star:
-    roller = GD.DiceRoller()
+    roller = dice.DiceRoller()
 
-    def roll(self, dicenum, modifier):
-        return self.roller.roll(dicenum, modifier)
+    def roll(self, dicenum, modifier, sides=6):
+        return self.roller.roll(dicenum, modifier, sides)
 
     def __init__(self, age):
         self.__hasforbiddenzone = False
@@ -147,7 +147,7 @@ class Star:
 
         self.__temperature = temp
 
-    def getTemp(self):
+    def get_temp(self):
         return self.__temperature
 
     def make_radius(self):
@@ -183,7 +183,7 @@ class Star:
         self.__hasforbiddenzone = True
 
     def make_planetsystem(self):
-        self.planetsystem = PS.PlanetSystem(self)
+        self.planetsystem = planetsystem.PlanetSystem(self)
 
     def get_orbit_limits(self):
         return (self.__innerlimit, self.__outerlimit)

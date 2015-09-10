@@ -147,6 +147,17 @@ class World(OrbitContent):
             hydro = self.roll(2, -7) * 10
             if hydro < 0:
                 hydro = 0
+        # Introduce a small amount of randomness to the hydrographic coverage, to make the worlds more varied and to make them feel more real
+        # Do this only if there is any surface liquid at all, avoiding those astral bodies who cannot have a hydrographic coverage at all
+        # Vary by +- 5% as described in the rule book
+        if 10 <= hydro <= 90:
+            sign = self.roll(1, 0, 2)
+            variation = self.roll(1, 0, 5)
+            if sign == 1:
+                hydro += variation
+            else:
+                hydro -= variation
+
         self.__hydrocover = hydro
 
     def get_hydrographic_cover(self):
@@ -432,7 +443,7 @@ class World(OrbitContent):
         # Now the Hydrographics Coverage conditions
         if self.get_type() in ['Garden', 'Ocean']:
             hydro = self.get_hydrographic_cover()
-            if (hydro > 0 and hydro < 60) or (hydro > 90 and hydro < 100):
+            if (0 < hydro < 60) or (90 < hydro < 100):
                 modifier += 1
             elif hydro > 0:
                 modifier += 2

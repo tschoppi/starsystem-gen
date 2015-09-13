@@ -25,7 +25,6 @@
             <th>Maximum Radius</th>
             <th>Moons</th>
             <th>Moonlets</th>
-            <th>Blackbody Temperature</th>
         </tr>
         {% for key, planet in planetsystem.get_orbitcontents().items()|sort %}
         {% set astro_body = planetsystem.get_orbitcontents()[key] %}
@@ -41,7 +40,6 @@
             <td>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
             <td>{% if astro_body.num_moons() != '' %}{{astro_body.num_moons()|round(2)}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.num_moonlets() != '' %}{{astro_body.num_moonlets()|round(2)}}{% else %} N/A {% endif %}</td>
-            <td>{{astro_body.get_blackbody_temp()|round(2)}} K</td>
         </tr>
         {% endfor %}
     </table>
@@ -74,7 +72,7 @@
     <div id="planets-list">
         <h4>This is a more detailed overview of the planets:</h4>
         <table border="1">
-            {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density", "Diameter", "Surface Gravity", "Mass", "Atm. Pressure", "Pressure Category", "Total Tidal Effect", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period"] %}
+            {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density", "Diameter", "Surface Gravity", "Mass", "Atm. Pressure", "Pressure Category", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period"] %}
             {% for row in list_of_rows %}
             <tr>
                 <td><b>{{row}}</b></td>
@@ -88,6 +86,7 @@
             {% endfor %}
         </table>
 		<p>*: retrograde rotation</p>
+        <p>Density, Diameter and Mass are relative to Earth; 1.0 is equal to Earth. The same goes for atmospheric Mass.</p>
     </div>
 {% endif %}
 </body>

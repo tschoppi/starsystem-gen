@@ -37,8 +37,8 @@
                 {% endif %}
                 <li>The star is as massive as {{star.get_mass()|round(2)}} suns.</li>
                 <li>The surface temperature of the star is {{star.get_temp()}} degrees K.</li>
-                <li>The luminosity of the star is {{star.get_luminosity()|round(6)}}.</li>
-                <li>The star's radius is {{star.get_radius()|round(6)}} times the sun's radius.</li>
+                <li>The star is {{star.get_luminosity()}} times as bright as the sun.</li>
+                <li>The star's radius is {{(star.get_radius() * 214.93) | round(2)}} times the sun's radius.</li>
                 <li>The inner limit for planets orbiting this star is at {{star.get_orbit_limits()[0]|round(2)}} AU. </li>
                 <li>The outer limit for planets orbiting this star is at {{star.get_orbit_limits()[1]|round(2)}} AU. </li>
                 <li>The snow line for planets orbiting this star is at {{star.get_snowline()|round(2)}} AU. </li>

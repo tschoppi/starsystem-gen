@@ -118,7 +118,7 @@ class WebServer(object):
         if row == 'Mass':
             return round(planet.get_mass(), 2)
         if row == 'Atm. Pressure':
-            return round(planet.get_pressure(), 2)
+            return str(round(planet.get_pressure(), 2)) + ' Atm'
         if row == 'Pressure Category':
             return planet.get_pressure_category()
         if row == 'Total Tidal Effect':

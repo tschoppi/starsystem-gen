@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Planetary system details - Starsystem Generator for GURPS</title>
+    <link rel="stylesheet" type="text/css" href="mainstyle.css" />
 </head>
 <body>
-    <h3>Planetary system properties</h3>
-    <p id="star-info">
-        This planetary system orbits star {{planetsystem.parentstar.get_letter()}} of the star system.
-    </p>
+    <h2>Properties of Planet System {{planetsystem.parentstar.get_letter()}}</h2>
 
 <div id="objects-overview">
-    <h4>This planetary system consists of the following planets and other astronomical objects:</h4></h4>
+    <h3>Overview</h3>
+    <p>This planetary system contains the following planets and other astronomical objects:</p>
     <table border="1">
         <tr>
             <th>Name</th>
@@ -46,7 +45,11 @@
 </div>
 {% if asteroid_count > 0 %}
 <div id="belts-list">
-    <h4>This is a more detailed overview of the asteroid belts:</h4>
+    {% if asteroid_count == 1 %}
+    <h3>Asteroid Belt Details</h3>
+    {% else %}
+    <h3>Details of the Asteroid Belts</h3>
+    {% endif %}
     <table border="1">
         <tr>
             <th>Name</th>
@@ -70,7 +73,11 @@
     {% endif %}
 {% if terrestrial_count > 0 %}
     <div id="planets-list">
-        <h4>This is a more detailed overview of the planets:</h4>
+        {% if terrestrial_count == 1 %}
+        <h3>Planet Details</h3>
+        {% else %}
+        <h3>Details of the Planets</h3>
+        {% endif %}
         <table border="1">
             {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density", "Diameter", "Surface Gravity", "Mass", "Atm. Pressure", "Pressure Category", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period"] %}
             {% for row in list_of_rows %}
@@ -86,7 +93,7 @@
             {% endfor %}
         </table>
 		<p>*: retrograde rotation</p>
-        <p>Density, Diameter and Mass are relative to Earth; 1.0 is equal to Earth. The same goes for atmospheric Mass.</p>
+        <p>Density, diameter and mass are relative to Earth; 1.0 is equal to Earth. The same goes for atmospheric mass.</p>
     </div>
 {% endif %}
 </body>

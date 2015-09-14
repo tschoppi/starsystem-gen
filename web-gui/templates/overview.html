@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Starsystem Generator for GURPS</title>
+    <link rel="stylesheet" type="text/css" href="mainstyle.css" />
 </head>
 <body>
-    <h3>You have successfully generated the following star system:</h3>
-    <h3>Star system properties</h3>
+    <p class="success">You have successfully generated the following star system:</p>
+    <h2>Star system properties</h2>
 
     {% if starsystem.is_open_cluster() %}
-    <p id="open-cluster">The star system is an open cluster.</p>
+    <p id="open-cluster">The star system is located in an open cluster.</p>
     {% endif %}
     {% if starsystem.stars|count == 1 %}
     <div>
@@ -36,8 +37,8 @@
                 <li>It is a {{star.get_sequence()|lower}}.</li>
                 {% endif %}
                 <li>The star is as massive as {{star.get_mass()|round(2)}} suns.</li>
-                <li>The surface temperature of the star is {{star.get_temp()}} degrees K.</li>
-                <li>The star is {{star.get_luminosity()}} times as bright as the sun.</li>
+                <li>The surface temperature of the star is {{star.get_temp()}} K.</li>
+                <li>The star is {{star.get_luminosity()|round(4)}} times as bright as the sun.</li>
                 <li>The star's radius is {{(star.get_radius() * 214.93) | round(2)}} times the sun's radius.</li>
                 <li>The inner limit for planets orbiting this star is at {{star.get_orbit_limits()[0]|round(2)}} AU. </li>
                 <li>The outer limit for planets orbiting this star is at {{star.get_orbit_limits()[1]|round(2)}} AU. </li>

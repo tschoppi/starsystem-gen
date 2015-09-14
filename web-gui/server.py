@@ -88,7 +88,7 @@ class WebServer(object):
             return planet.get_size()
         if row == 'World Type':
             return planet.get_type()
-        if row == 'Atm. Mass':
+        if row == 'Atm. Mass*':
             return str(planet.get_atmospheric_mass())
         if row == 'Atm. Composition' and planet.get_atmospheric_mass() > 0:
             retval = ''
@@ -109,13 +109,13 @@ class WebServer(object):
             return planet.get_climate()
         if row == 'Axial Tilt':
             return str(planet.get_axial_tilt()) + '°'
-        if row == 'Density':
+        if row == 'Density*':
             return planet.get_density()
-        if row == 'Diameter':
+        if row == 'Diameter*':
             return round(planet.get_diameter(), 2)
         if row == 'Surface Gravity':
             return round(planet.get_gravity(), 2)
-        if row == 'Mass':
+        if row == 'Mass*':
             return round(planet.get_mass(), 2)
         if row == 'Atm. Pressure':
             return str(round(planet.get_pressure(), 2)) + ' atm'
@@ -133,11 +133,9 @@ class WebServer(object):
             return planet.get_habitability()
         if row == 'Affinity':
             return planet.get_affinity()
-        if row == 'Rotational Period':
+        if row == 'Rotational Period*':
             retval = str(round(planet.get_rotation(), 2))
             retval += " days"
-            if planet.get_rotation() < 0:
-                retval += " *"
             return retval
         else:
             return 'Not implemented yet'

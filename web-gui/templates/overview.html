@@ -24,8 +24,10 @@
         <table>
             <tr>
                 <th>Name</th>
+                {% if starsystem.stars|count > 1 %}
                 <th>Orbital Radius</th>
                 <th>Orbital Period</th>
+                {% endif %}
                 <th>Sequence</th>
                 <th>Mass*</th>
                 <th>Avg. Temp.</th>
@@ -34,16 +36,18 @@
                 <th>Inner Limit</th>
                 <th>Outer Limit</th>
                 <th>Snow Line</th>
+                {% if starsystem.stars|count > 1 %}
                 <th>Forbidden Zone</th>
+                {% endif %}
                 <th>Planetary System</th>
             </tr>
             {% for star in starsystem.stars %}
             <tr>
                 <td>{{star.get_letter()}}</td>
-                {% if star.get_letter() == 'A' %}
-                <td>N/A</td>
-                <td>N/A</td>
-                {% else %}
+                {% if star.get_letter() == 'A' and starsystem.stars|count > 1 %}
+                <td>-</td>
+                <td>-</td>
+                {% elif star.get_letter() != 'A' %}
                 <td>{{starsystem.get_orbits()[loop.index0 - 1][0]|round(2)}} AU</td>
                 <td>{{starsystem.get_period()[loop.index0 - 1]|round(1, 'common')}} days</td>
                 {% endif %}
@@ -55,10 +59,10 @@
                 <td>{{star.get_orbit_limits()[0]|round(2)}} AU</td>
                 <td>{{star.get_orbit_limits()[1]|round(2)}} AU</td>
                 <td>{{star.get_snowline()|round(2)}} AU</td>
-                {% if star.get_letter() != 'A' %}
+                {% if star.get_letter() == 'A' and starsystem.stars|count > 1 %}
+                <td>-</td>
+                {% elif star.get_letter() != 'A' %}
                 <td>{{star.get_forbidden_zone()[0]|round(2)}} AU - {{star.get_forbidden_zone()[1]|round(2)}} AU</td>
-                {% else %}
-                <td>N/A</td>
                 {% endif %}
                 {% if star.planetsystem.get_orbitcontents()|count > 0 %}
                 <td>
@@ -77,16 +81,8 @@
     </div>
     <br/>
     <br/>
-    <div id="form-container">
-        <div id="question-text">
-            Do you want to generate a new star system?<br/>
-        </div>
-        <form id="generation" action="starsystem">
-            <input id="garden" type="checkbox" name="must_have_garden" value="True" /> Force star system with garden world? <br/>
-            <input id="open_cluster" type="checkbox" name="open_cluster" value="True" /> Should the star system be an open cluster? <br/>
-            <input id="num_stars" type="number" name="num_stars" />  Do you want to force a specific number of stars? 1-3 possible <br/>
-            <input id="generate" type="submit" value="Generate star system"/>
-        </form>
+    <div id="go-again">
+        <p>If you want to generate a new star system with the same constraints, just refresh the page. If you want to change the constraints, go back to the <a href="index.html">generator</a> page.</p>
     </div>
 </body>
 </html>

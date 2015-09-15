@@ -12,15 +12,18 @@
 		<p>The majority of the information is not game-specific, however, and is useful to anyone.</p>
     </div>
     <form id="generation" action="starsystem">
-        <h3>Options</h3>
+        <h3>Customization Options</h3>
         <p>
-            You can select some options about the star system, or leave it completely random.
+        You can select some options about the star system, or leave it completely random. <br />
             The rules often generate hostile systems, as garden-type worlds are fairly rare. If you need to generate a system with such a world, it is preferable to force it.
-            Note that even a garden-type world may be very cold or hot, as long as it falls in a range that humans can live in!
+            Note that even a garden-type world may be very cold or hot, as long as it falls in a range that humans can live in! <br />
+            If you want your star system to be located in an open cluster (which makes for close neighboring systems to explore) check the box. <br />
+            You can also choose to force a specific number of stars, values 1-3 are possible (other values are ignored).
         </p>
-        Force star system with garden world? <input id="garden" type="checkbox" name="must_have_garden" value="True" /> <br/>
-        Should the star system be in an open cluster? <input id="open_cluster" type="checkbox" name="open_cluster" value="True" /> <br/>
-        Do you want to force a specific number of stars? 1-3 are possible, other values are treated as random. <input id="num_stars" type="number" name="num_stars" /> <br/>
+        <hr />
+        <input id="garden" type="checkbox" name="must_have_garden" value="True" /> Force garden world <br/>
+        <input id="open_cluster" type="checkbox" name="open_cluster" value="True" /> Location: Open cluster <br/>
+        <input id="num_stars" type="number" name="num_stars" /> Number of stars in the system <br/>
         <input id="generate" type="submit" value="Generate star system"/>
     </form>
 

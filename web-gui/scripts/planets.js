@@ -88,7 +88,6 @@ document.onreadystatechange = function(){
             context.fill();
             context.stroke();
         }
-        document.getElementById('diagram-legend').innerHTML = sweet_spot_scale;
     }
 }
 

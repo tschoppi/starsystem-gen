@@ -49,12 +49,21 @@ document.onreadystatechange = function(){
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
 
+        document.getElementById('diagram-legend').innerHTML = "1px ~ " + (star_size * diagram_scale * sweet_spot_scale).toFixed(4) + " AU" ;
+        document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
+                "<br/> Orbital bodies are always drawn with a radius of 3px.";
+
         // Determine a minimum size for planets and star
         var body_size = sweet_spot_scale;
         if (sweet_spot_scale < 3){
             body_size = 3;
-            document.getElementById('diagram-legend').innerHTML = "Star and orbital bodies not to scale. Magnified by a factor of " + (3 /sweet_spot_scale).toFixed(2) + ".";
+            document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
+                    "<br/> The star has been magnified by a factor of " + (3 /sweet_spot_scale).toFixed(2) + " to be drawn with a radius of 3px.";
+        } else {
+            document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
+                    "<br/> The star is to scale."
         }
+
 
         var cookies = document.cookie.split(';');
         for (var i = 0; i < toDraw.length; i++){
@@ -86,7 +95,7 @@ document.onreadystatechange = function(){
 
             // Draw a dot to represent the astronomical body
             context.beginPath();
-            context.arc(text_x, text_y, body_size, 0, 2 * Math.PI, false);
+            context.arc(text_x, text_y, 3, 0, 2 * Math.PI, false);
             context.fill();
             context.stroke();
         }

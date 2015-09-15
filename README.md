@@ -12,9 +12,24 @@ This program was designed to assist the GM by quickly creating a random star sys
 
 ## How do I use this?
 
+### CLI Version
 Basically, download the code and put it in a folder. Currently installing as a Python module onto the system is not supported, but will come in the future. Some day.
 
 After that have a look at the `example.py` file and modify it to suit your needs. Currently not many options are available, but there will be more!
+
+### Web Version
+In v0.3 we introduced a web interface which is self-hosting, meaning that all the work is done locally on your machine. Navigate to the `web-gui` directory and start the server with the command
+
+    python3 server.py
+
+If they are not already on your system, you need to install the 3<sup>rd</sup> party modules `cherrypy` and `jinja2`.
+An easy way to do that is with pip3:
+
+    pip3 install cherrypy jinja2
+
+
+When the server is up and running, open your favorite browser and navigate to `localhost:8080` where you can interact with the software.
+
 
 ## I found a bug!
 

@@ -49,12 +49,12 @@ document.onreadystatechange = function(){
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
 
-        context.beginPath();
-        context.arc(centerX, centerY, 1 * sweet_spot_scale, 0, 2 * Math.PI, false);
-        context.fillStyle = 'yellow';
-        context.fill();
-        context.stroke();
-        context.fillStyle = 'black';
+        // Determine a minimum size for planets and star
+        var body_size = sweet_spot_scale;
+        if (sweet_spot_scale < 3){
+            body_size = 3;
+            document.getElementById('diagram-legend').innerHTML = "Star and orbital bodies not to scale. Magnified by a factor of " + (3 /sweet_spot_scale).toFixed(2) + ".";
+        }
 
         var cookies = document.cookie.split(';');
         for (var i = 0; i < toDraw.length; i++){
@@ -74,20 +74,30 @@ document.onreadystatechange = function(){
             // Write the label; offset 10 and 15 pixels respectively from the ellipse
             var text_x = centerX + (semi_major * Math.cos(1) * Math.cos(cookieValue) - semi_minor * Math.sin(1) * Math.sin(cookieValue));
             var text_y = centerY + (semi_major * Math.cos(1) * Math.sin(cookieValue) + semi_minor * Math.sin(1) * Math.cos(cookieValue));
+            var left_right = text_x > centerX ? 1 : -2;
+            var up_down = text_y > centerY ? 1 : -1.5;
             context.fillStyle = 'white';
             var rectWidth = context.measureText(star_letter + "-" + (i + 1)).width;
-            context.fillRect(5 + text_x, 12 + text_y, rectWidth + 10, 15);
+            context.fillRect((left_right * 10) + text_x, (up_down * 12) + text_y, rectWidth + 10, 20);
             context.beginPath();
             context.fillStyle = 'black';
             context.textBaseline = 'top';
-            context.fillText(star_letter + "-" + (i + 1), 10 + text_x, 15 + text_y);
+            context.fillText(star_letter + "-" + (i + 1), (left_right * 10) + text_x, (up_down * 12) + text_y);
 
             // Draw a dot to represent the astronomical body
             context.beginPath();
-            context.arc(text_x, text_y, 1 * sweet_spot_scale, 0, 2 * Math.PI, false);
+            context.arc(text_x, text_y, body_size, 0, 2 * Math.PI, false);
             context.fill();
             context.stroke();
         }
+
+        // Draw the star last, so it will always be visible
+        context.beginPath();
+        context.arc(centerX, centerY, body_size, 0, 2 * Math.PI, false);
+        context.fillStyle = 'yellow';
+        context.fill();
+        context.stroke();
+        context.fillStyle = 'black';
     }
 }
 

@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <title>Planetary system details - Starsystem Generator for GURPS</title>
     <link rel="stylesheet" type="text/css" href="mainstyle.css" />
+    <script src="scripts/planets.js"></script>
 </head>
 <body>
     <h2>Properties of Planet System {{planetsystem.parentstar.get_letter()}}</h2>
+
+    <p id="star-info">
+        This planetary system orbits star {{planetsystem.parentstar.get_letter()}} of the star system.
+    </p>
+    <div id="star-radius" style="display: none">{{planetsystem.parentstar.get_radius()}}</div>
+    <div id="star-limit" style="display: none">{{planetsystem.parentstar.get_orbit_limits()[1]}}</div>
+    <div id="star-letter" style="display: none">{{planetsystem.parentstar.get_letter()}}</div>
+    <canvas id="diagram" height="100" width="100" style="border: 1px solid black"></canvas>
+    <p id="diagram-legend"></p>
 
 <div id="objects-overview">
     <h3>Overview</h3>
@@ -35,8 +45,8 @@
             <td>{{astro_body.get_orbit()|round(2)}} AU</td>
             <td>{{(astro_body.get_period() * 365)|round(2)}} days</td>
             <td>{{astro_body.get_eccentricity()}}</td>
-            <td>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
-            <td>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
+            <td id={{'min_radius' ~ loop.index}}>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
+            <td id={{'max_radius' ~ loop.index}}>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
             <td>{% if astro_body.num_moons() != '' %}{{astro_body.num_moons()|round(2)}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.num_moonlets() != '' %}{{astro_body.num_moonlets()|round(2)}}{% else %} N/A {% endif %}</td>
         </tr>
@@ -90,15 +100,23 @@
                 {% set astro_body = planetsystem.get_orbitcontents()[key] %}
                 {% if row == "" %}<th>{{translate_row(key, row)}}</th>
                 {% else %}<td>{{translate_row(key, row)}}{% endif %}</td>
+        <h4>This is a more detailed overview of the planets:</h4>
+        <table border="1">
+            {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density", "Diameter", "Surface Gravity", "Mass", "Atm. Pressure", "Pressure Category", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period"] %}
+            {% for row in list_of_rows %}
+            <tr>
+                <td><b>{{row}}</b></td>
+                {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Terrestrial'%}
+                {% set astro_body = planetsystem.get_orbitcontents()[key] %}
+                <td>
+                    {% if row == "" %}<b>{{translate_row(key, row)}}</b>{% else %}{{translate_row(key, row)}}{% endif %}
+                </td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </table>
 
 		<p class="tablenote">*: Atmospheric mass, density, diameter, and mass are all relative to Earth dimensions; 1.0 is what you'd expect on Earth. The rotation of the body is prograde by default, negative rotational period values indicate retrograde rotation.</p>
-<!--
-        <p>Density, diameter and mass are relative to Earth; 1.0 is equal to Earth. The same goes for atmospheric mass.</p>
--->
     </div>
 {% endif %}
 </body>

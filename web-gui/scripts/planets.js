@@ -69,10 +69,17 @@ document.onreadystatechange = function(){
             context.beginPath();
             context.ellipse(centerX, centerY, semi_major, semi_minor, cookieValue, 0, Math.PI*2);
             context.stroke();
+            context.closePath();
 
             // Write the label; offset 10 and 15 pixels respectively from the ellipse
             var text_x = centerX + (semi_major * Math.cos(1) * Math.cos(cookieValue) - semi_minor * Math.sin(1) * Math.sin(cookieValue));
             var text_y = centerY + (semi_major * Math.cos(1) * Math.sin(cookieValue) + semi_minor * Math.sin(1) * Math.cos(cookieValue));
+            context.fillStyle = 'white';
+            var rectWidth = context.measureText(star_letter + "-" + (i + 1)).width;
+            context.fillRect(5 + text_x, 12 + text_y, rectWidth + 10, 15);
+            context.beginPath();
+            context.fillStyle = 'black';
+            context.textBaseline = 'top';
             context.fillText(star_letter + "-" + (i + 1), 10 + text_x, 15 + text_y);
 
             // Draw a dot to represent the astronomical body
@@ -81,7 +88,7 @@ document.onreadystatechange = function(){
             context.fill();
             context.stroke();
         }
-        document.getElementById('diagram-legend').innerHTML = "Scale (relative to star size): 1:" + Math.floor(diagram_scale * sweet_spot_scale)
+        document.getElementById('diagram-legend').innerHTML = sweet_spot_scale;
     }
 }
 

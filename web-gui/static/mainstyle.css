@@ -2,6 +2,7 @@ body {
     font-family: Verdana, sans-serif;
     width: 90%;
     margin: auto;
+    padding-bottom: 50px;
 }
 
 /**** Table Styling ****/

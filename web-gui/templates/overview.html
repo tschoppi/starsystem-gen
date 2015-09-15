@@ -21,43 +21,60 @@
     {% endif %}
         The stars in this system are {{starsystem.get_age()|round(2)}} billion years old. <br/>
         <br/>
-        {% for star in starsystem.stars %}
-        <div>
-            Star {{star.get_letter()}} properties:
-            {% if star.get_letter() == 'B' or star.get_letter() == 'C' %}
-            <p>
-                Star {{star.get_letter()}} orbits the main star at {{starsystem.get_orbits()[loop.index0 - 1][0]|round(2)}} AU mean distance with an orbital eccentricity of {{starsystem.get_orbits()[loop.index0 - 1][1]|round(2)}}. <br/>
-                It has an orbital period of {{starsystem.get_period()[loop.index0 - 1]|round(1, 'common')}} days.
-            </p>
-            {% endif %}
-            <ul>
-                {% if star.get_sequence() == 'Main' %}
-                <li>It is a {{star.get_sequence()|lower}} sequence star.</li>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Orbital Radius</th>
+                <th>Orbital Period</th>
+                <th>Sequence</th>
+                <th>Mass*</th>
+                <th>Avg. Temp.</th>
+                <th>Luminosity*</th>
+                <th>Radius*</th>
+                <th>Inner Limit</th>
+                <th>Outer Limit</th>
+                <th>Snow Line</th>
+                <th>Forbidden Zone</th>
+                <th>Planetary System</th>
+            </tr>
+            {% for star in starsystem.stars %}
+            <tr>
+                <td>{{star.get_letter()}}</td>
+                {% if star.get_letter() == 'A' %}
+                <td>N/A</td>
+                <td>N/A</td>
                 {% else %}
-                <li>It is a {{star.get_sequence()|lower}}.</li>
+                <td>{{starsystem.get_orbits()[loop.index0 - 1][0]|round(2)}} AU</td>
+                <td>{{starsystem.get_period()[loop.index0 - 1]|round(1, 'common')}} days</td>
                 {% endif %}
-                <li>The star is as massive as {{star.get_mass()|round(2)}} suns.</li>
-                <li>The surface temperature of the star is {{star.get_temp()}} K.</li>
-                <li>The star is {{star.get_luminosity()|round(4)}} times as bright as the sun.</li>
-                <li>The star's radius is {{(star.get_radius() * 214.93) | round(2)}} times the sun's radius.</li>
-                <li>The inner limit for planets orbiting this star is at {{star.get_orbit_limits()[0]|round(2)}} AU. </li>
-                <li>The outer limit for planets orbiting this star is at {{star.get_orbit_limits()[1]|round(2)}} AU. </li>
-                <li>The snow line for planets orbiting this star is at {{star.get_snowline()|round(2)}} AU. </li>
+                <td>{{star.get_sequence()}}</td>
+                <td>{{star.get_mass()|round(2)}}</td>
+                <td>{{star.get_temp()}} K</td>
+                <td>{{star.get_luminosity()|round(4)}}</td>
+                <td>{{(star.get_radius() * 214.93) | round(2)}}</td>
+                <td>{{star.get_orbit_limits()[0]|round(2)}} AU</td>
+                <td>{{star.get_orbit_limits()[1]|round(2)}} AU</td>
+                <td>{{star.get_snowline()|round(2)}} AU</td>
                 {% if star.get_letter() != 'A' %}
-                    <li>The forbidden zone for planets lies between {{star.get_forbidden_zone()[0]|round(2)}} AU and {{star.get_forbidden_zone()[1]|round(2)}} AU.</li>
+                <td>{{star.get_forbidden_zone()[0]|round(2)}} AU - {{star.get_forbidden_zone()[1]|round(2)}} AU</td>
+                {% else %}
+                <td>N/A</td>
                 {% endif %}
                 {% if star.planetsystem.get_orbitcontents()|count > 0 %}
-                <li><form id="planet{{star.get_letter()}}" action="planetsystem">
+                <td>
+                    <form id="planet{{star.get_letter()}}" action="planetsystem">
                     <input type="number" style="display: none" name="star_id" value={{loop.index0}} />
                     <input type="submit" id="planet-details" value="View orbiting objects" formtarget="_blank"/>
-                </form></li>
+                    </form>
+                </td>
+                {% else %}
+                <td>No Planetary System</td>
                 {% endif %}
-            </ul>
-        </div>
-        {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        <p class="tablenote">*: Mass, Luminosity and Radius are given relative to the Sun: 1.0 is equal to the Sun.</p>
     </div>
-    <br/>
-    <br/>
     <br/>
     <br/>
     <div id="form-container">
@@ -71,7 +88,5 @@
             <input id="generate" type="submit" value="Generate star system"/>
         </form>
     </div>
-
-
 </body>
 </html>

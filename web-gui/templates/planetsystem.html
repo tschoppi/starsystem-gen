@@ -92,12 +92,18 @@
             {% set list_of_rows = ["", "World Size", "World Type", "Atm. Mass*", "Atm. Composition", "Hydr. Coverage", "Avg. Surface Temperature", "Climate Type", "Axial Tilt", "Density*", "Diameter*", "Surface Gravity", "Mass*", "Atm. Pressure", "Pressure Category", "Volcanics", "Tectonics", "Resource Value Modifier", "Habitability", "Affinity", "Rotational Period*"] %}
             {% for row in list_of_rows %}
             <tr>
-                <td><b>{{row}}</b></td>
+                {% if row == "" %}<th></th>
+                {% else %}<td><b>{{row}}</b></td>
+                {% endif %}
+
                 {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Terrestrial'%}
                 {% set astro_body = planetsystem.get_orbitcontents()[key] %}
-                <td>
-                    {% if row == "" %}<b>{{translate_row(key, row)}}</b>{% else %}{{translate_row(key, row)}}{% endif %}
-                </td>
+
+                {% if row == "" %}
+                <th>{{translate_row(key, row)}}</th>
+                {% else %}
+                <td>{{translate_row(key, row)}}</td>
+                {% endif %}
                 {% endfor %}
             </tr>
             {% endfor %}

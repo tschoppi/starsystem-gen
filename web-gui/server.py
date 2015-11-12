@@ -79,9 +79,30 @@ class WebServer(object):
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
         return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=tcount, asteroid_count=acount)
 
-    def translate_row(self, key, row):
+    @cherrypy.expose
+    def satellites(self, planet_id=""):
         planetsystem = cherrypy.session.get('planetsystem')
-        planet = planetsystem.get_orbitcontents()[key]
+        if planetsystem is None:
+            raise cherrypy.HTTPRedirect('/index.html', 307)
+        if planet_id == "":
+            raise cherrypy.HTTPRedirect('/index.html', 307)
+        else:
+            planet_id = float(planet_id)
+
+        planet = planetsystem.get_orbitcontents()[planet_id]
+        if planet.type() == 'Terrestrial':
+            moons = planet.get_satellites()
+        else:
+            moons = planet.get_moons()
+
+        cherrypy.session['moons'] = moons
+
+        tmpl = env.get_template('moons.html')
+        return tmpl.render(moons=moons, planet_name=planet.get_name().replace("<", "").replace(">", ""))
+
+    def translate_row(self, planet, row):
+        #planetsystem = cherrypy.session.get('planetsystem')
+        #planet = planetsystem.get_orbitcontents()[key]
         if row == '':
             return planet.get_name().replace("<", "").replace(">", "")
         if row == 'World Size':
@@ -141,6 +162,7 @@ class WebServer(object):
             return 'Not implemented yet'
 
 if __name__ == '__main__':
+
     # This line reads the global server config from the file
     cherrypy.config.update("server.conf")
     # The third argument reads the application config from the file.

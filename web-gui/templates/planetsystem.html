@@ -48,7 +48,20 @@
             <td>{{astro_body.get_eccentricity()}}</td>
             <td id={{'min_radius' ~ loop.index}}>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
             <td id={{'max_radius' ~ loop.index}}>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
-            <td>{% if astro_body.num_moons() != '' %}{{astro_body.num_moons()|round(2)}}{% else %} N/A {% endif %}</td>
+            <td>
+                {% if astro_body.num_moons() != '' %}
+                    {% if astro_body.num_moons() > 0 %}
+                        <form action="satellites">
+                        <input type="number" style="display: none" name="planet_id" value={{key}} />
+                        <input type="submit" id="planet-details" value={{astro_body.num_moons()|round(2)}} formtarget="_blank"/>
+                        </form>
+                    {% else %}
+                        {{astro_body.num_moons()|round(2)}}
+                    {% endif %}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
             <td>{% if astro_body.num_moonlets() != '' %}{{astro_body.num_moonlets()|round(2)}}{% else %} N/A {% endif %}</td>
         </tr>
         {% endfor %}
@@ -81,7 +94,7 @@
         {% endfor %}
     </table>
 </div>
-    {% endif %}
+{% endif %}
 {% if terrestrial_count > 0 %}
     <div id="planets-list">
         {% if terrestrial_count == 1 %}
@@ -101,9 +114,9 @@
                 {% set astro_body = planetsystem.get_orbitcontents()[key] %}
 
                 {% if row == "" %}
-                <th>{{translate_row(key, row)}}</th>
+                <th>{{translate_row(astro_body, row)}}</th>
                 {% else %}
-                <td>{{translate_row(key, row)}}</td>
+                <td>{{translate_row(astro_body, row)}}</td>
                 {% endif %}
                 {% endfor %}
             </tr>

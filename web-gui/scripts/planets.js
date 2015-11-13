@@ -112,14 +112,15 @@ document.onreadystatechange = function(){
 
 function getCookie(cookieName) {
     var name = cookieName + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
+    var cookieArray = document.cookie.split(';');
+    for(var i=0; i<cookieArray.length; i++) {
+        var c = cookieArray[i];
         while (c.charAt(0)==' ') c = c.substring(1);
         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
     }
     return "";
 }
 
+console.log(getCookie('names'))
 
 // beginPath starts a new Path that can then be drawn with stroke

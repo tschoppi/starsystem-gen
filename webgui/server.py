@@ -1,6 +1,7 @@
 import cherrypy
 
 import operator
+
 from gurpsspace import starsystem as starsys
 from namegenerator import namegenerator
 
@@ -66,29 +67,30 @@ class WebServer(object):
         else:
             star_id = int(star_id)
 
-        namegen = cherrypy.session['namegen']
+        namegen = cherrypy.session.get('namegen')
 
         tmpl = env.get_template('planetsystem.html')
         env.globals['translate_row'] = self.translate_row
-        tcount = 0
-        acount = 0
-        names = {}
+
+        t_count = 0
+        a_count = 0
         for key, v in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
-                    tcount += 1
+                    t_count += 1
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
-                    acount += 1
-                if cherrypy.session.get('name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")) is None:
-                    name = namegen.get_random_name()
-                    starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
-                    cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")] = name
-                else:
-                    name = cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")]
-                    starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
+                    a_count += 1
+                if namegen is not None:
+                    if cherrypy.session.get('name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")) is None:
+                        name = namegen.get_random_name()
+                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
+                        cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")] = name
+                    else:
+                        name = cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")]
+                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
 
         cherrypy.session.save()
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
-        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=tcount, asteroid_count=acount)
+        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=t_count, asteroid_count=a_count)
 
     @cherrypy.expose
     def satellites(self, planet_id=""):

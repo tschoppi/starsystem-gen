@@ -23,12 +23,6 @@ class NameGenerator:
                     self.names.append(row)
 
     """
-        Returns a random name from the available names.
-    """
-    def get_random_name(self):
-        return self.names.pop(random.randint(0, len(self.names)-1))
-
-    """
         Returns a generator for the available corpuses of pre-prepared names.
         These corpuses contain names that belong to a given theme and need no further
         mangling to be useable.
@@ -50,17 +44,29 @@ class NameGenerator:
             if file.endswith('.csv'):
                 yield (file)
 
+    """
+        Returns a random name from the available names.
+    """
+    def get_random_name(self):
+        return self.names.pop(random.randint(0, len(self.names)-1))[0]
+
     def generate_name(self):
         # TODO: Generate a name from a seed using a markov chain
         return "RANDOMNESS!!"
 
-    def generate_pseudoscientific_name(self, star, planet, is_moon=False, moon=None):
-        return "SCIENCE!"
-        # TODO: generate name based on star and planet classifications
-
-
-# Debugging code to see whether stuff works. TODO: remove this before release
-gen = NameGenerator()
-for i in gen.list_available_corpuses():
-    gen.read_file(i)
-    print(gen.get_random_name())
+    """
+        Returns a name based on the star and planet details.
+        Keyword arguments:
+            star -- the star that the named body orbits
+            planet -- the planet to be named
+    """
+    def generate_pseudoscientific_name(self, star, planet):
+        star_part = star.get_sequence()[0] + '-' + star.get_letter()
+        planet_part = planet.type()[:2]
+        if int(planet.get_name()[-2] == 0):
+            planet_part = planet.type()[:2] + planet.get_name()[-3:-2]
+        else:
+            planet_part = planet.type()[:2] + planet.get_name()[-2]
+        if planet.type() != 'Gas Giant':
+            planet_part = planet_part + '-' + planet.get_type()[:3]
+        return star_part + '-' + planet_part

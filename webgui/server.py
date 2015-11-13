@@ -61,9 +61,9 @@ class WebServer(object):
     def planetsystem(self, star_id=""):
         starsystem = cherrypy.session.get('starsystem')
         if starsystem is None:
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         if star_id == "":
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         else:
             star_id = int(star_id)
 
@@ -80,12 +80,15 @@ class WebServer(object):
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
                     a_count += 1
                 if namegen is not None:
-                    if cherrypy.session.get('name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")) is None:
+                    simple_name = v.get_name().replace("<", "").replace(">", "").replace("-", "")
+                    if cherrypy.session.get('name_of_' + simple_name) is None:
                         name = namegen.get_random_name()
                         starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
+                        # For some reason, using simple_name here leads to storing stuff improperly and
+                        # generating new names every time. No idea why.
                         cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")] = name
                     else:
-                        name = cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")]
+                        name = cherrypy.session.get('name_of_' + simple_name)
                         starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
 
         cherrypy.session.save()

@@ -48,7 +48,10 @@ class NameGenerator:
         Returns a random name from the available names.
     """
     def get_random_name(self):
-        return self.names.pop(random.randint(0, len(self.names)-1))[0]
+        if len(self.names) > 0:
+            return self.names.pop(random.randint(0, len(self.names)-1))[0]
+        else:
+            return 'used all names up!'
 
     def generate_name(self):
         # TODO: Generate a name from a seed using a markov chain

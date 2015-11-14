@@ -6,6 +6,10 @@ import os
 class NameGenerator:
 
     names = []
+    loaded_file = ()
+    reload_counter = 0
+
+    suffixes = ['', '-Beta', '-Gamma']
 
     """
         Loads prepared names or seeds for the markov chain from a file.
@@ -15,12 +19,17 @@ class NameGenerator:
     """
     def read_file(self, path, seed_or_corpus='corpuses'):
         self.names = []
+        self.loaded_file = path, seed_or_corpus
         path = os.path.dirname(os.path.realpath(__file__)) + '/' + seed_or_corpus + '/' + path
         if path:
             with open(path, newline='', encoding='utf-8') as csv_file:
                 corpus_reader = csv.reader(csv_file, delimiter=',', skipinitialspace=True)
                 for row in corpus_reader:
                     self.names.append(row)
+
+    def reload_file(self):
+        self.read_file(self.loaded_file[0], self.loaded_file[1])
+        self.reload_counter += 1
 
     """
         Returns a generator for the available corpuses of pre-prepared names.
@@ -48,10 +57,10 @@ class NameGenerator:
         Returns a random name from the available names.
     """
     def get_random_name(self):
-        if len(self.names) > 0:
-            return self.names.pop(random.randint(0, len(self.names)-1))[0]
-        else:
-            return 'used all names up!'
+        result = self.names.pop(random.randint(0, len(self.names)-1))[0] + self.suffixes[self.reload_counter]
+        if len(self.names) == 0:
+            self.reload_file()
+        return result
 
     def generate_name(self):
         # TODO: Generate a name from a seed using a markov chain

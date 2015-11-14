@@ -36,6 +36,8 @@ class WebServer(object):
             namegen = namegenerator.NameGenerator()
             namegen.read_file(naming)
             cherrypy.session['namegen'] = namegen
+        else:
+            cherrypy.session['namegen'] = None
 
         arguments = {
             'open_cluster': open_cluster == "True",
@@ -99,9 +101,9 @@ class WebServer(object):
     def satellites(self, planet_id=""):
         planetsystem = cherrypy.session.get('planetsystem')
         if planetsystem is None:
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         if planet_id == "":
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         else:
             planet_id = float(planet_id)
 
@@ -110,6 +112,11 @@ class WebServer(object):
             moons = planet.get_satellites()
         else:
             moons = planet.get_moons()
+
+        for moon in moons:
+            if len(moon.get_name().split('-')) == 3:
+                index = moon.get_name().split('-')[2]
+                moon.set_name(planet.get_name() + '-' + index)
 
         cherrypy.session['moons'] = moons
 

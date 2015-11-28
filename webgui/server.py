@@ -17,14 +17,12 @@ class WebServer(object):
         naming_schemes = []
         for scheme in namegenerator.NameGenerator().list_available_corpuses():
             naming_schemes.append(scheme)
-        for scheme in namegenerator.NameGenerator().list_available_seeds():
-            naming_schemes.append(scheme)
 
         tmpl = env.get_template('index.html')
         return tmpl.render(naming_schemes=naming_schemes)
 
     @cherrypy.expose
-    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming=""):
+    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False):
         if num_stars == "":
             num_stars = None
         elif int(num_stars) < 1 or int(num_stars) > 3:
@@ -35,6 +33,7 @@ class WebServer(object):
         if naming != "":
             namegen = namegenerator.NameGenerator()
             namegen.read_file(naming)
+            namegen.use_chain = use_chain
             cherrypy.session['namegen'] = namegen
         else:
             cherrypy.session['namegen'] = None

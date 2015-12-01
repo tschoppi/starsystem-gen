@@ -24,6 +24,7 @@
                 You can also choose to force a specific number of stars, although only 1 to 3 are possible, with 0 representing random choice. <br/>
                 For the naming of the planets, you can choose between various lists of names, or use a simple numbering scheme.
                 If you use any of the name lists, you can choose to use them as a corpus for a markov chain instead and generate "similar" names.
+                The "depth" of the chain determines how big the patterns are that the chain looks at. Higher values make the output more similar to the input, with a too-large value simply regurgitating the input.
             </p>
         </div>
         <div class="customization_options">
@@ -40,6 +41,7 @@
                     </select>
                 </span>
                 <span><input id="use_chain" type="checkbox" name="use_chain" value="True" /> Use a Markov Chain instead of fixed names?  </span><br/>
+                <span><input id="depth" type="number" name="depth" value="1" min="1"/> Depth of the Markov Chain?</span>
             </p>
        </div>
     </form>

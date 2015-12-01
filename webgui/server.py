@@ -22,7 +22,7 @@ class WebServer(object):
         return tmpl.render(naming_schemes=naming_schemes)
 
     @cherrypy.expose
-    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False):
+    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1):
         if num_stars == "":
             num_stars = None
         elif int(num_stars) < 1 or int(num_stars) > 3:
@@ -31,7 +31,7 @@ class WebServer(object):
             num_stars = int(num_stars)
 
         if naming != "":
-            namegen = namegenerator.NameGenerator()
+            namegen = namegenerator.NameGenerator(int(depth))
             namegen.read_file(naming)
             namegen.use_chain = use_chain
             cherrypy.session['namegen'] = namegen

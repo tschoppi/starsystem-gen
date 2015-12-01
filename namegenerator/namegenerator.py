@@ -20,6 +20,9 @@ class NameGenerator:
 
     suffixes = ['', '-Beta', '-Gamma']
 
+    def __init__(self, depth=1):
+        self.markov_chain = MarkovStateMachine(depth)
+
     def set_corpus(self, corpus):
         self.corpus = corpus
 

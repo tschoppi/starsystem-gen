@@ -68,6 +68,7 @@ document.onreadystatechange = function(){
         var cookies = document.cookie.split(';');
         for (var i = 0; i < toDraw.length; i++){
             if (getCookie(i + star_letter) == ""){
+                // We store the rotation belonging to a given astro_body in a cookie
                 document.cookie = i + star_letter + "=" + Math.floor((Math.random() * 360) + 1);
             }
             cookieValue = parseInt(getCookie(i + star_letter), '10');

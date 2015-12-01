@@ -1,31 +1,28 @@
 import cherrypy
 
-import os
-import sys
 import operator
+
+from gurpsspace import starsystem as starsys
+from namegenerator import namegenerator
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
-
-# This adds '..' to the search path for python,
-# so that ../gurpsspace can be imported
-# TODO: Fix Modules so this is no longer necessary,
-# most likely by creating a top-level module
-# Then from .. import gurpsspace should work
-path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-print(path)
-if path not in sys.path:
-    sys.path.insert(1, path)
-del path
-
-# This import is not at the top of the file, due to aforementioned path issues
-from gurpsspace import starsystem as starsys
 
 
 class WebServer(object):
 
     @cherrypy.expose
-    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None):
+    def index(self):
+        # List the available naming schemes
+        naming_schemes = []
+        for scheme in namegenerator.NameGenerator().list_available_corpuses():
+            naming_schemes.append(scheme)
+
+        tmpl = env.get_template('index.html')
+        return tmpl.render(naming_schemes=naming_schemes)
+
+    @cherrypy.expose
+    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1):
         if num_stars == "":
             num_stars = None
         elif int(num_stars) < 1 or int(num_stars) > 3:
@@ -33,7 +30,15 @@ class WebServer(object):
         else:
             num_stars = int(num_stars)
 
-        args = {
+        if naming != "":
+            namegen = namegenerator.NameGenerator(int(depth))
+            namegen.read_file(naming)
+            namegen.use_chain = use_chain
+            cherrypy.session['namegen'] = namegen
+        else:
+            cherrypy.session['namegen'] = None
+
+        arguments = {
             'open_cluster': open_cluster == "True",
             'num_stars': num_stars,
             'age': age
@@ -42,50 +47,62 @@ class WebServer(object):
         # Generate starsystems until one is made that contains a Garden world if it's required.
         if must_have_garden == "True":
             garden = False
-            cyclenum = 0
             while garden is not True:
-                cyclenum += 1
-                mysys = starsys.StarSystem(**args)
+                mysys = starsys.StarSystem(**arguments)
                 garden = mysys.has_garden()
         else:
-            mysys = starsys.StarSystem(**args)
+            mysys = starsys.StarSystem(**arguments)
 
         tmpl = env.get_template('overview.html')
         cherrypy.session['starsystem'] = mysys
+        cherrypy.response.cookie['names'] = {}
         return tmpl.render(starsystem=mysys)
 
     @cherrypy.expose
     def planetsystem(self, star_id=""):
         starsystem = cherrypy.session.get('starsystem')
         if starsystem is None:
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         if star_id == "":
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         else:
             star_id = int(star_id)
 
+        namegen = cherrypy.session.get('namegen')
+
         tmpl = env.get_template('planetsystem.html')
         env.globals['translate_row'] = self.translate_row
-        count = 0
-        for key, _ in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
+
+        t_count = 0
+        a_count = 0
+        for key, v in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
-                    count += 1
-        tcount = count
-        count = 0
-        for key, _ in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
+                    t_count += 1
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
-                    count += 1
-        acount = count
+                    a_count += 1
+                if namegen is not None:
+                    simple_name = v.get_name().replace("<", "").replace(">", "").replace("-", "")
+                    if cherrypy.session.get('name_of_' + simple_name) is None:
+                        name = namegen.get_random_name()
+                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
+                        # For some reason, using simple_name here leads to storing stuff improperly and
+                        # generating new names every time. No idea why.
+                        cherrypy.session['name_of_' + v.get_name().replace("<", "").replace(">", "").replace("-", "")] = name
+                    else:
+                        name = cherrypy.session.get('name_of_' + simple_name)
+                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
+
+        cherrypy.session.save()
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
-        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=tcount, asteroid_count=acount)
+        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=t_count, asteroid_count=a_count)
 
     @cherrypy.expose
     def satellites(self, planet_id=""):
         planetsystem = cherrypy.session.get('planetsystem')
         if planetsystem is None:
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         if planet_id == "":
-            raise cherrypy.HTTPRedirect('/index.html', 307)
+            raise cherrypy.HTTPRedirect('/', 307)
         else:
             planet_id = float(planet_id)
 
@@ -95,14 +112,17 @@ class WebServer(object):
         else:
             moons = planet.get_moons()
 
+        for moon in moons:
+            if len(moon.get_name().split('-')) == 3:
+                index = moon.get_name().split('-')[2]
+                moon.set_name(planet.get_name() + '-' + index)
+
         cherrypy.session['moons'] = moons
 
         tmpl = env.get_template('moons.html')
         return tmpl.render(moons=moons, planet_name=planet.get_name().replace("<", "").replace(">", ""))
 
     def translate_row(self, planet, row):
-        #planetsystem = cherrypy.session.get('planetsystem')
-        #planet = planetsystem.get_orbitcontents()[key]
         if row == '':
             return planet.get_name().replace("<", "").replace(">", "")
         if row == 'World Size':

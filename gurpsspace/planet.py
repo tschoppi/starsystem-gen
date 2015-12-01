@@ -26,7 +26,7 @@ class Planet(World):
             for moon in self.__moons:
                 moon.print_info()
         if self.__nummoonlets > 0:
-            print("    # Moonlts:\t{}".format(self.__nummoonlets))
+            print("    # Moonlets:\t{}".format(self.__nummoonlets))
         self.print_atmosphere()
         print("  Hydrogr Cov:\t{}".format(self.get_hydrographic_cover()))
         print("    Av Surf T:\t{}".format(self.get_average_surface_temp()))

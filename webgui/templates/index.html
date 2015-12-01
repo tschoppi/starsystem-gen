@@ -1,0 +1,48 @@
+<head>
+<title> Starsystem Generator for GURPS </title>
+    <link rel="stylesheet" type="text/css" href="mainstyle.css" />
+    <link rel="icon" type="image/png" href="/favicon" />
+</head>
+<body>
+    <h1>Star System Generator for GURPS 4<sup>th</sup> Edition</h1>
+	<div id="welcome-text">
+        <h3>Welcome!</h3>
+		<p>This is a little tool to generate star systems for use in any story or Pen &amp; Paper roleplaying game. <br/>
+		We use the rules from <a href="http://www.sjgames.com/gurps/books/space/" target="_blank">GURPS Space</a> in the background and generate some stats that are of use in GURPS Space games.</p>
+		<p>The majority of the information is not game-specific, however, and is useful to anyone.</p>
+    </div>
+    <form id="generation" action="starsystem">
+        <h3>Generate a star system:</h3>
+
+        <p>You can select some options about the star system, or leave it completely random. <input id="generate" type="submit" value="Generate star system"/></p>
+        <hr />
+        <div class="customization_legend">
+            <p>
+                The rules often generate hostile systems, as habitable, garden-type worlds are fairly rare. If you need to generate a system with such a world, it is preferable to force it. <br/>
+                Note that even a garden-type world may be very cold or hot, as long as it falls in a range that humans can live in! <br/>
+                If you want your star system to be located in an open cluster (which makes for close neighboring systems to explore) check the box. <br/>
+                You can also choose to force a specific number of stars, although only 1 to 3 are possible, with 0 representing random choice. <br/>
+                For the naming of the planets, you can choose between various lists of names, or use a simple numbering scheme.
+                If you use any of the name lists, you can choose to use them as a corpus for a markov chain instead and generate "similar" names.
+                The "depth" of the chain determines how big the patterns are that the chain looks at. Higher values make the output more similar to the input, with a too-large value simply regurgitating the input.
+            </p>
+        </div>
+        <div class="customization_options">
+            <p>
+                <span><input id="garden" type="checkbox" name="must_have_garden" value="True" /> Force garden world </span><br/>
+                <span><input id="open_cluster" type="checkbox" name="open_cluster" value="True" /> Location: Open cluster </span><br/>
+                <span><input id="num_stars" type="number" name="num_stars" min="0" max="3" /> Number of stars in the system </span><br/>
+                <span>Use which corpus for the planet names?
+                    <select form="generation" name="naming">
+                        <option value="">Simple naming scheme</option>
+                        {% for scheme in naming_schemes %}
+                        <option value={{scheme}}>{{scheme|replace('.csv', '')|capitalize}}</option>
+                        {% endfor %}
+                    </select>
+                </span>
+                <span><input id="use_chain" type="checkbox" name="use_chain" value="True" /> Use a Markov Chain instead of fixed names?  </span><br/>
+                <span><input id="depth" type="number" name="depth" value="1" min="1"/> Depth of the Markov Chain?</span>
+            </p>
+       </div>
+    </form>
+</body>

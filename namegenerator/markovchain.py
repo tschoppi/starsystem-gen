@@ -75,11 +75,18 @@ class MarkovStateMachine:
         """
         Go back to the starting state. This doesn't reset the transitions! It is therefore used to process or generate a new word.
         :return: None
-        :rtype: None
         """
         self.currentState = self.startState
 
     def get_name(self, length=0) -> str:
+        """
+        Uses get_letter() to generate names of length 3-8, or any specified, positive length.
+        :param length: Integer length of the name to be generated.
+        :type length: int
+        :return: A capitalized name.
+        """
+        if length < 0:
+            length = 0
         if length == 0:
             length = random.randint(3, 8)
         result = ""

@@ -111,7 +111,7 @@ class GasGiant(OrbitContent):
         self.__mass = mass
         self.__density = density
 
-    def get_mass(self):
+    def get_mass(self) -> int | float:
         return self.__mass
 
     def make_diameter(self):

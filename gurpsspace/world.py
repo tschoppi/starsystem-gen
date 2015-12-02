@@ -43,9 +43,9 @@ class World(OrbitContent):
             if bbtemp <= 80:
                 type = 'Hadean'
         if size == 'Standard' or size == 'Large':
-            if bbtemp > 150 and bbtemp <= 230 and primmass <= 0.65:
+            if 150 < bbtemp <= 230 and primmass <= 0.65:
                 type = 'Ammonia'
-            if bbtemp > 240 and bbtemp <= 320:
+            if 240 < bbtemp <= 320:
                 age = self.primary_star.get_age()
                 if size == 'Standard':
                     cap = 10
@@ -59,7 +59,7 @@ class World(OrbitContent):
                     type = 'Garden'
                 else:
                     type = 'Ocean'
-            if bbtemp > 320 and bbtemp <= 500:
+            if 320 < bbtemp <= 500:
                 type = 'Greenhouse'
             if bbtemp > 500:
                 type = 'Chthonian'
@@ -263,7 +263,7 @@ class World(OrbitContent):
     def make_mass(self):
         self.__mass = self.get_density() * self.get_diameter() ** 3
 
-    def get_mass(self):
+    def get_mass(self) -> int | float:
         return self.__mass
 
     def make_pressure(self):

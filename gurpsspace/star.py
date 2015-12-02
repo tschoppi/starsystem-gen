@@ -48,7 +48,7 @@ class Star:
         self.planetsystem.printinfo()
         print("  ---------\n")
 
-    def get_mass(self):
+    def get_mass(self) -> int | float:
         return self.__mass
 
     def get_age(self):
@@ -56,7 +56,7 @@ class Star:
 
     def set_age(self, age):
         self.__age = age
-        # Eventually some recalculations will have to be done
+        # TODO: Eventually some recalculations will have to be done
 
     def make_index(self):
         # Roll to randomly select the index for the StEvoTable

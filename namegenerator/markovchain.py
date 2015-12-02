@@ -8,12 +8,19 @@ class MarkovStateFactory:
     """
     __states = dict()
 
-    def get_markov_state(self, value):
+    def get_markov_state(self, value) -> MarkovState:
+        """
+        Provides the MarkovState corresponding to the given value. Only creates a new MarkovState once per value.
+        :param value: The character(s) that the MarkovState represents.
+        :type value: list[str]
+        :return: An instance of MarkovState.
+        """
         key = ""
         if len(value) < 1:
             value = ["@"]
         for s in value:
             key += s
+        # value is a list, which is not itself hashable for use as a dictionary key. Its values are joined as a key instead.
         if key in self.__states:
             return self.__states[key]
         else:
@@ -21,7 +28,10 @@ class MarkovStateFactory:
             self.__states[key] = state
             return state
 
-    def reset_states(self):
+    def reset_states(self) -> None:
+        """
+        Forget all generated MarkovStates, therefore also forgetting all previous transitions.
+        """
         self.__states = dict()
 
 
@@ -55,7 +65,7 @@ class MarkovState:
     def __eq__(self, other):
         return self.value == other.value
 
-    def next_state(self):
+    def next_state(self) -> list[str]:
         """
         Returns the value of the next state.
         """
@@ -68,7 +78,11 @@ class MarkovState:
                 arr.append("@")
             return arr
 
-    def add_transition(self, value):
+    def add_transition(self, value) -> None:
+        """
+        Stores a new transition from this state to the state given by value.
+        :param value: The value of the target state.
+        """
         self.transitions.append(value)
 
 
@@ -110,6 +124,7 @@ class MarkovStateMachine:
                 self.currentState = self.factory.get_markov_state(self.currentState.transitions[-1])
             else:
                 # This produces a moving window of size depth, allowing for some pattern finding.
+                # It uses a copy of the current state's value, so as not to modify the current state.
                 new_array = list(self.currentState.value)
                 if len(new_array) == self.depth:
                     new_array.pop(0)
@@ -165,7 +180,7 @@ class MarkovStateMachine:
             else:  # Restart the chain, since the last letter was a word-end and the output is still too short.
                 self.reset_state()
         # In some of the corpuses, a name can contain spaces and all parts must be capitalized.
-        # See for example La Paz vs La paz or La Coru�a vs La coru�a.
+        # See for example La Paz vs La paz or La Coruña vs La coruña.
         temp = [string.capitalize() for string in result.split(" ")]
         result = ""
         for string in temp:

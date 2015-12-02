@@ -30,7 +30,7 @@ class WebServer(object):
         else:
             num_stars = int(num_stars)
 
-        if naming != "":
+        if naming != "":  # A naming scheme has been selected that is not the simple "A-1", "B-1" scheme.
             namegen = namegenerator.NameGenerator(int(depth))
             namegen.read_file(naming)
             namegen.use_chain = use_chain

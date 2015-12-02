@@ -122,13 +122,13 @@ class MarkovStateMachine:
         """
         Generate the transition rules for a markov chain, based on the given text.
         :param text: A list of words to be parsed.
-        :param initialize: If False, the transitions are merely updated, adding another corpus
+        :param initialize: If False, the transitions are merely updated, enlarging the corpus
         :type text: list[str]
         :type initialize: bool
         :return: None
         """
         if initialize:
-            self.factory.reset_states()
+            self.factory.reset_states()  # It's a factory reset! :D Deletes all states, and thus all loaded transitions.
             arr = []
             for _ in range(0, self.depth):
                 arr.append("@")
@@ -165,7 +165,7 @@ class MarkovStateMachine:
             else:  # Restart the chain, since the last letter was a word-end and the output is still too short.
                 self.reset_state()
         # In some of the corpuses, a name can contain spaces and all parts must be capitalized.
-        # See for example La Paz vs La paz or La Coruña vs La coruña.
+        # See for example La Paz vs La paz or La Coruï¿½a vs La coruï¿½a.
         temp = [string.capitalize() for string in result.split(" ")]
         result = ""
         for string in temp:

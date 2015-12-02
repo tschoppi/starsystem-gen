@@ -6,6 +6,16 @@ from .markovchain import MarkovStateMachine
 
 
 class NameGenerator:
+    """
+    Can either select names from a prepared corpus or use that as a basis for a markov chain of random names.
+    :type names: list[string]
+    :type loaded_file:
+    :type reload_counter: int
+    :type markov_chain: MarkovStateMachine
+    :type corpus: str
+    :type use_chain: Boolean
+    :type suffixes: list[str]
+    """
 
     names = []
 
@@ -28,7 +38,7 @@ class NameGenerator:
 
     def read_file(self, path):
         """
-            Loads prepared names or seeds for the markov chain from a file.
+            Loads prepared names and seeds for the markov chain from a file.
             :param path: The file name to read
             :type path: str
         """
@@ -60,7 +70,7 @@ class NameGenerator:
             if file.endswith('.csv'):
                 yield (file)
 
-    def get_random_name(self):
+    def get_random_name(self) -> str:
         """
             Get a name from the name generator.
             :return: Return a name, either from the corpus or generate by the markov chain.
@@ -73,14 +83,4 @@ class NameGenerator:
                 self.reload_file()
             return result
 
-    def generate_pseudoscientific_name(self, star, planet):
-        # FIXME: This is not yet in a useable state.
-        star_part = star.get_sequence()[0] + '-' + star.get_letter()
-        if int(planet.get_name()[-2] == 0):
-            planet_part = planet.type()[:2] + planet.get_name()[-3:-2]
-        else:
-            planet_part = planet.type()[:2] + planet.get_name()[-2]
-        if planet.type() != 'Gas Giant':
-            planet_part = planet_part + '-' + planet.get_type()[:3]
-        return star_part + '-' + planet_part
 

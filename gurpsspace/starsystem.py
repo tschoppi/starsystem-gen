@@ -8,7 +8,7 @@ LW = latexout.LatexWriter
 class StarSystem:
     roller = dice.DiceRoller()
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # FIXME: Stop using **kwargs or make it conform to PEP448
         open_cluster = kwargs.get('open_cluster', None)
         if open_cluster is not None:
             self.__opencluster = open_cluster
@@ -17,9 +17,10 @@ class StarSystem:
 
         num_stars = kwargs.get('num_stars', None)
         if num_stars is not None:
+            # The rules only support 1-3 stars per system, so it is checked whether the argument is valid.
             if 0 < num_stars <= 3:
                 self.__numstars = num_stars
-            else:
+            else:  # Otherwise it is replaced with a random valid number.
                 self.__numstars = self.random_star_number()
         else:
             self.__numstars = self.random_star_number()
@@ -36,10 +37,23 @@ class StarSystem:
         self.make_periods()
         # self.print_info()
 
-    def roll(self, dicenum, modifier, sides=6):
+    def roll(self, dicenum, modifier, sides=6) -> int:
+        """
+        Rolls XdY +- Z.
+        :param dicenum: X, the number of dice.
+        :param modifier: Z, a static modifier to the result.
+        :param sides: Y, the type of dice, defaults to 6-sided.
+        :type dicenum: int
+        :type modifier: int
+        :type sides: int
+        :return: An int, representing the result of the roll.
+        """
         return self.roller.roll(dicenum, modifier, sides)
 
-    def printinfo(self):
+    def printinfo(self) -> None:
+        """
+        Outputs all information about the starsystem to console.
+        """
         print("Star System Info")
         print("================")
         print("        Age:\t{}".format(self.__age))
@@ -53,12 +67,20 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars[i].print_info()
 
-    def random_cluster(self):
+    def random_cluster(self) -> bool:
+        """
+        Randomly determines whether the star system is in an open cluster.
+        :return: True if the system is in an open cluster.
+        """
         # Criteria for a success (star system in an open cluster):
         #    - Roll of 10 or less
         return self.roll(3, 0) <= 10
 
-    def random_star_number(self):
+    def random_star_number(self) -> int:
+        """
+        Randomly determines the number of stars in the system.
+        :return: The number of stars
+        """
         if self.__opencluster:
             roll_mod = 3
         else:
@@ -72,12 +94,12 @@ class StarSystem:
         else:
             return 2
 
-    def generate_stars(self):
+    def generate_stars(self) -> None:
         self.stars = []
         for i in range(self.__numstars):
             self.stars.append(star.Star(age=self.__age))
 
-    def make_age(self, age):
+    def make_age(self, age) -> None:
         if age is None:
             provage = self.random_age()
             while self.__opencluster and provage > 2:
@@ -86,7 +108,11 @@ class StarSystem:
         else:
             self.__age = age
 
-    def random_age(self):
+    def random_age(self) -> int:
+        """
+        Randomly determines the age of the star system in billions of years.
+        :return: An int factor of billion years.
+        """
         dice_roll = self.roll(3, 0)
         if dice_roll == 3:
             # Extreme Population I: Age is set to 1 million years
@@ -102,8 +128,10 @@ class StarSystem:
         else:
             return 10 + self.roll(1, -1) * 0.6 + self.roll(1, -1) * 0.1
 
-    # Sort the stars according to mass. Higher mass is placed first.
-    def sortstars(self):
+    def sortstars(self) -> None:
+        """
+        Sort the stars according to mass. Higher mass is placed first.
+        """
         num = self.__numstars
         newlist = []
         for i in range(num):
@@ -116,18 +144,22 @@ class StarSystem:
 
         self.stars = newlist
 
-    def name_stars(self):
+    def name_stars(self) -> None:
         """
-        Assign a letter to each star according to it's primaryness in the
-        stellar system.
+        Assign a letter to each star according to it's cardinality in the stellar system.
         """
         letters = ['A', 'B', 'C']
         for star_ in self.stars:
             star_.set_letter(letters[self.stars.index(star_)])
 
-    # Generate stellar orbits for multiple-star systems
-    # Missing: Sub-companion star for distant second companion star
+    # TODO: Sub-companion star for distant second companion star
+    # TODO: Complete type-hinting, once the returns have been sorted out
     def make_orbits(self):
+        """
+        Generate stellar orbits for multiple-star systems.
+        :return:
+        """
+        # FIXME: This looks like it shouldn't return anything, but it has two return statements!
         self.__orbsepentry = []
         self.__orbits = []
         if self.__numstars == 1:
@@ -171,7 +203,8 @@ class StarSystem:
             if self.__orbsepentry[0][1] >= self.__orbsepentry[1][1]:
                 return self.make_orbits()
 
-    def find_orbital_separation_index(self, dice_roll):
+    def find_orbital_separation_index(self, dice_roll) -> int:
+        # TODO: This needs a proper description
         if dice_roll <= 6:
             return 0
         if dice_roll <= 9:
@@ -183,7 +216,7 @@ class StarSystem:
         else:
             return 4
 
-    def make_min_max_separations(self):
+    def make_min_max_separations(self) -> None:
         self.__minmaxorbits = []
         for i in range(len(self.__orbits)):
             orbit, ecc = self.__orbits[i]
@@ -191,7 +224,7 @@ class StarSystem:
             max = (1 + ecc) * orbit
             self.__minmaxorbits.append((min, max))
 
-    def make_forbidden_zones(self):
+    def make_forbidden_zones(self) -> None:
         self.__forbiddenzones = []
         for i in range(len(self.__minmaxorbits)):
             min_, max_ = self.__minmaxorbits[i]
@@ -206,11 +239,14 @@ class StarSystem:
             if i == 1:  # For the third star
                 self.stars[2].set_forbidden_zone(start, end)
 
-    def create_planetsystem(self):
+    def create_planetsystem(self) -> None:
+        """
+        Causes all stars to generate a planetary system for themselves. These may be empty!
+        """
         for star_ in self.stars:
             star_.make_planetsystem()
 
-    def make_periods(self):
+    def make_periods(self) -> list[int | float]:
         self.__periods = []
         if self.__numstars >= 2:
             orbit, ecc = self.__orbits[0]
@@ -225,7 +261,11 @@ class StarSystem:
             m = m1 + m2
             self.__periods.append((orbit ** 3 / m) ** 0.5)
 
-    def write_latex(self):
+    def write_latex(self) -> None:
+        """
+        Write all information about the starsystem to a latex file.
+        """
+        # FIXME: This is a hard-coded dependency on console input, which needs to be removed for use with a GUI.
         filename = input("Name of the file (include extension): ")
         if filename == '':
             writer = LW(self)
@@ -233,21 +273,22 @@ class StarSystem:
             writer = LW(self, filename)
         writer.write()
 
-    def get_age(self):
+    def get_age(self) -> int:
         return self.__age
 
-    def get_orbits(self):
-        """Return tuple (orbital separation, eccentricity)"""
+    def get_orbits(self) -> list[(int | float, int | float)]:
+        """
+        Return tuple (orbital separation, eccentricity).
+        """
         return self.__orbits
 
     def get_period(self):
         return self.__periods
 
-    # This is the PEP8 recommended style for function names
-    def is_open_cluster(self):
+    def is_open_cluster(self) -> bool:
         return self.__opencluster
 
-    def has_garden(self):
+    def has_garden(self) -> bool:
         ret = False
         for star_ in self.stars:
             ret |= star_.planetsystem.has_garden()

@@ -33,9 +33,6 @@ class NameGenerator:
     def __init__(self, depth=1):
         self.markov_chain = MarkovStateMachine(depth)
 
-    def set_corpus(self, corpus) -> None:
-        self.corpus = corpus
-
     def read_file(self, path) -> None:
         """
             Loads prepared names and seeds for the markov chain from a file.

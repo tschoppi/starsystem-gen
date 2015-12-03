@@ -79,7 +79,7 @@ class NameGenerator:
         if self.use_chain:
             return self.markov_chain.get_name()
         else:
-            result = self.names.pop(random.randint(0, len(self.names)-1))[0] + self.suffixes[self.reload_counter]
+            result = self.names.pop(random.randint(0, len(self.names)-1)) + self.suffixes[self.reload_counter]
             if len(self.names) == 0:
                 self.reload_file()
             return result

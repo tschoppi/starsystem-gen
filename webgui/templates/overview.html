@@ -25,7 +25,11 @@
     <div>
         There are {{ starsystem.stars|count }} stars in the system. <br/>
     {% endif %}
-        The stars in this system are {{starsystem.get_age()|round(2)}} billion years old. <br/>
+        {% if starsystem.get_age() < 1 %}
+            The stars in this system are {{starsystem.get_age()|round(2)}} billion years old. <br/>
+        {% else %}
+            The stars in this system are {{starsystem.get_age() * 1000}} million years old. <br/>
+        {% endif %}
         <br/>
         <table>
             <tr>

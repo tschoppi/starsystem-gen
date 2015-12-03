@@ -8,6 +8,7 @@ class World(OrbitContent):
     def __init__(self, primary, orbitalradius, sizeclass):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
+        self.__type = ""
         self.make_type()
         self.make_atmosphere()
         self.make_hydrographics()
@@ -21,31 +22,34 @@ class World(OrbitContent):
     def __repr__(self):
         return repr("World")
 
-    def type(self):
+    def type(self) -> str:
         return "World"
 
-    def get_size(self):
+    def get_size(self) -> str:
         return self.__sizeclass
 
-    def make_type(self):
-        bbtemp = self.get_blackbody_temp()
+    def make_type(self) -> None:
+        """
+        Determine and set the world type, according to blackbody temperature, size and primary star.
+        """
+        blackbody_temp = self.get_blackbody_temp()
         size = self.get_size()
-        primmass = self.primary_star.get_mass()
-        type = 'Ice'
-        if size == 'Tiny' and bbtemp >= 141:
-            type = 'Rock'
+        primary_star_mass = self.primary_star.get_mass()
+        world_type = 'Ice'
+        if size == 'Tiny' and blackbody_temp >= 141:
+            world_type = 'Rock'
         if size == 'Small':
-            if bbtemp <= 80:
-                type = 'Hadean'
-            if bbtemp >= 141:
-                type = 'Rock'
+            if blackbody_temp <= 80:
+                world_type = 'Hadean'
+            if blackbody_temp >= 141:
+                world_type = 'Rock'
         if size == 'Standard':
-            if bbtemp <= 80:
-                type = 'Hadean'
+            if blackbody_temp <= 80:
+                world_type = 'Hadean'
         if size == 'Standard' or size == 'Large':
-            if 150 < bbtemp <= 230 and primmass <= 0.65:
-                type = 'Ammonia'
-            if 240 < bbtemp <= 320:
+            if 150 < blackbody_temp <= 230 and primary_star_mass <= 0.65:
+                world_type = 'Ammonia'
+            if 240 < blackbody_temp <= 320:
                 age = self.primary_star.get_age()
                 if size == 'Standard':
                     cap = 10
@@ -56,22 +60,28 @@ class World(OrbitContent):
                     bonus = cap
                 dice = self.roll(3, bonus)
                 if dice >= 18:
-                    type = 'Garden'
+                    world_type = 'Garden'
                 else:
-                    type = 'Ocean'
-            if 320 < bbtemp <= 500:
-                type = 'Greenhouse'
-            if bbtemp > 500:
-                type = 'Chthonian'
-        self.__type = type
+                    world_type = 'Ocean'
+            if 320 < blackbody_temp <= 500:
+                world_type = 'Greenhouse'
+            if blackbody_temp > 500:
+                world_type = 'Chthonian'
+        self.__type = world_type
 
-    def get_type(self):
+    def get_type(self) -> str:
         return self.__type
 
     def get_atmospheric_mass(self):
+        """
+        :rtype: int | float
+        """
         return self.__atmmass
 
-    def make_atmosphere(self):
+    def make_atmosphere(self) -> None:
+        """
+        Determine details about the atmosphere and store them.
+        """
         size = self.get_size()
         type = self.get_type()
         # Determine atmospheric mass
@@ -116,13 +126,13 @@ class World(OrbitContent):
             self.atmcomp['Highly Toxic'] = True
             self.atmcomp['Suffocating'] = True
 
-    def get_marginal(self):
-        """Return a tuple:
-        (boolean: marginal, marginal atmosphere)
+    def get_marginal(self) -> (bool, str):
+        """
+        Returns a tuple of bool and atmosphere.
         """
         return self.__hasmarginal, self.__marginal
 
-    def make_hydrographics(self):
+    def make_hydrographics(self) -> None:
         hydro = 0
         size = self.get_size()
         type = self.get_type()
@@ -160,10 +170,10 @@ class World(OrbitContent):
 
         self.__hydrocover = hydro
 
-    def get_hydrographic_cover(self):
+    def get_hydrographic_cover(self) -> int:
         return self.__hydrocover
 
-    def get_absorption_greenhouse(self):
+    def get_absorption_greenhouse(self) -> (int, int):
         """
         Return a tuple (absorption factor, greenhouse factor) based on world
         type and size.
@@ -174,16 +184,16 @@ class World(OrbitContent):
             return TempFactor[type][size]
         else:
             hydro = self.get_hydrographic_cover()
-            abs = 0.84
+            absorption = 0.84
             if hydro <= 90:
-                abs = 0.88
+                absorption = 0.88
             if hydro <= 50:
-                abs = 0.92
+                absorption = 0.92
             if hydro <= 20:
-                abs = 0.95
-            return (abs, 0.16)
+                absorption = 0.95
+            return (absorption, 0.16)
 
-    def make_climate(self):
+    def make_climate(self) -> None:
         abs, green = self.get_absorption_greenhouse()
         matm = self.get_atmospheric_mass()
         bbcorr = abs * (1 + (matm * green))
@@ -193,10 +203,10 @@ class World(OrbitContent):
     def get_average_surface_temp(self):
         return self.__averagesurface
 
-    def get_climate(self):
+    def get_climate(self) -> str:
         return self.__climatetype
 
-    def make_density(self):
+    def make_density(self) -> None:
         type = self.get_type()
         size = self.get_size()
         density = 0
@@ -237,9 +247,12 @@ class World(OrbitContent):
         self.__density = density
 
     def get_density(self):
+        """
+        :rtype: int | float
+        """
         return self.__density
 
-    def make_diameter(self):
+    def make_diameter(self) -> None:
         size = self.get_size()
         bb = self.get_blackbody_temp()
         dens = self.get_density()
@@ -254,19 +267,19 @@ class World(OrbitContent):
     def get_diameter(self):
         return self.__diameter
 
-    def make_gravity(self):
+    def make_gravity(self) -> None:
         self.__surfacegravity = self.get_density() * self.get_diameter()
 
     def get_gravity(self):
         return self.__surfacegravity
 
-    def make_mass(self):
+    def make_mass(self) -> None:
         self.__mass = self.get_density() * self.get_diameter() ** 3
 
-    def get_mass(self) -> int | float:
+    def get_mass(self):
         return self.__mass
 
-    def make_pressure(self):
+    def make_pressure(self) -> None:
         size = self.get_size()
         type = self.get_type()
         pressure = 0

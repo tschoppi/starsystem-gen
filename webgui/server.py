@@ -44,7 +44,7 @@ class WebServer(object):
             'age': age
         }
 
-        # Generate starsystems until one is made that contains a Garden world if it's required.
+        # Generate star systems until one is made that contains a Garden world if it's required.
         if must_have_garden == "True":
             garden = False
             while garden is not True:
@@ -123,6 +123,13 @@ class WebServer(object):
         return tmpl.render(moons=moons, planet_name=planet.get_name().replace("<", "").replace(">", ""))
 
     def translate_row(self, planet, row):
+        """
+        It is difficult in HTML and Jinja to make a table where each column is a single item, rather than each row.
+        This function helps out by returning the appropriate data for each row.
+        :param planet: The orbital body to be queried.
+        :param row: The row which determines the query.
+        :return: The  data appropriate to the given row.
+        """
         if row == '':
             return planet.get_name().replace("<", "").replace(">", "")
         if row == 'World Size':

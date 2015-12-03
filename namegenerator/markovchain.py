@@ -8,7 +8,7 @@ class MarkovStateFactory:
     """
     __states = dict()
 
-    def get_markov_state(self, value) -> MarkovState:
+    def get_markov_state(self, value):
         """
         Provides the MarkovState corresponding to the given value. Only creates a new MarkovState once per value.
         :param value: The character(s) that the MarkovState represents.
@@ -65,11 +65,10 @@ class MarkovState:
     def __eq__(self, other):
         return self.value == other.value
 
-    def next_state(self) -> list[str]:
+    def next_state(self) -> [str]:
         """
         Returns the value of the next state.
         """
-        # FIXME: This should return the state directly. However, that means that this needs to store the states too...
         if len(self.transitions) > 0:
             return self.transitions[random.randint(0, len(self.transitions) - 1)]
         else:

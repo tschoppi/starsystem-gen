@@ -1,7 +1,7 @@
 import csv
 import random
 import os
-import string
+
 from .markovchain import MarkovStateMachine
 
 
@@ -33,10 +33,10 @@ class NameGenerator:
     def __init__(self, depth=1):
         self.markov_chain = MarkovStateMachine(depth)
 
-    def set_corpus(self, corpus):
+    def set_corpus(self, corpus) -> None:
         self.corpus = corpus
 
-    def read_file(self, path):
+    def read_file(self, path) -> None:
         """
             Loads prepared names and seeds for the markov chain from a file.
             :param path: The file name to read
@@ -52,17 +52,18 @@ class NameGenerator:
                     self.names.append(*row)
         self.markov_chain.analyze_text(self.names)
 
-    def reload_file(self):
+    def reload_file(self) -> None:
         """
             Reloads the corpus, used when the pre-generated names run out. Increases the reload counter, so that an appropriate suffix is used for new names.
         """
         self.read_file(self.loaded_file)
         self.reload_counter += 1
 
-    def list_available_corpuses(self):
+    @staticmethod
+    def list_available_corpuses() -> [str]:
         """
             Returns a generator for the available corpuses. These corpuses contain names that belong to a given theme and need no further
-            mangling to be useable. However, they can also be used as seeds for a markov chain.
+            mangling to be usable. However, they can also be used as seeds for a markov chain.
             :return: A generator object for a list of the available corpuses.
         """
         corpuses_dir = os.path.dirname(os.path.realpath(__file__)) + '/corpuses'

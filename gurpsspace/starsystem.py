@@ -246,7 +246,7 @@ class StarSystem:
         for star_ in self.stars:
             star_.make_planetsystem()
 
-    def make_periods(self) -> list[int | float]:
+    def make_periods(self):
         self.__periods = []
         if self.__numstars >= 2:
             orbit, ecc = self.__orbits[0]
@@ -276,7 +276,7 @@ class StarSystem:
     def get_age(self) -> int:
         return self.__age
 
-    def get_orbits(self) -> list[(int | float, int | float)]:
+    def get_orbits(self):
         """
         Return tuple (orbital separation, eccentricity).
         """

@@ -48,7 +48,7 @@ class Star:
         self.planetsystem.printinfo()
         print("  ---------\n")
 
-    def get_mass(self) -> int | float:
+    def get_mass(self):
         return self.__mass
 
     def get_age(self):

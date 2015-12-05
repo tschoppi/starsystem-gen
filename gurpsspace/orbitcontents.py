@@ -79,6 +79,9 @@ class OrbitContent:
     def get_name(self):
         return self.__name
 
+    def get_angled_name(self):
+        return "<" + self.__name + ">"
+
     def set_number(self, number):
         self.__number = number
 

@@ -18,7 +18,7 @@ class Planet(World):
         self.make_axial_tilt()
 
     def print_info(self):
-        print("--- Planet {} Info ---".format(self.get_name()))
+        print("--- Planet {} Info ---".format(self.get_angled_name()))
         print("        Orbit:\t{}".format(self.get_orbit()))
         print("   World Type:\t{} ({})".format(self.get_size(), self.get_type()))
         if self.__nummoons > 0:
@@ -259,5 +259,5 @@ class Planet(World):
             counter += 1
             moon.set_number(counter)
             letter = self.primary_star.get_letter()
-            name = '<{}-{}-{}>'.format(letter, number, counter)
+            name = '{}-{}-{}'.format(letter, number, counter)
             moon.set_name(name)

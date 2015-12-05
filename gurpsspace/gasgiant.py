@@ -32,7 +32,7 @@ class GasGiant(OrbitContent):
         return self.__size
 
     def print_info(self):
-        print("---- Gas Giant {} Properties ----".format(self.get_name()))
+        print("---- Gas Giant {} Properties ----".format(self.get_angled_name()))
         print("     Size:\t{}".format(self.__size))
         print("  BB Temp:\t{}".format(self.get_blackbody_temp()))
         print("     Mass:\t{}".format(self.__mass))
@@ -137,7 +137,7 @@ class GasGiant(OrbitContent):
             counter += 1
             moon.set_number(counter)
             letter = self.primary_star.get_letter()
-            name = '<{}-{}-{}>'.format(letter, number, counter)
+            name = '{}-{}-{}'.format(letter, number, counter)
             moon.set_name(name)
 
     def get_moons(self):

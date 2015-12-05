@@ -264,7 +264,7 @@ class PlanetSystem:
         counter = 0
         for key in sorted(self.__orbitcontents):
             counter += 1
-            name = '<{}-{}>'.format(self.parentstar.get_letter(), counter)
+            name = '{}-{}'.format(self.parentstar.get_letter(), counter)
             self.__orbitcontents[key].set_name(name)
             self.__orbitcontents[key].set_number(counter)
 

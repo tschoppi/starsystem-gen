@@ -3,7 +3,9 @@ from .tables import world_climate
 
 
 class AsteroidBelt(OrbitContent):
-    """Class for asteroid belts."""
+    """
+    Class for asteroid belts.
+    """
     def __init__(self, primarystar, orbitalradius):
         OrbitContent.__init__(self, primarystar, orbitalradius)
         self.make_resources()

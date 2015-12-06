@@ -2,7 +2,9 @@ from . import dice
 
 
 class OrbitContent:
-    """Generic class for contents of orbits."""
+    """
+    Generic class for contents of orbits.
+    """
     def roll(self, dice_num, modifier, sides=6):
         return self.roller.roll(dice_num, modifier, sides)
 

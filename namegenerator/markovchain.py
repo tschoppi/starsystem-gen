@@ -87,6 +87,7 @@ class MarkovState:
 
 class MarkovStateMachine:
     """
+    Represents a markov chain, and provides methods to generate a chain from a corpus and move from state to state.
     :type currentState: MarkovState
     :type startState: MarkovState
     :type depth: int

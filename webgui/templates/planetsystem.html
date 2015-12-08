@@ -39,7 +39,7 @@
         {% for key, planet in planetsystem.get_orbitcontents().items()|sort %}
         {% set astro_body = planetsystem.get_orbitcontents()[key] %}
         <tr>
-            <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.get_name()|e}}</td>
             <td>{{astro_body.type()}}</td>
             <td>{% if astro_body.get_size() != '' %}{{astro_body.get_size()}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.get_type() != '' %}{{astro_body.get_type()}}{% else %} N/A {% endif %}</td>
@@ -85,7 +85,7 @@
         {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt'%}
         {% set astro_body = planetsystem.get_orbitcontents()[key] %}
         <tr>
-            <td>{{astro_body.get_name().replace("<", "").replace(">","")|e}}</td>
+            <td>{{astro_body.get_name()|e}}</td>
             <td>{{astro_body.get_average_surface_temp()|round(2)}} K / {{(astro_body.get_average_surface_temp()-273.15)|round(2)}}°C</td>
             <td>{{astro_body.get_climate()}}</td>
             <td>{{astro_body.get_rvm()}}</td>

@@ -21,7 +21,7 @@ class AsteroidBelt(OrbitContent):
         return "Ast. Belt"
 
     def print_info(self):
-        print("Asteroid Belt {}".format(self.get_name()))
+        print("Asteroid Belt {}".format(self.get_angled_name()))
         print("    Orbit:\t{}".format(self.get_orbit()))
         print("  Orb Per:\t{}".format(self.get_period()))
         print("  Orb Ecc:\t{}".format(self.get_eccentricity()))

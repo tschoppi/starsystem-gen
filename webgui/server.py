@@ -81,13 +81,13 @@ class WebServer(object):
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
                     a_count += 1
                 if namegen is not None:
-                    simple_name = v.get_angled_name().replace("<", "").replace(">", "").replace("-", "")
+                    simple_name = v.get_name().replace("-", "")
                     if cherrypy.session.get('name_of_' + simple_name) is None:
                         name = namegen.get_random_name()
                         starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
                         # For some reason, using simple_name here leads to storing stuff improperly and
                         # generating new names every time. No idea why.
-                        cherrypy.session['name_of_' + v.get_angled_name().replace("<", "").replace(">", "").replace("-", "")] = name
+                        cherrypy.session['name_of_' + v.get_name().replace("-", "")] = name
                     else:
                         name = cherrypy.session.get('name_of_' + simple_name)
                         starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
@@ -120,7 +120,7 @@ class WebServer(object):
         cherrypy.session['moons'] = moons
 
         tmpl = env.get_template('moons.html')
-        return tmpl.render(moons=moons, planet_name=planet.get_angled_name().replace("<", "").replace(">", ""))
+        return tmpl.render(moons=moons, planet_name=planet.get_name())
 
     def translate_row(self, planet, row):
         """
@@ -131,7 +131,7 @@ class WebServer(object):
         :return: The  data appropriate to the given row.
         """
         if row == '':
-            return planet.get_angled_name().replace("<", "").replace(">", "")
+            return planet.get_name()
         if row == 'World Size':
             return planet.get_size()
         if row == 'World Type':

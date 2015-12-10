@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+#
+# A pre-commit hook to verify PEP8 conformity using flake8
+# and to run all available unit tests
+
+import subprocess
+import sys
+import os
+import glob
+
+# Try to read the GIT_DIR envvar, which is set if this is being called as a git pre-commit hook.
+try: 
+    path = os.environ['GIT_DIR']
+# If it is not set, a KeyError is raised, which is taken as if this is invoked from the command line, using the cwd instead.
+# This requires calling this script from the correct directory!
+except:
+    path = os.getcwd()
+    
+if (subprocess.call(["flake8", path]) != 0):
+    print("Found PEP8 non-conformities! Aborting commit...")
+    sys.exit(1)
+
+for test_file in glob.glob(path + "/tests/*.py"):
+    if (subprocess.call(["python3", "-m", "unittest", test_file], stdin=None, stdout=None, stderr=subprocess.DEVNULL) != 0):
+        print("Unit tests failed in " + test_file + "! Aborting commit...")
+        sys.exit(1)
+
+print("Style check and unit tests successful, committing!")

@@ -75,11 +75,14 @@ class WebServer(object):
 
         t_count = 0
         a_count = 0
+        g_count = 0
         for key, v in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
                     t_count += 1
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
                     a_count += 1
+                if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Gas Giant':
+                    g_count += 1
                 if namegen is not None:
                     simple_name = v.get_name().replace("-", "")
                     if cherrypy.session.get('name_of_' + simple_name) is None:
@@ -94,7 +97,7 @@ class WebServer(object):
 
         cherrypy.session.save()
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
-        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=t_count, asteroid_count=a_count)
+        return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=t_count, asteroid_count=a_count, gas_giant_count=g_count)
 
     @cherrypy.expose
     def satellites(self, planet_id=""):
@@ -185,6 +188,10 @@ class WebServer(object):
             retval = str(round(planet.get_rotation(), 2))
             retval += " days"
             return retval
+        if row == 'Blackbody Temperature':
+            return str(round(planet.get_blackbody_temp(), 2)) + ' K'
+        if row == 'Cloudtop Gravity':
+            return round(planet.get_gravity(), 2)
         else:
             return 'Not implemented yet'
 

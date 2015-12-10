@@ -126,5 +126,36 @@
 		<p class="tablenote">*: Atmospheric mass, density, diameter, and mass are all relative to Earth dimensions; 1.0 is what you'd expect on Earth. The rotation of the body is prograde by default, negative rotational period values indicate retrograde rotation.</p>
     </div>
 {% endif %}
+{% if gas_giant_count > 0 %}
+<div id="gas-giants-list">
+        {% if gas_giant_count == 1%}
+        <h3>Gas Giant Details</h3>
+        {% else %}
+        <h3>Details of the Gas Giants</h3>
+        {% endif %}
+        <table>
+            {% set list_of_rows = ["", "World Size", "Density*", "Diameter*", "Mass*", "Cloudtop Gravity", "Blackbody Temperature"] %}
+            {% for row in list_of_rows %}
+            <tr>
+                {% if row == "" %}<th></th>
+                {% else %}<td><b>{{row}}</b></td>
+                {% endif %}
+
+                {% for key, _ in planetsystem.get_orbitcontents().items()|sort if planetsystem.get_orbitcontents()[key].type() == 'Gas Giant'%}
+                {% set astro_body = planetsystem.get_orbitcontents()[key] %}
+
+                {% if row == "" %}
+                <th>{{translate_row(astro_body, row)}}</th>
+                {% else %}
+                <td>{{translate_row(astro_body, row)}}</td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+
+		<p class="tablenote">*: Atmospheric mass, density, diameter, and mass are all relative to Earth dimensions; 1.0 is what you'd expect on Earth. The rotation of the body is prograde by default, negative rotational period values indicate retrograde rotation.</p>
+{% endif %}
+</div>
 </body>
 </html>

@@ -3,3 +3,6 @@
 web-gui/.idea/
 .idea/
 *.pdf
+
+# vim swap files
+*.swp

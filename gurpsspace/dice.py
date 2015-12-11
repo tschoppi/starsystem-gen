@@ -20,6 +20,10 @@ class DiceRoller:
         """
 
         result = 0
+        if sides <= 1:
+            raise ValueError("Dice have at least two sides, and not {}.".format(sides))
+        if dice_num <= 0:
+            raise ValueError("At least 1 die needs to be thrown, not {}.".format(dice_num))
         for i in range(dice_num):
             result += r.randint(1, sides)
         result += modifier

@@ -71,8 +71,6 @@ class Planet(World):
         roll_mod = -4
         roll_mod += self.moon_roll_modifier()
         moon_roll = self.roll(1, roll_mod)
-        if moon_roll <= 0:
-            moon_roll = 0
             # If we have no major moons, generate moonlets
             self.generate_moonlets()
         else:
@@ -85,8 +83,6 @@ class Planet(World):
         roll_mod = -2
         roll_mod += self.moon_roll_modifier()
         moonlet_roll = self.roll(1, roll_mod)
-        if moonlet_roll < 0:
-            moonlet_roll = 0
         self.__nummoonlets = moonlet_roll
         self.__moonlets = [Moonlet(self) for moonletnum in range(moonlet_roll)]
 

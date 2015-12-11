@@ -144,8 +144,6 @@ class World(OrbitContent):
                 hydro = 100
         if type == 'Ice' and (size == 'Standard' or size == 'Large'):
             hydro = self.roll(2, -10) * 10
-            if hydro < 0:
-                hydro = 0
         if type == 'Ocean' or type == 'Garden':
             bonus = 4
             if size == 'Large':
@@ -155,8 +153,6 @@ class World(OrbitContent):
                 hydro = 100
         if type == 'Greenhouse':
             hydro = self.roll(2, -7) * 10
-            if hydro < 0:
-                hydro = 0
         # Introduce a small amount of randomness to the hydrographic coverage, to make the worlds more varied and to make them feel more real
         # Do this only if there is any surface liquid at all, avoiding those astral bodies who cannot have a hydrographic coverage at all
         # Vary by +- 5% as described in the rule book

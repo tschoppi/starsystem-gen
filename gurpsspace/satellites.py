@@ -86,6 +86,17 @@ class Moon(World):
         self.__orbit = orbit
 
     def roll(self, ndice, modifier, sides=6):
+        """
+        Rolls XdY +- Z.
+
+        :param ndice: X, the number of dice.
+        :param modifier: Z, a static modifier to the result.
+        :param sides: Y, the type of dice, defaults to 6-sided.
+        :type ndice: int
+        :type modifier: int
+        :type sides: int
+        :return: An int, representing the result of the roll.
+        """
         return self.roller.roll(ndice, modifier, sides)
 
     def get_volcanic_bonus(self):
@@ -222,6 +233,17 @@ class Moon(World):
 
 class Moonlet:
     def roll(self, ndice, modifier, sides=6):
+        """
+        Rolls XdY +- Z.
+
+        :param ndice: X, the number of dice.
+        :param modifier: Z, a static modifier to the result.
+        :param sides: Y, the type of dice, defaults to 6-sided.
+        :type ndice: int
+        :type modifier: int
+        :type sides: int
+        :return: An int, representing the result of the roll.
+        """
         return self.roller.roll(ndice, modifier, sides)
 
     def __init__(self, parentplanet, family=None):

@@ -6,6 +6,17 @@ class OrbitContent:
     Generic class for contents of orbits.
     """
     def roll(self, dice_num, modifier, sides=6):
+        """
+        Rolls XdY +- Z.
+
+        :param dice_num: X, the number of dice.
+        :param modifier: Z, a static modifier to the result.
+        :param sides: Y, the type of dice, defaults to 6-sided.
+        :type dice_num: int
+        :type modifier: int
+        :type sides: int
+        :return: An int, representing the result of the roll.
+        """
         return self.roller.roll(dice_num, modifier, sides)
 
     def __init__(self,

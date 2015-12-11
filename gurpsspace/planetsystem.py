@@ -7,6 +7,17 @@ from .tables import OrbitalSpace
 
 class PlanetSystem:
     def roll(self, dicenum, modifier, sides=6):
+        """
+        Rolls XdY +- Z.
+
+        :param dicenum: X, the number of dice.
+        :param modifier: Z, a static modifier to the result.
+        :param sides: Y, the type of dice, defaults to 6-sided.
+        :type dicenum: int
+        :type modifier: int
+        :type sides: int
+        :return: An int, representing the result of the roll.
+        """
         return self.roller.roll(dicenum, modifier, sides)
 
     def __init__(self, parentstar):

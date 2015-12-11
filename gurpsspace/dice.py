@@ -5,7 +5,8 @@ class DiceRoller:
     def roll(self, dice_num, modifier, sides=6) -> int:
         """
         Rolls XdY +- Z.
-        :param dicenum: X, the number of dice.
+
+        :param dice_num: X, the number of dice.
         :param modifier: Z, a static modifier to the result.
         :param sides: Y, the type of dice, defaults to 6-sided.
         :type dice_num: int

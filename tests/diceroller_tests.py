@@ -1,6 +1,7 @@
 import unittest
 from gurpsspace import dice
 
+
 class TestDiceRoller(unittest.TestCase):
 
     def setUp(self):

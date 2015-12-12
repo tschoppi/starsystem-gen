@@ -4,21 +4,25 @@
 # and to run all available unit tests
 
 import subprocess
+from subprocess import CalledProcessError
 import sys
 import os
 import glob
 
 # Try to read the GIT_DIR envvar, which is set if this is being called as a git pre-commit hook.
-try: 
+try:
     path, _ = os.path.split(os.path.abspath(os.environ['GIT_DIR']))
-    print(path)
 # If it is not set, a KeyError is raised, which is taken as if this is invoked from the command line, using the cwd instead.
 # This requires calling this script from the correct directory!
 except KeyError:
     path = os.getcwd()
 
 print("Checking " + path)
-if subprocess.check_call(["flake8", path]) != 0:
+try:
+    subprocess.check_call(["flake8", path])
+except CalledProcessError as e:
+    print(e.output)
+    print(e)
     print("Found PEP8 non-conformities! Aborting commit...")
     sys.exit(1)
 

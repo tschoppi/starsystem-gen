@@ -1,6 +1,7 @@
 import unittest
 from gurpsspace import starsystem
 
+
 class TestStarsystem(unittest.TestCase):
 
     def test_generate_starsystem_open_cluster_one_star(self):

@@ -21,7 +21,6 @@ print("Checking " + path)
 try:
     subprocess.check_call(["flake8", path])
 except CalledProcessError as e:
-    print(e.output)
     print("Found PEP8 non-conformities! Aborting commit...")
     sys.exit(1)
 

@@ -70,7 +70,7 @@ class Planet(World):
     def generate_moons(self):
         roll_mod = -4
         roll_mod += self.moon_roll_modifier()
-        moon_roll = self.roll(1, roll_mod)
+        moon_roll = self.roller.roll(1, roll_mod)
         if moon_roll <= 0:
             # If we have no major moons, generate moonlets
             self.generate_moonlets()
@@ -83,7 +83,7 @@ class Planet(World):
     def generate_moonlets(self):
         roll_mod = -2
         roll_mod += self.moon_roll_modifier()
-        moonlet_roll = self.roll(1, roll_mod)
+        moonlet_roll = self.roller.roll(1, roll_mod)
         self.__nummoonlets = moonlet_roll
         self.__moonlets = [Moonlet(self) for moonletnum in range(moonlet_roll)]
 
@@ -158,25 +158,25 @@ class Planet(World):
                 bonus = 14
             if self.get_size() == 'Tiny':
                 bonus = 18
-            diceroll = self.roll(3, bonus)
+            diceroll = self.roller.roll(3, bonus)
             rotational_period = (diceroll + self.get_total_tidal_effect()) / 24.
             if rotational_period > 1.5 or diceroll - bonus >= 16:
-                roll2 = self.roll(2, 0)
+                roll2 = self.roller.roll(2, 0)
                 if roll2 == 7:
-                    rotational_period = self.roll(1, 0) * 2
+                    rotational_period = self.roller.roll(1, 0) * 2
                 if roll2 == 8:
-                    rotational_period = self.roll(1, 0) * 5
+                    rotational_period = self.roller.roll(1, 0) * 5
                 if roll2 == 9:
-                    rotational_period = self.roll(1, 0) * 10
+                    rotational_period = self.roller.roll(1, 0) * 10
                 if roll2 == 10:
-                    rotational_period = self.roll(1, 0) * 20
+                    rotational_period = self.roller.roll(1, 0) * 20
                 if roll2 == 11:
-                    rotational_period = self.roll(1, 0) * 50
+                    rotational_period = self.roller.roll(1, 0) * 50
                 if roll2 == 12:
-                    rotational_period = self.roll(1, 0) * 100
+                    rotational_period = self.roller.roll(1, 0) * 100
             if rotational_period > self.get_period() * 365.26:
                 rotational_period = self.get_period() * 365.26
-        if self.roll(3, 0) >= 13:
+        if self.roller.roll(3, 0) >= 13:
             rotational_period = -rotational_period
         self.__rotperiod = rotational_period
 
@@ -217,7 +217,7 @@ class Planet(World):
             return None
 
     def make_axial_tilt(self):
-        roll1 = self.roll(3, 0)
+        roll1 = self.roller.roll(3, 0)
         base = 0
         if roll1 > 6:
             base = 10
@@ -228,7 +228,7 @@ class Planet(World):
         if roll1 > 14:
             base = 40
         if roll1 > 16:
-            roll2 = self.roll(1, 0)
+            roll2 = self.roller.roll(1, 0)
             if roll2 in [1, 2]:
                 base = 50
             if roll2 in [3, 4]:
@@ -237,7 +237,7 @@ class Planet(World):
                 base = 70
             if roll2 == 6:
                 base = 80
-        self.__axtilt = base + self.roll(2, -2)
+        self.__axtilt = base + self.roller.roll(2, -2)
 
     def get_axial_tilt(self):
         return self.__axtilt

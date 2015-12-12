@@ -4,6 +4,7 @@ from .tables import SizeToInt, IntToSize
 
 
 class Moon(World):
+
     def __init__(self, parent_planet, primary_star):
         self.roller = dice.DiceRoller()
         self.parent = parent_planet
@@ -68,7 +69,7 @@ class Moon(World):
         parentsize = SizeToInt[parent.get_size()]
         if parent.type() == "Gas Giant":
             parentsize = SizeToInt["Large"]
-        diceroll = self.roll(3, 0)
+        diceroll = self.roller.roll(3, 0)
         if diceroll >= 15:
             childsize = parentsize - 1
         if diceroll >= 12:
@@ -84,20 +85,6 @@ class Moon(World):
 
     def set_orbit(self, orbit):
         self.__orbit = orbit
-
-    def roll(self, ndice, modifier, sides=6):
-        """
-        Rolls XdY +- Z.
-
-        :param ndice: X, the number of dice.
-        :param modifier: Z, a static modifier to the result.
-        :param sides: Y, the type of dice, defaults to 6-sided.
-        :type ndice: int
-        :type modifier: int
-        :type sides: int
-        :return: An int, representing the result of the roll.
-        """
-        return self.roller.roll(ndice, modifier, sides)
 
     def get_volcanic_bonus(self):
         if self.get_type() == 'Sulfur':
@@ -122,12 +109,12 @@ class Moon(World):
                 bonus = 2
             if diff == 1:
                 bonus = 4
-            dice = self.roll(2, bonus)
+            dice = self.roller.roll(2, bonus)
             self.__orbit = dice * 2.5 * self.parent.get_diameter()
         if ptype == 'Gas Giant':
-            roll = self.roll(3, 3)
+            roll = self.roller.roll(3, 3)
             if roll >= 15:
-                roll += self.roll(2, 0)
+                roll += self.roller.roll(2, 0)
             self.__orbit = roll / 2. * self.parent.get_diameter()
 
     def get_orbit(self):
@@ -166,25 +153,25 @@ class Moon(World):
                 bonus = 14
             if self.get_size() == 'Tiny':
                 bonus = 18
-            diceroll = self.roll(3, bonus)
+            diceroll = self.roller.roll(3, bonus)
             rotperiod = (diceroll + self.get_total_tidal_effect()) / 24.
             if rotperiod > 1.5 or diceroll - bonus >= 16:
-                roll2 = self.roll(2, 0)
+                roll2 = self.roller.roll(2, 0)
                 if roll2 == 7:
-                    rotperiod = self.roll(1, 0) * 2
+                    rotperiod = self.roller.roll(1, 0) * 2
                 if roll2 == 8:
-                    rotperiod = self.roll(1, 0) * 5
+                    rotperiod = self.roller.roll(1, 0) * 5
                 if roll2 == 9:
-                    rotperiod = self.roll(1, 0) * 10
+                    rotperiod = self.roller.roll(1, 0) * 10
                 if roll2 == 10:
-                    rotperiod = self.roll(1, 0) * 20
+                    rotperiod = self.roller.roll(1, 0) * 20
                 if roll2 == 11:
-                    rotperiod = self.roll(1, 0) * 50
+                    rotperiod = self.roller.roll(1, 0) * 50
                 if roll2 == 12:
-                    rotperiod = self.roll(1, 0) * 100
+                    rotperiod = self.roller.roll(1, 0) * 100
             if rotperiod > self.get_period():
                 rotperiod = self.get_period()
-        if self.roll(3, 0) >= 17:
+        if self.roller.roll(3, 0) >= 17:
             rotperiod = -rotperiod
         self.__rotperiod = rotperiod
 
@@ -232,19 +219,6 @@ class Moon(World):
 
 
 class Moonlet:
-    def roll(self, ndice, modifier, sides=6):
-        """
-        Rolls XdY +- Z.
-
-        :param ndice: X, the number of dice.
-        :param modifier: Z, a static modifier to the result.
-        :param sides: Y, the type of dice, defaults to 6-sided.
-        :type ndice: int
-        :type modifier: int
-        :type sides: int
-        :return: An int, representing the result of the roll.
-        """
-        return self.roller.roll(ndice, modifier, sides)
 
     def __init__(self, parentplanet, family=None):
         self.parent = parentplanet
@@ -262,7 +236,7 @@ class Moonlet:
     def make_orbit(self):
         ptype = self.parent.type()
         if ptype == 'Gas Giant' and self.family == 'first':
-            self.__orbit = self.roll(1, 4) / 4. * self.parent.get_diameter()
+            self.__orbit = self.roller.roll(1, 4) / 4. * self.parent.get_diameter()
         if ptype == 'Gas Giant' and self.family == 'third':
             # Make random orbits between 20 and 200 planetary diameters
             import random as r
@@ -270,7 +244,7 @@ class Moonlet:
             self.__orbit = multiplier * self.parent.get_diameter()
 
         if ptype == 'Terrestrial':
-            self.__orbit = self.roll(1, 4) / 4. * self.parent.get_diameter()
+            self.__orbit = self.roller.roll(1, 4) / 4. * self.parent.get_diameter()
 
     def get_orbit(self):
         return self.__orbit

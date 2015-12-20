@@ -51,10 +51,6 @@ class Star:
     def get_age(self):
         return self.__age
 
-    def set_age(self, age):
-        self.__age = age
-        # TODO: Eventually some recalculations will have to be done
-
     def make_index(self):
         # Roll to randomly select the index for the StEvoTable
         diceroll1 = self.roller.roll(3, 0)

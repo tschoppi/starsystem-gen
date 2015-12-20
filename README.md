@@ -18,7 +18,7 @@ Basically, download the code and put it in a folder. Currently installing as a P
 After that have a look at the `example.py` file and modify it to suit your needs. Currently not many options are available, but there will be more!
 
 ### Web Version
-In v0.3 we introduced a web interface which is self-hosting, meaning that all the work is done locally on your machine. Navigate to the `web-gui` directory and start the server with the command
+In v0.3 we introduced a web interface which is self-hosting, meaning that all the work is done locally on your machine. From the root directory start the server with the command
 
     python3 server.py
 

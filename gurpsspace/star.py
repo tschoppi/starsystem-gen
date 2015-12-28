@@ -7,9 +7,13 @@ class Star:
     roller = dice.DiceRoller()
 
     def __init__(self, age):
+        if age <= 0:
+            raise ValueError("Age needs to be a positive number.")
+
         self.__hasforbiddenzone = False
         # roller = GD.DiceRoller()
         self.__age = age
+        self.__letter = 'A'
         self.make_index()
         self.make_mass()
         self.find_sequence()
@@ -172,6 +176,8 @@ class Star:
         self.__snowline = 4.85 * initlum ** 0.5
 
     def set_forbidden_zone(self, inner, outer):
+        if inner >= outer:
+            raise ValueError("Inner limit must be smaller than outer limit.")
         self.__forbiddenzone = (inner, outer)
         self.__hasforbiddenzone = True
 

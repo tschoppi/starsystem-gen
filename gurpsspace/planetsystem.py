@@ -181,9 +181,13 @@ class PlanetSystem:
         return orbits
 
     def make_content_list(self):
-        # Make a dictionary: Orbit: Content. Initially this will only contain
-        # the first gas giant. (If gas giant arrangement is not "None")
-        # orbits = self.__orbitarray
+        """
+        Initialize orbit content dictionary
+
+        Make a dictionary: Orbit: Content. Initially this will only contain the
+        first gas giant. (If gas giant arrangement is not "None")
+        """
+
         self.__orbitcontents = dict.fromkeys(self.__orbitarray)
 
         # Put the first gas giant
@@ -196,8 +200,12 @@ class PlanetSystem:
                 self.parentstar, self.__firstgasorbit, bonus)
 
     def place_gas_giants(self):
-        # Iterate through all orbits necessary and decide whether to place a
-        # gas giant there. Also check whether the orbit is eligible for a bonus
+        """
+        Populate orbit content dictionary with gas giants
+
+        Iterate through all empty orbits and decide whether to place a gas
+        giant there. Also check whether the orbit is eligible for a bonus.
+        """
 
         rollorbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
         small_orbits = [orb for orb in rollorbits if orb < self.__snowline]
@@ -235,6 +243,10 @@ class PlanetSystem:
         return bonus
 
     def fill_orbits(self):
+        """
+        Fill empty orbits with non-jovian entities (worlds and asteroid belts)
+        """
+
         # Determine eligible orbits to roll for
         roll_orbits = [orb for orb in self.__orbitarray if self.__orbitcontents[orb] is None]
         roll_orbits.sort()

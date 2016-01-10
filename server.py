@@ -1,4 +1,5 @@
 import cherrypy
+import os
 
 import operator
 
@@ -197,8 +198,26 @@ class WebServer(object):
 
 if __name__ == '__main__':
 
-    # This line reads the global server config from the file
-    cherrypy.config.update("webgui/server.conf")
-    # The third argument reads the application config from the file.
-    # This is necessary, because apparently the route mapping is application-specific.
-    cherrypy.quickstart(WebServer(), '/', "webgui/server.conf")
+    # Configure CherryPy with a Python dictionary for Python 3.5 compatibility.
+    conf = {
+        'global': {
+            'server.socket_host': '0.0.0.0',
+            'server.socket_port': 8000
+        },
+        '/': {
+            'tools.sessions.on': True,
+            'tools.sessions.timeout': 60,
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': "webgui/static",
+            'tools.staticdir.root': os.path.abspath(os.getcwd())
+        },
+        '/favicon': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.path.abspath(os.getcwd()) + "/webgui/static/favicon.ico"
+        },
+        '/scripts': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': "webgui/scripts"
+        }
+    }
+    cherrypy.quickstart(WebServer(), '/', conf)

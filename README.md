@@ -22,9 +22,6 @@ In v0.3 we introduced a web interface which is self-hosting, meaning that all th
 
     python3 server.py
 
-Python 3.5 changed the way arguments are handled, breaking our code. We're investigating why PEP448 affects us, but it is low priority,
-since Python 3.4 is often still available and our code works with it.
-
 If they are not already on your system, you need to install the 3<sup>rd</sup> party modules `cherrypy` and `jinja2`.
 An easy way to do that is with pip3:
 

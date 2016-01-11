@@ -122,6 +122,4 @@ function getCookie(cookieName) {
     return "";
 }
 
-console.log(getCookie('names'))
-
 // beginPath starts a new Path that can then be drawn with stroke

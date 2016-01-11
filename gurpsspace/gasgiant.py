@@ -21,7 +21,7 @@ class GasGiant(OrbitContent):
             modifier = 4
         else:
             modifier = 0
-        dice = self.roll(3, modifier)
+        dice = self.roller.roll(3, modifier)
         self.__size = "Small"
         if dice > 10:
             self.__size = "Medium"
@@ -67,9 +67,7 @@ class GasGiant(OrbitContent):
             modifier = -6
         if 0.75 < orbit <= 1.5:
             modifier = -3
-        num_moonlets = self.roll(2, modifier)
-        if num_moonlets < 0:
-            num_moonlets = 0
+        num_moonlets = self.roller.roll(2, modifier)
         self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(num_moonlets)]
 
     def make_second_family(self):
@@ -83,9 +81,7 @@ class GasGiant(OrbitContent):
             modifier = -3
         if 0.75 < orbit <= 1.5:
             modifier = -1
-        num_moons = self.roll(1, modifier)
-        if num_moons < 0:
-            num_moons = 0
+        num_moons = self.roller.roll(1, modifier)
         self.__secondfamily = sorted([Moon(self, self.primary_star) for _ in range(num_moons)], key=lambda moon: moon.get_orbit())
 
     def make_third_family(self):
@@ -99,14 +95,12 @@ class GasGiant(OrbitContent):
             modifier = -4
         if 1.5 < orbit <= 3:
             modifier = -1
-        num_moonlets = self.roll(1, modifier)
-        if num_moonlets < 0:
-            num_moonlets = 0
+        num_moonlets = self.roller.roll(1, modifier)
         self.__thirdfamily = [Moonlet(self, 'third') for _ in range(num_moonlets)]
 
     def make_mass(self):
         size = self.get_size()
-        diceroll = self.roll(3, 0)
+        diceroll = self.roller.roll(3, 0)
         mass, density = GGSizeTable[size][diceroll]
         self.__mass = mass
         self.__density = density

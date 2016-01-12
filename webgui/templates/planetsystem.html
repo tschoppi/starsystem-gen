@@ -44,7 +44,7 @@
             <td>{% if astro_body.get_size() != '' %}{{astro_body.get_size()}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.get_type() != '' %}{{astro_body.get_type()}}{% else %} N/A {% endif %}</td>
             <td>{{astro_body.get_orbit()|round(2)}} AU</td>
-            <td>{{(astro_body.get_period() * 365)|round(2)}} days</td>
+            <td id={{'orbit_period' ~ loop.index}}>{{(astro_body.get_period() * 365)|round(2)}} days</td>
             <td>{{astro_body.get_eccentricity()}}</td>
             <td id={{'min_radius' ~ loop.index}}>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
             <td id={{'max_radius' ~ loop.index}}>{{astro_body.get_min_max()[1]|round(2)}} AU</td>

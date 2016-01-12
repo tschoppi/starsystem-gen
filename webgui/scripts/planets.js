@@ -1,10 +1,33 @@
+// GLOBALS
+// TODO: Clean up the entire JS code. I feel there are a few things that could be done more nicely...
+var day_in_year = 1;
+
 function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size) {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    if (getCookie("positionOnEllipse") == ""){
-        var position_on_ellipse = 1;
+
+    // Draw a counter representing Earth years
+    context.beginPath();
+    if (day_in_year > 300){
+        context.fillStyle = 'red';
+        context.strokeStyle = 'red';
     } else {
-        var position_on_ellipse = parseFloat(getCookie("positionOnEllipse"));
+        context.fillStyle = 'black';
+        context.strokeStyle = 'black';
     }
+    var end_angle = 1.5 * Math.PI + (2 * Math.PI * (day_in_year / 365));
+    context.arc(40, 40, 20, 1.5 * Math.PI, end_angle);
+    context.stroke();
+
+    if (day_in_year > 300 && day_in_year < 320 || day_in_year > 335 && day_in_year < 366){
+        context.beginPath();
+        context.fillText("1 year!", 23, 33);
+    }
+    day_in_year = (day_in_year % 365) + 1
+
+    // Reset to defaults
+    context.fillStyle = 'black';
+    context.strokeStyle = 'black';
+
     for (var i = 0; i < toDraw.length; i++) {
         if (getCookie(i + star_letter) == "") {
             // We store the rotation belonging to a given astro_body in a cookie
@@ -21,13 +44,13 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
         context.closePath();
 
         // Write the label; offset 10 and 15 pixels respectively from the ellipse
-        var text_x = centerX + (semi_major * Math.cos(position_on_ellipse) * Math.cos(cookieValue) - semi_minor * Math.sin(position_on_ellipse) * Math.sin(cookieValue));
-        var text_y = centerY + (semi_major * Math.cos(position_on_ellipse) * Math.sin(cookieValue) + semi_minor * Math.sin(position_on_ellipse) * Math.cos(cookieValue));
+        var text_x = centerX + (semi_major * Math.cos(toDraw[i].position) * Math.cos(cookieValue) - semi_minor * Math.sin(toDraw[i].position) * Math.sin(cookieValue));
+        var text_y = centerY + (semi_major * Math.cos(toDraw[i].position) * Math.sin(cookieValue) + semi_minor * Math.sin(toDraw[i].position) * Math.cos(cookieValue));
         var left_right = text_x > centerX ? 1 : -2;
         var up_down = text_y > centerY ? 1 : -1.5;
         context.fillStyle = 'white';
         var rectWidth = context.measureText(star_letter + "-" + (i + 1)).width;
-        context.fillRect((left_right * 10) + text_x, (up_down * 12) + text_y, rectWidth + 10, 20);
+        context.fillRect((left_right * 10) + text_x, (up_down * 12) + text_y, rectWidth + 5, 15);
         context.beginPath();
         context.fillStyle = 'black';
         context.textBaseline = 'top';
@@ -47,12 +70,17 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
         context.stroke();
         context.fillStyle = 'black';
 
-        if (position_on_ellipse < 2 * Math.PI - 0.1){
-            position_on_ellipse += 0.001;
-        } else {
-            position_on_ellipse = 0;
+        if (toDraw[i].velocity == 0){
+            toDraw[i].velocity = (2 * Math.PI) / toDraw[i].orbital_period; // Calculate how many ticks for a full year
+            if (toDraw[i].velocity == 0){
+                toDraw[i].velocity += 0.00000000000000001;
+            }
         }
-        document.cookie = "positionOnEllipse=" + position_on_ellipse;
+        if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity){
+            toDraw[i].position += toDraw[i].velocity;
+        } else {
+            toDraw[i].position = 0;
+        }
     }
 }
 
@@ -70,6 +98,7 @@ function getCookie(cookieName) {
 
 document.onreadystatechange = function(){
     if (document.readyState === 'complete'){
+
         document.cookie = "positionOnEllipse=";
         var canvas = document.getElementById("diagram");
         var star_size = parseFloat(document.getElementById("star-radius").innerHTML);
@@ -85,19 +114,20 @@ document.onreadystatechange = function(){
         var toDraw = [];
         var max_size = 0;
         for (var row in rows){
-            // Row 0 contains the headings, the others are javascript attributes of the object
+            // Row 0 contains the headings, the others are javascript attributes of the rows object (in Chrome!)
             if (row !== '0' && row !== 'item' && row !== 'length' && row !== 'namedItem'){
                 var min_cell = document.getElementById('min_radius' + row);
                 var max_cell = document.getElementById('max_radius' + row);
+                var orbital_period = parseFloat(document.getElementById('orbit_period' + row).innerHTML.split(' ')[0]);
 
-                var min_radius = parseFloat(min_cell.innerHTML).toFixed(1   );
+                var min_radius = parseFloat(min_cell.innerHTML).toFixed(1);
                 var max_radius = parseFloat(max_cell.innerHTML).toFixed(1);
 
                 // scale the radii
                 min_radius = (min_radius * diagram_scale);
                 max_radius = (max_radius * diagram_scale);
 
-                toDraw.push({max: max_radius / 2, min: min_radius / 2});
+                toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0});
                 max_size = max_radius > max_size ? max_radius : max_size;
             }
         }
@@ -136,7 +166,7 @@ document.onreadystatechange = function(){
         }
 
         animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY);
-        window.setInterval(animate_solar_system, 50, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
+        window.setInterval(animate_solar_system, 40, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
     }
 };
 

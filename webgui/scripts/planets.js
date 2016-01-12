@@ -7,22 +7,25 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
 
     // Draw a counter representing Earth years
     context.beginPath();
-    if (day_in_year > 300){
+    if (day_in_year > 300){ // We're approaching year end! Holiday season :D
         context.fillStyle = 'red';
         context.strokeStyle = 'red';
-    } else {
+    } else { // Rest of the year
         context.fillStyle = 'black';
         context.strokeStyle = 'black';
     }
+    // 0 is at 3 o'clock, so we start at 1.5 * Pi. The end angle therefore is offset by that much.
+    // Everyday, we increase our end angle by 1/365, drawing ever more of the circle.
     var end_angle = 1.5 * Math.PI + (2 * Math.PI * (day_in_year / 365));
     context.arc(40, 40, 20, 1.5 * Math.PI, end_angle);
     context.stroke();
 
     if (day_in_year > 300 && day_in_year < 320 || day_in_year > 335 && day_in_year < 366){
+        // Flash the text, but not too fast!
         context.beginPath();
         context.fillText("1 year!", 23, 33);
     }
-    day_in_year = (day_in_year % 365) + 1
+    day_in_year = (day_in_year % 365) + 1 // Start counting at 1, up to 365.
 
     // Reset to defaults
     context.fillStyle = 'black';
@@ -33,32 +36,38 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
             // We store the rotation belonging to a given astro_body in a cookie
             document.cookie = i + star_letter + "=" + Math.floor((Math.random() * 360) + 1);
         }
-        var cookieValue = parseInt(getCookie(i + star_letter), 10);
+
+        // Getting the rotation and the axes
+        var rotationValue = parseInt(getCookie(i + star_letter), 10);
         var semi_major = toDraw[i].max * sweet_spot_scale;
         var semi_minor = toDraw[i].min * sweet_spot_scale;
 
         // Draw the ellipse
         context.beginPath();
-        context.ellipse(centerX, centerY, semi_major, semi_minor, cookieValue, 0, Math.PI * 2);
+        context.ellipse(centerX, centerY, semi_major, semi_minor, rotationValue, 0, Math.PI * 2);
         context.stroke();
         context.closePath();
 
-        // Write the label; offset 10 and 15 pixels respectively from the ellipse
-        var text_x = centerX + (semi_major * Math.cos(toDraw[i].position) * Math.cos(cookieValue) - semi_minor * Math.sin(toDraw[i].position) * Math.sin(cookieValue));
-        var text_y = centerY + (semi_major * Math.cos(toDraw[i].position) * Math.sin(cookieValue) + semi_minor * Math.sin(toDraw[i].position) * Math.cos(cookieValue));
-        var left_right = text_x > centerX ? 1 : -2;
-        var up_down = text_y > centerY ? 1 : -1.5;
+        // We use the general, parameterized ellipse equations to find a point on the eclipse, again rotated.
+        toDraw[i].x = centerX + (semi_major * Math.cos(toDraw[i].position) * Math.cos(rotationValue) - semi_minor * Math.sin(toDraw[i].position) * Math.sin(rotationValue));
+        toDraw[i].y = centerY + (semi_major * Math.cos(toDraw[i].position) * Math.sin(rotationValue) + semi_minor * Math.sin(toDraw[i].position) * Math.cos(rotationValue));
+
+        // Offset the label to the different quadrants
+        var left_right = toDraw[i].x > centerX ? 1 : -2;
+        var up_down = toDraw[i].y > centerY ? 1 : -1.5;
+
+        // Actually draw the label, with white BG to always readable
         context.fillStyle = 'white';
         var rectWidth = context.measureText(star_letter + "-" + (i + 1)).width;
-        context.fillRect((left_right * 10) + text_x, (up_down * 12) + text_y, rectWidth + 5, 15);
+        context.fillRect((left_right * 10) + toDraw[i].x, (up_down * 12) + toDraw[i].y, rectWidth + 5, 15);
         context.beginPath();
         context.fillStyle = 'black';
         context.textBaseline = 'top';
-        context.fillText(star_letter + "-" + (i + 1), (left_right * 10) + text_x, (up_down * 12) + text_y);
+        context.fillText(star_letter + "-" + (i + 1), (left_right * 10) + toDraw[i].x, (up_down * 12) + toDraw[i].y);
 
         // Draw a dot to represent the astronomical body
         context.beginPath();
-        context.arc(text_x, text_y, 3, 0, 2 * Math.PI, false);
+        context.arc(toDraw[i].x, toDraw[i].y, 3, 0, 2 * Math.PI, false);
         context.fill();
         context.stroke();
 

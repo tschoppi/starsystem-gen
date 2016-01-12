@@ -3,7 +3,7 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
     if (getCookie("positionOnEllipse") == ""){
         var position_on_ellipse = 1;
     } else {
-        var position_on_ellipse = parseInt(getCookie("positionOnEllipse"));
+        var position_on_ellipse = parseFloat(getCookie("positionOnEllipse"));
     }
     for (var i = 0; i < toDraw.length; i++) {
         if (getCookie(i + star_letter) == "") {
@@ -47,9 +47,8 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
         context.stroke();
         context.fillStyle = 'black';
 
-        if (position_on_ellipse < 6){
-            position_on_ellipse += 1;
-            console.log(position_on_ellipse);
+        if (position_on_ellipse < 2 * Math.PI - 0.1){
+            position_on_ellipse += 0.001;
         } else {
             position_on_ellipse = 0;
         }
@@ -137,7 +136,7 @@ document.onreadystatechange = function(){
         }
 
         animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY);
-        window.setInterval(animate_solar_system, 1000, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
+        window.setInterval(animate_solar_system, 50, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
     }
 };
 

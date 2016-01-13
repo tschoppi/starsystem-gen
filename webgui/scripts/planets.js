@@ -58,12 +58,12 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
 
         // Actually draw the label, with white BG to always readable
         context.fillStyle = 'white';
-        var rectWidth = context.measureText(star_letter + "-" + (i + 1)).width;
+        var rectWidth = context.measureText(toDraw[i].name).width;
         context.fillRect((left_right * 10) + toDraw[i].x, (up_down * 12) + toDraw[i].y, rectWidth + 5, 15);
         context.beginPath();
         context.fillStyle = 'black';
         context.textBaseline = 'top';
-        context.fillText(star_letter + "-" + (i + 1), (left_right * 10) + toDraw[i].x, (up_down * 12) + toDraw[i].y);
+        context.fillText(toDraw[i].name, (left_right * 10) + toDraw[i].x, (up_down * 12) + toDraw[i].y);
 
         // Draw a dot to represent the astronomical body
         context.beginPath();
@@ -79,12 +79,14 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
         context.stroke();
         context.fillStyle = 'black';
 
+        // Calculate an orbital body's speed around the star and store it in the orbital body
         if (toDraw[i].velocity == 0){
-            toDraw[i].velocity = (2 * Math.PI) / toDraw[i].orbital_period; // Calculate how many ticks for a full year
+            toDraw[i].velocity = (2 * Math.PI) / toDraw[i].orbital_period;
             if (toDraw[i].velocity == 0){
-                toDraw[i].velocity += 0.00000000000000001;
+                toDraw[i].velocity += 0.00000000000000001; // Guarantees a non-zero speed
             }
         }
+        // Move orbital body
         if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity){
             toDraw[i].position += toDraw[i].velocity;
         } else {
@@ -94,11 +96,12 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
 }
 
 function getCookie(cookieName) {
+    // Get a specific cookie based on its name
     var name = cookieName + "=";
     var cookieArray = document.cookie.split(';');
     for(var i=0; i<cookieArray.length; i++) {
         var c = cookieArray[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
+        while (c.charAt(0)==' ') c = c.substring(1); // Trim leading whitespace
         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
     }
     return "";
@@ -128,6 +131,7 @@ document.onreadystatechange = function(){
                 var min_cell = document.getElementById('min_radius' + row);
                 var max_cell = document.getElementById('max_radius' + row);
                 var orbital_period = parseFloat(document.getElementById('orbit_period' + row).innerHTML.split(' ')[0]);
+                var name = document.getElementById('name' + row).innerHTML;
 
                 var min_radius = parseFloat(min_cell.innerHTML).toFixed(1);
                 var max_radius = parseFloat(max_cell.innerHTML).toFixed(1);
@@ -136,7 +140,7 @@ document.onreadystatechange = function(){
                 min_radius = (min_radius * diagram_scale);
                 max_radius = (max_radius * diagram_scale);
 
-                toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0});
+                toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0, name: name});
                 max_size = max_radius > max_size ? max_radius : max_size;
             }
         }
@@ -174,7 +178,9 @@ document.onreadystatechange = function(){
                     "<br/> The star is to scale."
         }
 
+        // We immediately draw the first frame of the animation, no delay.
         animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY);
+        // Every 40ms, repaint the solar system. 24fps requires a frame every 41.666666ms, so we run slightly faster than that.
         window.setInterval(animate_solar_system, 40, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
     }
 };

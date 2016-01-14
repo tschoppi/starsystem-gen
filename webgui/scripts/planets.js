@@ -135,23 +135,17 @@ document.onreadystatechange = function(){
         var rows = overviewTable.getElementsByTagName("tr");
         var toDraw = [];
         var max_size = 0;
-        var min_size = 99999; // Super big, so that we can find smaller numbers
         for (var i = 1; i < rows.length; i++){
-            row = rows[i];
-            // Row 0 contains the headings, the others are javascript attributes of the rows object (in Chrome!)
-            if (row !== '0' && row !== 'item' && row !== 'length' && row !== 'namedItem'){
-                var min_cell = document.getElementById('min_radius' + i);
-                var max_cell = document.getElementById('max_radius' + i);
-                var orbital_period = parseFloat(document.getElementById('orbit_period' + i).innerHTML.split(' ')[0]);
-                var name = document.getElementById('name' + i).innerHTML;
+            var min_cell = document.getElementById('min_radius' + i);
+            var max_cell = document.getElementById('max_radius' + i);
+            var orbital_period = parseFloat(document.getElementById('orbit_period' + i).innerHTML.split(' ')[0]);
+            var name = document.getElementById('name' + i).innerHTML;
 
-                var min_radius = parseFloat(min_cell.innerHTML).toFixed(3);
-                var max_radius = parseFloat(max_cell.innerHTML).toFixed(3);
+            var min_radius = parseFloat(min_cell.innerHTML).toFixed(3);
+            var max_radius = parseFloat(max_cell.innerHTML).toFixed(3);
 
-                toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0, name: name});
-                max_size = max_radius > max_size ? max_radius : max_size;
-                min_size = min_radius < min_size ? min_radius : min_size;
-            }
+            toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0, name: name});
+            max_size = max_radius > max_size ? max_radius : max_size;
         }
 
         // Scale everything so that the largest orbit is 600px across.

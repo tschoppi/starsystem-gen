@@ -111,19 +111,14 @@ function getCookie(cookieName) {
 
 function zoomIn(){
     sweet_spot_scale += (default_zoom / 5);
-    console.debug("Zoomed in");
-    console.debug(sweet_spot_scale);
 }
 
 function zoomOut(){
     sweet_spot_scale -= (default_zoom / 5);
-    console.debug("Zoomed out");
-    console.debug(sweet_spot_scale);
 }
 
 function resetZoom(){
     sweet_spot_scale = default_zoom;
-    console.log("Zoom was reset");
 }
 
 
@@ -141,13 +136,14 @@ document.onreadystatechange = function(){
         var toDraw = [];
         var max_size = 0;
         var min_size = 99999; // Super big, so that we can find smaller numbers
-        for (var row in rows){
+        for (var i = 1; i < rows.length; i++){
+            row = rows[i];
             // Row 0 contains the headings, the others are javascript attributes of the rows object (in Chrome!)
             if (row !== '0' && row !== 'item' && row !== 'length' && row !== 'namedItem'){
-                var min_cell = document.getElementById('min_radius' + row);
-                var max_cell = document.getElementById('max_radius' + row);
-                var orbital_period = parseFloat(document.getElementById('orbit_period' + row).innerHTML.split(' ')[0]);
-                var name = document.getElementById('name' + row).innerHTML;
+                var min_cell = document.getElementById('min_radius' + i);
+                var max_cell = document.getElementById('max_radius' + i);
+                var orbital_period = parseFloat(document.getElementById('orbit_period' + i).innerHTML.split(' ')[0]);
+                var name = document.getElementById('name' + i).innerHTML;
 
                 var min_radius = parseFloat(min_cell.innerHTML).toFixed(3);
                 var max_radius = parseFloat(max_cell.innerHTML).toFixed(3);

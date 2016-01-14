@@ -1,8 +1,10 @@
 // GLOBALS
 // TODO: Clean up the entire JS code. I feel there are a few things that could be done more nicely...
 var day_in_year = 1;
+var sweet_spot_scale = 1;
+var default_zoom = 1;
 
-function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size) {
+function animate_solar_system(toDraw, star_letter, context, canvas, centerX, centerY) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw a counter representing Earth years
@@ -73,7 +75,7 @@ function animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, ca
 
         // Draw the star last, so it will always be visible
         context.beginPath();
-        context.arc(centerX, centerY, body_size, 0, 2 * Math.PI, false);
+        context.arc(centerX, centerY, 3, 0, 2 * Math.PI, false);
         context.fillStyle = 'yellow';
         context.fill();
         context.stroke();
@@ -107,6 +109,23 @@ function getCookie(cookieName) {
     return "";
 }
 
+function zoomIn(){
+    sweet_spot_scale += (default_zoom / 5);
+    console.debug("Zoomed in");
+    console.debug(sweet_spot_scale);
+}
+
+function zoomOut(){
+    sweet_spot_scale -= (default_zoom / 5);
+    console.debug("Zoomed out");
+    console.debug(sweet_spot_scale);
+}
+
+function resetZoom(){
+    sweet_spot_scale = default_zoom;
+    console.log("Zoom was reset");
+}
+
 
 document.onreadystatechange = function(){
     if (document.readyState === 'complete'){
@@ -117,14 +136,11 @@ document.onreadystatechange = function(){
         var outer_limit = parseFloat(document.getElementById("star-limit").innerHTML);
         var star_letter = document.getElementById("star-letter").innerHTML;
 
-        // The star will be drawn with a fixed radius, so we need to scale all radii accordingly
-
-        var diagram_scale = 1 / star_size;
-
         var overviewTable = document.getElementById("objects-overview");
         var rows = overviewTable.getElementsByTagName("tr");
         var toDraw = [];
         var max_size = 0;
+        var min_size = 99999; // Super big, so that we can find smaller numbers
         for (var row in rows){
             // Row 0 contains the headings, the others are javascript attributes of the rows object (in Chrome!)
             if (row !== '0' && row !== 'item' && row !== 'length' && row !== 'namedItem'){
@@ -133,55 +149,38 @@ document.onreadystatechange = function(){
                 var orbital_period = parseFloat(document.getElementById('orbit_period' + row).innerHTML.split(' ')[0]);
                 var name = document.getElementById('name' + row).innerHTML;
 
-                var min_radius = parseFloat(min_cell.innerHTML).toFixed(1);
-                var max_radius = parseFloat(max_cell.innerHTML).toFixed(1);
-
-                // scale the radii
-                min_radius = (min_radius * diagram_scale);
-                max_radius = (max_radius * diagram_scale);
+                var min_radius = parseFloat(min_cell.innerHTML).toFixed(3);
+                var max_radius = parseFloat(max_cell.innerHTML).toFixed(3);
 
                 toDraw.push({max: max_radius / 2, min: min_radius / 2, orbital_period: orbital_period, velocity: 0, position: 0, name: name});
                 max_size = max_radius > max_size ? max_radius : max_size;
+                min_size = min_radius < min_size ? min_radius : min_size;
             }
         }
 
+        // Scale everything so that the largest orbit is 600px across.
+        sweet_spot_scale = 600 / max_size;
+        default_zoom = sweet_spot_scale;
 
-        // Now that we know how big everything is, relative to the star
-        // We can scale it to fit the website
-        var sweet_spot_scale = 1;
-        if (max_size < 500){
-            sweet_spot_scale = 500 / max_size;
-        } else if (max_size > 600){
-            sweet_spot_scale = 600 / max_size;
-        }
-
-        // Provide 10px padding
-        canvas.height = (max_size * sweet_spot_scale) + 10;
-        canvas.width  = (max_size * sweet_spot_scale) + 10 ;
+        // This would scale the graphic so that the smallest radius is 20px across, and more nicely visible. Results in HUGE outer orbits.
+        /*if ((min_size * sweet_spot_scale) < 20){
+            console.log(min_size * sweet_spot_scale);
+            sweet_spot_scale = 20 / min_size;
+            console.log(min_size * sweet_spot_scale);
+        }*/
 
         var context = canvas.getContext("2d");
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
 
-        document.getElementById('diagram-legend').innerHTML = "1px ~ " + (star_size * diagram_scale * sweet_spot_scale).toFixed(4) + " AU" ;
+        document.getElementById('diagram-legend').innerHTML = "1px ~ " + (1 / sweet_spot_scale).toFixed(4) + " AU" ;
         document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
                 "<br/> Orbital bodies are always drawn with a radius of 3px.";
 
-        // Determine a minimum size for planets and star
-        var body_size = sweet_spot_scale;
-        if (sweet_spot_scale < 3){
-            body_size = 3;
-            document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
-                    "<br/> The star has been magnified by a factor of " + (3 /sweet_spot_scale).toFixed(2) + " to be drawn with a radius of 3px.";
-        } else {
-            document.getElementById('diagram-legend').innerHTML = document.getElementById('diagram-legend').innerHTML +
-                    "<br/> The star is to scale."
-        }
-
         // We immediately draw the first frame of the animation, no delay.
-        animate_solar_system(toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY);
+        animate_solar_system(toDraw, star_letter, context, canvas, centerX, centerY);
         // Every 40ms, repaint the solar system. 24fps requires a frame every 41.666666ms, so we run slightly faster than that.
-        window.setInterval(animate_solar_system, 40, toDraw, star_letter, sweet_spot_scale, context, canvas, centerX, centerY, body_size);
+        window.setInterval(animate_solar_system, 40, toDraw, star_letter, context, canvas, centerX, centerY);
     }
 };
 

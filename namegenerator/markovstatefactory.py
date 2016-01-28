@@ -20,7 +20,8 @@ class MarkovStateFactory:
             value = ["@"]
         for s in value:
             key += s
-        # value is a list, which is not itself hashable for use as a dictionary key. Its values are joined as a key instead.
+        # value is a list, which is not itself hashable for use as a dictionary key.
+        # Its values are joined as a key instead.
         if key in self.__states:
             return self.__states[key]
         else:

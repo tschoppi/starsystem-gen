@@ -177,6 +177,8 @@ class MarkovStateMachine:
             elif not self.get_letter() == "@" and len(result) > 1 and length - len(result) > 2:
                 # Punctuation is never the first letter nor one of the last two letters. Looks better
                 result += self.get_letter()
+            elif not self.get_letter() == "@":
+                break
             else:  # Restart the chain, since the last letter was a word-end and the output is still too short.
                 self.reset_state()
         # In some of the corpuses, a name can contain spaces and all parts must be capitalized.

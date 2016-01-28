@@ -51,7 +51,8 @@ class NameGenerator:
 
     def reload_file(self) -> None:
         """
-            Reloads the corpus, used when the pre-generated names run out. Increases the reload counter, so that an appropriate suffix is used for new names.
+            Reloads the corpus, used when the pre-generated names run out.
+            Increases the reload counter, so that an appropriate suffix is used for new names.
         """
         self.read_file(self.loaded_file)
         self.reload_counter += 1

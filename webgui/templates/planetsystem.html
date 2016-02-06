@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Planetary system details - Starsystem Generator for GURPS</title>
     <link rel="stylesheet" type="text/css" href="mainstyle.css" />
+    <link rel="stylesheet" type="text/css" href="diagramstyle.css" />
     <link rel="icon" type="image/png" href="/favicon" />
     <script src="scripts/planets.js"></script>
 </head>
@@ -17,9 +18,11 @@
     <div id="star-limit" style="display: none">{{planetsystem.parentstar.get_orbit_limits()[1]}}</div>
     <div id="star-letter" style="display: none">{{planetsystem.parentstar.get_letter()}}</div>
     <canvas id="diagram" height="610" width="610" style="border: 1px solid black"></canvas>
-    <button onclick="zoomIn()">Zoom +</button>
-    <button onclick="zoomOut()">Zoom -</button>
-    <button onclick="resetZoom()">Reset</button>
+    <div class="diagram-buttons">
+        <button onclick="zoomIn()">Zoom +</button>
+        <button onclick="zoomOut()">Zoom -</button>
+        <button onclick="resetZoom()">Reset</button>
+    </div>
     <p id="diagram-legend" class="tablenote"></p>
 
 <div id="objects-overview">

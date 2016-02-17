@@ -8,8 +8,9 @@ LW = latexout.LatexWriter
 class StarSystem:
     roller = dice.DiceRoller()
 
-    def __init__(self, **kwargs):  # FIXME: Stop using **kwargs or make it conform to PEP448
+    def __init__(self, **kwargs):
         open_cluster = kwargs.get('open_cluster', None)
+
         if open_cluster is not None:
             self.__opencluster = open_cluster
         else:

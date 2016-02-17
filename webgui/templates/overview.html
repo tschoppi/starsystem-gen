@@ -5,13 +5,15 @@
     <title>Starsystem Generator for GURPS</title>
     <link rel="stylesheet" type="text/css" href="mainstyle.css" />
     <link rel="icon" type="image/png" href="/favicon" />
+    <script src="scripts/overview.js"></script>
 </head>
 <body>
     <h1>Star System Generator for GURPS 4<sup>th</sup> Edition</h1>
     <aside id="go-again">
-        <p><a href="javascript:history.go(0)">Click to generate a new star system with the same settings.</a></p>
+        <p><a href="javascript:void(0)" onclick="regenerate()">Click to generate a new star system with the same settings.</a></p>
         <p><a href="/">Click here if you want to change the settings.</a></p>
     </aside>
+    <p>Seed: {{seed}}</p>
     <p class="success">You have successfully generated the following star system:</p>
     <h2>Star system properties</h2>
 

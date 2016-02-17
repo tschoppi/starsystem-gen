@@ -10,7 +10,7 @@ class Moon(World):
         self.parent = parent_planet
         self.primary_star = primary_star
         self.make_blackbody_temperature()
-        self.__orbit = None
+        self.orbit = None
         self.make_size()
         self.make_type()
         self.make_atmosphere()
@@ -36,7 +36,7 @@ class Moon(World):
         print("         *** Moon {} Information *** ".format(self.get_angled_name()))
         # print("Parent Planet:\t{}".format(self.parent))
         print("           World Type:\t{} ({})".format(self.__sizeclass, self.get_type()))
-        print("                Orbit:\t{} Earth Diameters".format(self.__orbit))
+        print("                Orbit:\t{} Earth Diameters".format(self.orbit))
         print("             Orb Per.:\t{} d".format(self.get_period()))
         print("             Rot Per.:\t{} d".format(self.get_rotation()))
         print("           Len of day:\t{} d".format(self.get_day_length()))
@@ -69,7 +69,7 @@ class Moon(World):
         parentsize = SizeToInt[parent.get_size()]
         if parent.type() == "Gas Giant":
             parentsize = SizeToInt["Large"]
-        diceroll = self.roller.roll(3, 0)
+        diceroll = self.roller.roll_dice(3, 0)
         if diceroll >= 15:
             childsize = parentsize - 1
         if diceroll >= 12:
@@ -84,7 +84,7 @@ class Moon(World):
         return self.__sizeclass
 
     def set_orbit(self, orbit):
-        self.__orbit = orbit
+        self.orbit = orbit
 
     def get_volcanic_bonus(self):
         if self.get_type() == 'Sulfur':
@@ -109,26 +109,26 @@ class Moon(World):
                 bonus = 2
             if diff == 1:
                 bonus = 4
-            dice = self.roller.roll(2, bonus)
-            self.__orbit = dice * 2.5 * self.parent.get_diameter()
+            dice = self.roller.roll_dice(2, bonus)
+            self.orbit = dice * 2.5 * self.parent.get_diameter()
         if ptype == 'Gas Giant':
-            roll = self.roller.roll(3, 3)
+            roll = self.roller.roll_dice(3, 3)
             if roll >= 15:
-                roll += self.roller.roll(2, 0)
-            self.__orbit = roll / 2. * self.parent.get_diameter()
+                roll += self.roller.roll_dice(2, 0)
+            self.orbit = roll / 2. * self.parent.get_diameter()
 
     def get_orbit(self):
-        return self.__orbit
+        return self.orbit
 
     def make_period(self):
         m1 = self.get_mass()
         mp = self.parent.get_mass()
         m = m1 + mp
         orbit = self.get_orbit()
-        self.__period = 0.166 * (orbit ** 3 / m) ** 0.5
+        self.period = 0.166 * (orbit ** 3 / m) ** 0.5
 
     def get_period(self):
-        return self.__period
+        return self.period
 
     def make_tidals(self):
         m = self.parent.get_mass()
@@ -153,25 +153,25 @@ class Moon(World):
                 bonus = 14
             if self.get_size() == 'Tiny':
                 bonus = 18
-            diceroll = self.roller.roll(3, bonus)
+            diceroll = self.roller.roll_dice(3, bonus)
             rotperiod = (diceroll + self.get_total_tidal_effect()) / 24.
             if rotperiod > 1.5 or diceroll - bonus >= 16:
-                roll2 = self.roller.roll(2, 0)
+                roll2 = self.roller.roll_dice(2, 0)
                 if roll2 == 7:
-                    rotperiod = self.roller.roll(1, 0) * 2
+                    rotperiod = self.roller.roll_dice(1, 0) * 2
                 if roll2 == 8:
-                    rotperiod = self.roller.roll(1, 0) * 5
+                    rotperiod = self.roller.roll_dice(1, 0) * 5
                 if roll2 == 9:
-                    rotperiod = self.roller.roll(1, 0) * 10
+                    rotperiod = self.roller.roll_dice(1, 0) * 10
                 if roll2 == 10:
-                    rotperiod = self.roller.roll(1, 0) * 20
+                    rotperiod = self.roller.roll_dice(1, 0) * 20
                 if roll2 == 11:
-                    rotperiod = self.roller.roll(1, 0) * 50
+                    rotperiod = self.roller.roll_dice(1, 0) * 50
                 if roll2 == 12:
-                    rotperiod = self.roller.roll(1, 0) * 100
+                    rotperiod = self.roller.roll_dice(1, 0) * 100
             if rotperiod > self.get_period():
                 rotperiod = self.get_period()
-        if self.roller.roll(3, 0) >= 17:
+        if self.roller.roll_dice(3, 0) >= 17:
             rotperiod = -rotperiod
         self.__rotperiod = rotperiod
 
@@ -212,10 +212,10 @@ class Moon(World):
         return "<" + self.__name + ">"
 
     def set_number(self, number):
-        self.__number = number
+        self.number = number
 
     def get_number(self):
-        return self.__number
+        return self.number
 
 
 class Moonlet:
@@ -236,7 +236,7 @@ class Moonlet:
     def make_orbit(self):
         ptype = self.parent.type()
         if ptype == 'Gas Giant' and self.family == 'first':
-            self.__orbit = self.roller.roll(1, 4) / 4. * self.parent.get_diameter()
+            self.__orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
         if ptype == 'Gas Giant' and self.family == 'third':
             # Make random orbits between 20 and 200 planetary diameters
             import random as r
@@ -244,7 +244,7 @@ class Moonlet:
             self.__orbit = multiplier * self.parent.get_diameter()
 
         if ptype == 'Terrestrial':
-            self.__orbit = self.roller.roll(1, 4) / 4. * self.parent.get_diameter()
+            self.__orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
 
     def get_orbit(self):
         return self.__orbit

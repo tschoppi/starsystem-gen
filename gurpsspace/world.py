@@ -58,7 +58,7 @@ class World(OrbitContent):
                 bonus = floor(age / 0.5)
                 if bonus > cap:
                     bonus = cap
-                dice = self.roller.roll(3, bonus)
+                dice = self.roller.roll_dice(3, bonus)
                 if dice >= 18:
                     world_type = 'Garden'
                 else:
@@ -88,7 +88,7 @@ class World(OrbitContent):
         if size == 'Tiny' or type == 'Hadean' or type == 'Chthonian' or type == 'Rock':
             self.__atmmass = 0
         else:
-            self.__atmmass = self.roller.roll(3, 0) / 10.
+            self.__atmmass = self.roller.roll_dice(3, 0) / 10.
 
         # Now determine atmospheric composition
         self.atmcomp = {
@@ -102,7 +102,7 @@ class World(OrbitContent):
         self.__marginal = ''
         if size == 'Small' and type == 'Ice':
             self.atmcomp['Suffocating'] = True
-            if self.roller.roll(3, 0) > 15:
+            if self.roller.roll_dice(3, 0) > 15:
                 self.atmcomp['Lethally Toxic'] = True
             else:
                 self.atmcomp['Mildly Toxic'] = True
@@ -113,13 +113,13 @@ class World(OrbitContent):
             self.atmcomp['Corrosive'] = True
 
         if type == 'Garden':
-            if self.roller.roll(3, 0) >= 12:
+            if self.roller.roll_dice(3, 0) >= 12:
                 self.__hasmarginal = True
-                self.__marginal = MAtmoTable[self.roller.roll(3, 0)]
+                self.__marginal = MAtmoTable[self.roller.roll_dice(3, 0)]
 
         if size == 'Standard' and (type == 'Ice' or type == 'Ocean'):
             self.atmcomp['Suffocating'] = True
-            if self.roller.roll(3, 0) > 12:
+            if self.roller.roll_dice(3, 0) > 12:
                 self.atmcomp['Mildly Toxic'] = True
 
         if size == 'Large' and (type == 'Ice' or type == 'Ocean'):
@@ -137,28 +137,28 @@ class World(OrbitContent):
         size = self.get_size()
         type = self.get_type()
         if size == 'Small' and type == 'Ice':
-            hydro = self.roller.roll(1, 2) * 10
+            hydro = self.roller.roll_dice(1, 2) * 10
         if type == 'Ammonia':
-            hydro = self.roller.roll(2, 0) * 10
+            hydro = self.roller.roll_dice(2, 0) * 10
             if hydro > 100:
                 hydro = 100
         if type == 'Ice' and (size == 'Standard' or size == 'Large'):
-            hydro = self.roller.roll(2, -10) * 10
+            hydro = self.roller.roll_dice(2, -10) * 10
         if type == 'Ocean' or type == 'Garden':
             bonus = 4
             if size == 'Large':
                 bonus = 6
-            hydro = self.roller.roll(1, bonus) * 10
+            hydro = self.roller.roll_dice(1, bonus) * 10
             if hydro > 100:
                 hydro = 100
         if type == 'Greenhouse':
-            hydro = self.roller.roll(2, -7) * 10
+            hydro = self.roller.roll_dice(2, -7) * 10
         # Introduce a small amount of randomness to the hydrographic coverage, to make the worlds more varied and to make them feel more real
         # Do this only if there is any surface liquid at all, avoiding those astral bodies who cannot have a hydrographic coverage at all
         # Vary by +- 5% as described in the rule book
         if 10 <= hydro <= 90:
-            sign = self.roller.roll(1, 0, 2)
-            variation = self.roller.roll(1, 0, 5)
+            sign = self.roller.roll_dice(1, 0, 2)
+            variation = self.roller.roll_dice(1, 0, 5)
             if sign == 1:
                 hydro += variation
             else:
@@ -206,7 +206,7 @@ class World(OrbitContent):
         type = self.get_type()
         size = self.get_size()
         density = 0
-        dice = self.roller.roll(3, 0)
+        dice = self.roller.roll_dice(3, 0)
         if type == 'Ammonia' or type == 'Hadean' or type == 'Sulfur' or (type == 'Ice' and size != 'Large'):
             if dice >= 3:
                 density = 0.3
@@ -257,7 +257,7 @@ class World(OrbitContent):
         min = term * smin
         max = term * smax
         diff = max - min
-        diam = self.roller.roll(2, -2) * 0.1 * diff + min
+        diam = self.roller.roll_dice(2, -2) * 0.1 * diff + min
         self.__diameter = diam
 
     def get_diameter(self):
@@ -307,7 +307,7 @@ class World(OrbitContent):
     def make_volcanism(self):
         bonus = round(self.get_gravity() / self.primary_star.get_age() * 40)
         bonus += self.get_volcanic_bonus()
-        volcanoroll = self.roller.roll(3, bonus)
+        volcanoroll = self.roller.roll_dice(3, bonus)
         activity = 'None'
         if volcanoroll > 16:
             activity = 'Light'
@@ -342,7 +342,7 @@ class World(OrbitContent):
             if self.get_hydrographic_cover() < 50:
                 bonus -= 2
             bonus += self.get_tectonic_bonus()
-            tect = self.roller.roll(3, bonus)
+            tect = self.roller.roll_dice(3, bonus)
             activity = 'None'
             if tect > 6:
                 activity = 'Light'
@@ -375,7 +375,7 @@ class World(OrbitContent):
 
     def make_resources(self):
         rollbonus = self.get_resourcebonus()
-        dice = self.roller.roll(3, rollbonus)
+        dice = self.roller.roll_dice(3, rollbonus)
         rvm = -3
         value = 'Scant'
         if dice > 2:

@@ -53,8 +53,8 @@ class Star:
 
     def make_index(self):
         # Roll to randomly select the index for the StEvoTable
-        diceroll1 = self.roller.roll(3, 0)
-        diceroll2 = self.roller.roll(3, 0)
+        diceroll1 = self.roller.roll_dice(3, 0)
+        diceroll2 = self.roller.roll_dice(3, 0)
         self.__StEvoIndex = IndexTable[diceroll1][diceroll2]
 
     def make_mass(self):
@@ -92,7 +92,7 @@ class Star:
                 self.__SeqIndex = 0
         # For a white dwarf we have to regenerate the mass
         if self.__SeqIndex == 3:
-            self.__mass = self.roller.roll(2, -2) * 0.05 + 0.9
+            self.__mass = self.roller.roll_dice(2, -2) * 0.05 + 0.9
 
     def get_sequence(self):
         return SequenceTable[self.__SeqIndex]
@@ -134,7 +134,7 @@ class Star:
             s = sspan
             temp = m - (a / s * (m - 4800))
         elif seq == 2:  # Giant star
-            temp = self.roller.roll(2, -2) * 200 + 3000
+            temp = self.roller.roll_dice(2, -2) * 200 + 3000
         elif seq == 3:  # White dwarf
             temp = 8000  # Not defined in the rulebook, so arbitrarily assigned
 

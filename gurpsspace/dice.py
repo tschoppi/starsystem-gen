@@ -1,8 +1,10 @@
 import random as r
 
 
+# TODO: Turn this into a singleton and expose the seed for reproducibility XOR unwrap the method and remove the overhead
 class DiceRoller:
-    def roll(self, dice_num, modifier, sides=6) -> int:
+
+    def roll_dice(self, dice_num, modifier, sides=6) -> int:
         """
         Rolls XdY +- Z.
 

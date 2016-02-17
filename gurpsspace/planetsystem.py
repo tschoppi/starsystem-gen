@@ -67,7 +67,7 @@ class PlanetSystem:
             return result
 
     def make_gasgiant_arrangement(self):
-        dice = self.roller.roll(3, 0)
+        dice = self.roller.roll_dice(3, 0)
         self.__gasarrangement = 'None'
         if dice > 10:
             self.__gasarrangement = 'Conventional'
@@ -82,11 +82,11 @@ class PlanetSystem:
     def place_first_gasgiant(self):
         orbit = 0
         if self.__gasarrangement == 'Conventional':
-            orbit = (1 + (self.roller.roll(2, -2) * 0.05)) * self.__snowline
+            orbit = (1 + (self.roller.roll_dice(2, -2) * 0.05)) * self.__snowline
         if self.__gasarrangement == 'Eccentric':
-            orbit = self.roller.roll(1, 0) * 0.125 * self.__snowline
+            orbit = self.roller.roll_dice(1, 0) * 0.125 * self.__snowline
         if self.__gasarrangement == 'Epistellar':
-            orbit = self.roller.roll(3, 0) * 0.1 * self.__innerlimit
+            orbit = self.roller.roll_dice(3, 0) * 0.1 * self.__innerlimit
         self.__firstgasorbit = orbit
 
     def createorbits(self):
@@ -127,7 +127,7 @@ class PlanetSystem:
         old_orbit = startorbit
         new_orbit = 0
         while (allowed):
-            orbital_separation = OrbitalSpace[self.roller.roll(3, 0)]
+            orbital_separation = OrbitalSpace[self.roller.roll_dice(3, 0)]
             new_orbit = old_orbit * orbital_separation
             if self.allowed_orbit(new_orbit) and new_orbit - old_orbit >= 0.15:
                 orbits += [new_orbit]
@@ -164,7 +164,7 @@ class PlanetSystem:
         oldorbit = startorbit
         neworbit = 0
         while (allowed):
-            orbsep = OrbitalSpace[self.roller.roll(3, 0)]
+            orbsep = OrbitalSpace[self.roller.roll_dice(3, 0)]
             neworbit = oldorbit / orbsep
             if self.allowed_orbit(neworbit) and oldorbit - neworbit >= 0.15:
                 orbits = [neworbit] + orbits
@@ -204,25 +204,25 @@ class PlanetSystem:
         large_orbits = [orb for orb in rollorbits if orb > self.__snowline]
         if self.__gasarrangement is 'Epistellar':
             for stellar_orbit in small_orbits:
-                if self.roller.roll(3, 0) <= 6:
+                if self.roller.roll_dice(3, 0) <= 6:
                     self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
                                                                    stellar_orbit, True)
             for stellar_orbit in large_orbits:
-                if self.roller.roll(3, 0) <= 14:
+                if self.roller.roll_dice(3, 0) <= 14:
                     self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
                                                                    stellar_orbit, self.gas_giant_bonus(stellar_orbit))
         elif self.__gasarrangement is 'Eccentric':
             for stellar_orbit in small_orbits:
-                if self.roller.roll(3, 0) <= 8:
+                if self.roller.roll_dice(3, 0) <= 8:
                     self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
                                                                    stellar_orbit, True)
             for stellar_orbit in large_orbits:
-                if self.roller.roll(3, 0) <= 14:
+                if self.roller.roll_dice(3, 0) <= 14:
                     self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
                                                                    stellar_orbit, self.gas_giant_bonus(stellar_orbit))
         elif self.__gasarrangement is 'Conventional':
             for stellar_orbit in large_orbits:
-                if self.roller.roll(3, 0) <= 15:
+                if self.roller.roll_dice(3, 0) <= 15:
                     self.__orbitcontents[stellar_orbit] = GasGiant(self.parentstar,
                                                                    stellar_orbit, self.gas_giant_bonus(stellar_orbit))
 
@@ -241,7 +241,7 @@ class PlanetSystem:
         # Go through these orbits and determine the contents
         for orbit in roll_orbits:
             roll_mod = self.orbit_fill_modifier(self.__orbitarray.index(orbit))
-            dice_roll = self.roller.roll(3, roll_mod)
+            dice_roll = self.roller.roll_dice(3, roll_mod)
             if 4 <= dice_roll <= 6:
                 obj = AsteroidBelt(self.parentstar, orbit)
             if 7 <= dice_roll <= 8:
@@ -305,7 +305,7 @@ class PlanetSystem:
                 bonus = +4
             else:
                 bonus = 0
-            oc.set_eccentricity(self.roller.roll(3, bonus))
+            oc.eccentricity, oc.min_max = oc.make_eccentricity(self.roller.roll_dice(3, bonus))
 
     def has_garden(self):
         ret = False

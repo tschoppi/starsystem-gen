@@ -8,11 +8,10 @@ class Star:
 
     def __init__(self, age):
         self.__hasforbiddenzone = False
-        # roller = GD.DiceRoller()
         self.__age = age
-        self.make_index()
-        self.make_mass()
-        self.find_sequence()
+        self.__StEvoIndex = self.make_index()
+        self.__SeqIndex = self.find_sequence()
+        self.__mass = self.make_mass()
         self.make_luminosity()
         self.make_temperature()
         self.make_radius()
@@ -55,27 +54,28 @@ class Star:
         # Roll to randomly select the index for the StEvoTable
         diceroll1 = self.roller.roll_dice(3, 0)
         diceroll2 = self.roller.roll_dice(3, 0)
-        self.__StEvoIndex = IndexTable[diceroll1][diceroll2]
+        return IndexTable[diceroll1][diceroll2]
 
-    def make_mass(self):
-        self.__mass = StEvoTable['mass'][self.__StEvoIndex]
+    def make_mass(self) -> float:
+        """
+        Find or calculate the mass appropriate to the star.
+        :return: The mass of the star, relative to the sun.
+        """
+        if self.__SeqIndex == 3:  # The star is a white dwarf, and its mass is treated specially
+            return self.roller.roll_dice(2, -2) * 0.05 + 0.9
+        return StEvoTable['mass'][self.__StEvoIndex]
 
     def find_sequence(self):
         # Check what sequences are available
         seq = StEvoTable['internaltype'][self.__StEvoIndex]
         age = self.__age
-
-        # If we have a main-sequence-only star
-        if seq == 0:
-            self.__SeqIndex = 0
+        sequence_index = 0
 
         # If we have a main-sequence-only star that can decay to a white dwarf
-        elif seq == 1:
+        if seq == 1:
             span = StEvoTable['Mspan'][self.__StEvoIndex]
             if age > span:
-                self.__SeqIndex = 3
-            else:
-                self.__SeqIndex = 0
+                sequence_index = 3
 
         # If we have a star with sub- and giant type capabilities
         elif seq == 2:
@@ -83,16 +83,12 @@ class Star:
             sspan = StEvoTable['Sspan'][self.__StEvoIndex]
             gspan = StEvoTable['Gspan'][self.__StEvoIndex]
             if age > (mspan + sspan + gspan):
-                self.__SeqIndex = 3
+                sequence_index = 3
             elif age > (mspan + sspan):
-                self.__SeqIndex = 2
+                sequence_index = 2
             elif age > mspan:
-                self.__SeqIndex = 1
-            else:
-                self.__SeqIndex = 0
-        # For a white dwarf we have to regenerate the mass
-        if self.__SeqIndex == 3:
-            self.__mass = self.roller.roll_dice(2, -2) * 0.05 + 0.9
+                sequence_index = 1
+        return sequence_index
 
     def get_sequence(self):
         return SequenceTable[self.__SeqIndex]

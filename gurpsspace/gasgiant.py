@@ -40,7 +40,7 @@ class GasGiant(OrbitContent):
         print("     Diam:\t{}".format(self.diameter))
         print("  Orb Per:\t{}".format(self.get_period()))
         print("  Orb Ecc:\t{}".format(self.get_eccentricity()))
-        print(" Cl Top G:\t{}".format(self.gravity))
+        print(" Cl Top G:\t{}".format(self.cloudtop_gravity))
         print("  # 1st M:\t{}".format(len(self.first_family)))
         print("  # 2nd M:\t{}".format(len(self.second_family)))
         print("  # 3rd M:\t{}".format(len(self.third_family)))
@@ -120,7 +120,7 @@ class GasGiant(OrbitContent):
         return len(self.second_family)
 
     def num_moonlets(self):
-        return len(self.firstfamily) + len(self.thirdfamily)
+        return len(self.first_family) + len(self.third_family)
 
     def set_number(self, number):
         OrbitContent.set_number(self, number)
@@ -140,7 +140,7 @@ class GasGiant(OrbitContent):
         return self.density
 
     def get_gravity(self):
-        return self.gravity
+        return self.cloudtop_gravity
 
     def get_first_family(self):
         return self.first_family

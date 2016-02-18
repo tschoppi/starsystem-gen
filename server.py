@@ -37,10 +37,6 @@ class WebServer(object):
         input_seed = None if seed == '' or None else seed  # Correctly interpret "no input"
         self.set_seed(input_seed)  # reseed the PRNG, so that there is a unique seed every time
         r.seed(self.random_seed)
-        print('Seed:')
-        print(seed)
-        print("Random_seed:")
-        print(self.random_seed)
 
         if num_stars == "":
             num_stars = None

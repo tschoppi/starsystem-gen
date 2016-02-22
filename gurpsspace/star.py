@@ -177,6 +177,7 @@ class Star:
         self.__hasforbiddenzone = True
 
     def make_planetsystem(self):
+        # TODO: Why not call this in the constructor and avoid this side effect too?
         self.planetsystem = planetsystem.PlanetSystem(self)
 
     def get_orbit_limits(self):

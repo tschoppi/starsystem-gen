@@ -8,16 +8,21 @@ class World(OrbitContent):
     def __init__(self, primary, orbitalradius, sizeclass):
         OrbitContent.__init__(self, primary, orbitalradius)
         self.__sizeclass = sizeclass
-        self.__type = ""
-        self.make_type()
+        self.__type = self.make_type()
         self.make_atmosphere()
-        self.make_hydrographics()
-        self.make_climate()
-        self.make_density()
-        self.make_diameter()
-        self.make_gravity()
-        self.make_mass()
-        self.make_pressure()
+        self.__hydrocover = self.make_hydrographics()
+        self.__averagesurface, self.__climatetype = self.make_climate()
+        self.__density = self.make_density()
+        self.__diameter = self.make_diameter()
+        self.__surfacegravity = self.make_gravity()
+        self.__mass = self.make_mass()
+        self.__pressure, self.__presscat = self.make_pressure()
+        self.__volcanism = ""
+        self.__tectonic = ""
+        self.__rvm = 0
+        self.__resources = ""
+        self.__habitability = 0
+        self.__affinity = 0
 
     def __repr__(self):
         return repr("World")
@@ -28,7 +33,7 @@ class World(OrbitContent):
     def get_size(self) -> str:
         return self.__sizeclass
 
-    def make_type(self) -> None:
+    def make_type(self) -> str:
         """
         Determine and set the world type, according to blackbody temperature, size and primary star.
         """
@@ -67,7 +72,7 @@ class World(OrbitContent):
                 world_type = 'Greenhouse'
             if blackbody_temp > 500:
                 world_type = 'Chthonian'
-        self.__type = world_type
+        return world_type
 
     def get_type(self) -> str:
         return self.__type
@@ -82,6 +87,7 @@ class World(OrbitContent):
         """
         Determine details about the atmosphere and store them.
         """
+        # TODO: Untangle this mess and get rid of the side effects
         size = self.get_size()
         type = self.get_type()
         # Determine atmospheric mass
@@ -132,7 +138,7 @@ class World(OrbitContent):
         """
         return self.__hasmarginal, self.__marginal
 
-    def make_hydrographics(self) -> None:
+    def make_hydrographics(self) -> int:
         hydro = 0
         size = self.get_size()
         type = self.get_type()
@@ -164,7 +170,7 @@ class World(OrbitContent):
             else:
                 hydro -= variation
 
-        self.__hydrocover = hydro
+        return hydro
 
     def get_hydrographic_cover(self) -> int:
         return self.__hydrocover
@@ -189,12 +195,13 @@ class World(OrbitContent):
                 absorption = 0.95
             return (absorption, 0.16)
 
-    def make_climate(self) -> None:
+    def make_climate(self) -> tuple:
+        # TODO: Refactor by assigning better names
         abs, green = self.get_absorption_greenhouse()
         matm = self.get_atmospheric_mass()
         bbcorr = abs * (1 + (matm * green))
-        self.__averagesurface = bbcorr * self.get_blackbody_temp()
-        self.__climatetype = world_climate(self.__averagesurface)
+
+        return bbcorr * self.get_blackbody_temp(), world_climate(self.__averagesurface)
 
     def get_average_surface_temp(self):
         return self.__averagesurface
@@ -202,7 +209,7 @@ class World(OrbitContent):
     def get_climate(self) -> str:
         return self.__climatetype
 
-    def make_density(self) -> None:
+    def make_density(self) -> float:
         type = self.get_type()
         size = self.get_size()
         density = 0
@@ -240,7 +247,7 @@ class World(OrbitContent):
                 density = 1.1
             if dice == 18:
                 density = 1.2
-        self.__density = density
+        return density
 
     def get_density(self):
         """
@@ -248,7 +255,7 @@ class World(OrbitContent):
         """
         return self.__density
 
-    def make_diameter(self) -> None:
+    def make_diameter(self) -> float:
         size = self.get_size()
         bb = self.get_blackbody_temp()
         dens = self.get_density()
@@ -258,24 +265,24 @@ class World(OrbitContent):
         max = term * smax
         diff = max - min
         diam = self.roller.roll_dice(2, -2) * 0.1 * diff + min
-        self.__diameter = diam
+        return diam
 
     def get_diameter(self):
         return self.__diameter
 
-    def make_gravity(self) -> None:
-        self.__surfacegravity = self.get_density() * self.get_diameter()
+    def make_gravity(self) -> float or int:
+        return self.get_density() * self.get_diameter()
 
-    def get_gravity(self):
+    def get_gravity(self) -> float or int:
         return self.__surfacegravity
 
-    def make_mass(self) -> None:
-        self.__mass = self.get_density() * self.get_diameter() ** 3
+    def make_mass(self) -> float or int:
+        return self.get_density() * self.get_diameter() ** 3
 
-    def get_mass(self):
+    def get_mass(self) -> float or int:
         return self.__mass
 
-    def make_pressure(self) -> None:
+    def make_pressure(self) -> tuple:
         size = self.get_size()
         type = self.get_type()
         pressure = 0
@@ -295,8 +302,7 @@ class World(OrbitContent):
                 factor *= 100
             pressure = self.get_mass() * factor * self.get_gravity()
             category = pressure_category(pressure)
-        self.__pressure = pressure
-        self.__presscat = category
+        return pressure, category
 
     def get_pressure(self):
         return self.__pressure
@@ -317,7 +323,7 @@ class World(OrbitContent):
             activity = 'Heavy'
         if volcanoroll > 70:
             activity = 'Extreme'
-        self.__volcanism = activity
+        return activity
 
     def get_volcanism(self):
         return self.__volcanism
@@ -327,7 +333,7 @@ class World(OrbitContent):
 
     def make_tectonism(self):
         if self.get_size() == 'Small' or self.get_size() == 'Tiny':
-            self.__tectonic = 'None'
+            return 'None'
         else:
             volc = self.get_volcanism()
             bonus = 0
@@ -352,7 +358,7 @@ class World(OrbitContent):
                 activity = 'Heavy'
             if tect > 18:
                 activity = 'Extreme'
-            self.__tectonic = activity
+            return activity
 
     def get_tectonic_bonus(self):
         return 0
@@ -396,8 +402,7 @@ class World(OrbitContent):
         if dice > 18:
             rvm = 3
             value = 'Rich'
-        self.__rvm = rvm
-        self.__resources = value
+        return rvm, value
 
     def get_rvm(self):
         return self.__rvm
@@ -460,13 +465,13 @@ class World(OrbitContent):
         # Check lower bounds (p. 121)
         if modifier < -2:
             modifier = -2
-        self.__habitability = modifier
+        return modifier
 
     def get_habitability(self):
         return self.__habitability
 
     def make_affinity(self):
-        self.__affinity = self.get_rvm() + self.get_habitability()
+        return self.get_rvm() + self.get_habitability()
 
     def get_affinity(self):
         return self.__affinity

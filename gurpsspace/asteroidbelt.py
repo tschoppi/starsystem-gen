@@ -8,9 +8,9 @@ class AsteroidBelt(OrbitContent):
     """
     def __init__(self, primarystar, orbitalradius):
         OrbitContent.__init__(self, primarystar, orbitalradius)
-        self.make_resources()
-        self.make_surface_temp()
-        self.make_climate()
+        self.__rvm, self.__resources = self.make_resources()
+        self.__avsurf = self.make_surface_temp()
+        self.__climate = self.make_climate()
         self.__habitability = 0
         self.__affinity = self.__habitability + self.__rvm
 
@@ -31,6 +31,7 @@ class AsteroidBelt(OrbitContent):
         print("")
 
     def make_resources(self):
+        # TODO: Refactor into dictionary of tuples
         dice = self.roller.roll_dice(3, 0)
         rvm = -5
         value = 'Worthless'
@@ -64,17 +65,16 @@ class AsteroidBelt(OrbitContent):
         if dice == 16:
             rvm = 5
             value = 'Motherlode'
-        self.__rvm = rvm
-        self.__resources = value
+        return rvm, value
 
     def make_surface_temp(self):
-        self.__avsurf = self.get_blackbody_temp() * 0.97
+        return self.get_blackbody_temp() * 0.97
 
     def get_average_surface_temp(self):
         return self.__avsurf
 
     def make_climate(self):
-        self.__climate = world_climate(self.get_average_surface_temp())
+        return world_climate(self.get_average_surface_temp())
 
     def get_climate(self):
         return self.__climate

@@ -6,16 +6,20 @@ from .tables import SizeToInt
 class Planet(World):
     def __init__(self, primary, orbitalradius, sizeclass):
         World.__init__(self, primary, orbitalradius, sizeclass)
-        self.generate_moons()
-        self.make_tidals()
-        self.make_rotation()
-        self.make_volcanism()
-        self.make_tectonism()
-        self.make_resources()
-        self.make_habitability()
-        self.make_affinity()
-        self.make_calendar()
-        self.make_axial_tilt()
+        self.__nummoons, self.__moons = self.generate_moons()
+        if self.__nummoons == 0:
+            self.__nummoonlets, self.__moonlets = self.generate_moonlets()
+        else:
+            self.__nummoonlets, self.__moonlets = 0, []
+        self.__tte = self.make_tidals()
+        self.__rotperiod = self.make_rotation()
+        self.__volcanism = self.make_volcanism()
+        self.__tectonic = self.make_tectonism()
+        self.__rvm, self.__resources = self.make_resources()
+        self.__habitability = self.make_habitability()
+        self.__affinity = self.make_affinity()
+        self.__daylength, self.__moonlength = self.make_calendar()
+        self.__axtilt = self.make_axial_tilt()
 
     def print_info(self):
         print("--- Planet {} Info ---".format(self.get_angled_name()))
@@ -71,21 +75,15 @@ class Planet(World):
         roll_mod = -4
         roll_mod += self.moon_roll_modifier()
         moon_roll = self.roller.roll_dice(1, roll_mod)
-        if moon_roll <= 0:
-            # If we have no major moons, generate moonlets
-            self.generate_moonlets()
-        else:
-            self.__nummoonlets = 0
-            self.__moonlets = []
-        self.__nummoons = moon_roll
-        self.__moons = sorted([Moon(self, self.primary_star) for moonnum in range(moon_roll)], key=lambda moon: moon.get_orbit())
+
+        return moon_roll, sorted([Moon(self, self.primary_star) for _ in range(moon_roll)], key=lambda moon: moon.get_orbit())
 
     def generate_moonlets(self):
         roll_mod = -2
         roll_mod += self.moon_roll_modifier()
         moonlet_roll = self.roller.roll_dice(1, roll_mod)
-        self.__nummoonlets = moonlet_roll
-        self.__moonlets = [Moonlet(self) for moonletnum in range(moonlet_roll)]
+
+        return moonlet_roll, [Moonlet(self) for _ in range(moonlet_roll)]
 
     def moon_roll_modifier(self):
         modifier = 0
@@ -135,12 +133,13 @@ class Planet(World):
         orbit = self.get_orbit()
         star_tide = 0.46 * sun_mass * diameter / orbit ** 3
         total_tide = (moon_tide + star_tide) * self.primary_star.get_age() / self.get_mass()
-        self.__tte = round(total_tide)
+        return round(total_tide)
 
     def get_total_tidal_effect(self):
         return self.__tte
 
     def make_rotation(self):
+        bonus = 0
         if self.get_total_tidal_effect() > 50:
             if self.__nummoons == 0:
                 rotational_period = self.get_period() * 365.26
@@ -178,7 +177,7 @@ class Planet(World):
                 rotational_period = self.get_period() * 365.26
         if self.roller.roll_dice(3, 0) >= 13:
             rotational_period = -rotational_period
-        self.__rotperiod = rotational_period
+        return rotational_period
 
     def get_rotation(self):
         return self.__rotperiod
@@ -195,17 +194,18 @@ class Planet(World):
             alen = None
         else:
             alen = s * r / (s - r)
-        self.__daylength = alen
+        day_length = alen
 
+        moon_length = []
         if self.__nummoons > 0:
-            self.__moonlength = []
             for moon in self.get_satellites():
                 s = moon.get_period()
                 if s == r:
                     alen = None
                 else:
                     alen = s * r / (s - r)
-                self.__moonlength.append(alen)
+                moon_length.append(alen)
+        return day_length, moon_length
 
     def get_day_length(self):
         return self.__daylength
@@ -237,7 +237,7 @@ class Planet(World):
                 base = 70
             if roll2 == 6:
                 base = 80
-        self.__axtilt = base + self.roller.roll_dice(2, -2)
+        return base + self.roller.roll_dice(2, -2)
 
     def get_axial_tilt(self):
         return self.__axtilt

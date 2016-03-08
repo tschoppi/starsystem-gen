@@ -9,18 +9,18 @@ class Moon(World):
         self.roller = dice.DiceRoller()
         self.parent = parent_planet
         self.primary_star = primary_star
-        self.make_blackbody_temperature()
+        self.__bbtemp = self.make_blackbody_temperature()
         self.orbit = None
-        self.make_size()
-        self.make_type()
+        self.__sizeclass = self.make_size()
+        self.__type = self.make_type()
         self.make_atmosphere()
-        self.make_hydrographics()
-        self.make_climate()
-        self.make_density()
-        self.make_diameter()
-        self.make_gravity()
-        self.make_mass()
-        self.make_pressure()
+        self.__hydrocover = self.make_hydrographics()
+        self.__averagesurface, self.__climatetype = self.make_climate()
+        self.__density = self.make_density()
+        self.__diameter = self.make_diameter()
+        self.__surfacegravity = self.make_gravity()
+        self.__mass = self.make_mass()
+        self.__pressure, self.__presscat = self.make_pressure()
         self.make_volcanism()
         self.make_tectonism()
         self.make_resources()
@@ -59,7 +59,7 @@ class Moon(World):
         print("         --- **************** --- \n")
 
     def make_blackbody_temperature(self):
-        self.__bbtemp = self.parent.get_blackbody_temp()
+        return self.parent.get_blackbody_temp()
 
     def get_blackbody_temp(self):
         return self.__bbtemp
@@ -78,7 +78,7 @@ class Moon(World):
             childsize = parentsize - 3
         if childsize < 0:
             childsize = 0
-        self.__sizeclass = IntToSize[childsize]
+        return IntToSize[childsize]
 
     def get_size(self):
         return self.__sizeclass

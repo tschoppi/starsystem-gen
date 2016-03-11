@@ -1,9 +1,13 @@
 from .world import World
 from .satellites import Moon, Moonlet
 from .tables import SizeToInt
+from .setting import setting as setting_module
+import random
 
 
 class Planet(World):
+    setting = setting_module.Setting(9)
+
     def __init__(self, primary, orbitalradius, sizeclass):
         World.__init__(self, primary, orbitalradius, sizeclass)
         self.__nummoons, self.__moons = self.generate_moons()

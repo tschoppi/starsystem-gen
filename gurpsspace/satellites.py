@@ -9,7 +9,7 @@ class Moon(World):
         self.roller = dice.DiceRoller()
         self.parent = parent_planet
         self.primary_star = primary_star
-        self.__bbtemp = self.make_blackbody_temperature()
+        self.blackbody_temperature = self.make_blackbody_temperature()
         self.orbit = None
         self.__sizeclass = self.make_size()
         self.__type = self.make_type()
@@ -62,7 +62,7 @@ class Moon(World):
         return self.parent.get_blackbody_temp()
 
     def get_blackbody_temp(self):
-        return self.__bbtemp
+        return self.blackbody_temperature
 
     def make_size(self):
         parent = self.parent

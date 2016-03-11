@@ -28,7 +28,7 @@ class NameGenerator:
 
     use_chain = False
 
-    suffixes = ['', '-Beta', '-Gamma']
+    suffixes = ['', '-Beta', '-Gamma', '-Delta', '-Epsilon']
 
     def __init__(self, depth=1):
         self.markov_chain = MarkovStateMachine(depth)

@@ -12,7 +12,7 @@ class AsteroidBelt(OrbitContent):
         self.__avsurf = self.make_surface_temp()
         self.__climate = self.make_climate()
         self.__habitability = 0
-        self.__affinity = self.__habitability + self.__rvm
+        self.affinity = self.__habitability + self.__rvm
 
     def __repr__(self):
         return repr("Asteroid Belt")
@@ -27,7 +27,7 @@ class AsteroidBelt(OrbitContent):
         print("  Orb Ecc:\t{}".format(self.get_eccentricity()))
         print("      RVM:\t{}".format(self.__rvm))
         print("   Res. V:\t{}".format(self.__resources))
-        print("     Aff.:\t{}".format(self.__affinity))
+        print("     Aff.:\t{}".format(self.affinity))
         print("")
 
     def make_resources(self):
@@ -86,4 +86,4 @@ class AsteroidBelt(OrbitContent):
         return self.__rvm
 
     def get_affinity(self):
-        return self.__affinity
+        return self.affinity

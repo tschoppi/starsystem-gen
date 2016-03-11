@@ -12,8 +12,8 @@ class OrbitContent:
         self.roller = dice.DiceRoller()
         self.orbit = orbitalradius
         self.primary_star = primary
-        primary_luminosity = self.primary_star.get_luminosity()
-        self.blackbody_temp = self.make_blackbody_temperature(primary_luminosity, self.orbit)
+        primarylum = self.primary_star.get_luminosity()
+        self.blackbody_temperature = self.make_blackbody_temperature(primarylum, self.__orbit)
         self.period = self.make_orbital_period()
         self.name = ''
         self.number = None
@@ -26,7 +26,7 @@ class OrbitContent:
         return 278 * luminosity ** 0.25 * orbit ** -0.5
 
     def get_blackbody_temp(self) -> float:
-        return self.blackbody_temp
+        return self.blackbody_temperature
 
     def get_orbit(self) -> float:
         return self.orbit
@@ -38,7 +38,7 @@ class OrbitContent:
     def get_period(self):
         return self.period
 
-    def make_eccentricity(self, droll):
+    def set_eccentricity(self, droll):
         """
         Determine eccentricity of orbit with the roll result.
         :param droll: Dice roll value

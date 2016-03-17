@@ -31,6 +31,7 @@ class Moon(World):
         self._tte = self.make_tidals()
         self._rotperiod = self.make_rotation()
         self._alenday = self.make_calendar()
+        self._alenplanet = self.make_planet_length()
 
     def print_info(self):
         print("         *** Moon {} Information *** ".format(self.get_angled_name()))
@@ -199,13 +200,17 @@ class Moon(World):
             alen = s * r / (s - r)
         return alen
 
-        # Calculate the time in which the planet can be seen
+    def make_planet_length(self):
+        """
+        Calculate the time in which the planet can be seen
+        """
         s = self.get_period()  # [d]
+        r = self.get_rotation()  # [d]
         if s == r:
             alen = None
         else:
             alen = s * r / (s - r)
-        self._alenplanet = alen
+        return alen
 
     def get_day_length(self):
         return self._alenday

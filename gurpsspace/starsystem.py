@@ -249,16 +249,14 @@ class StarSystem:
             m = m1 + m2
             self.__periods.append((orbit ** 3 / m) ** 0.5)
 
-    def write_latex(self) -> None:
+    def write_latex(self, filename='starsystem.tex') -> None:
         """
         Write all information about the starsystem to a latex file.
+
+        :param filename: Name of file (with the .tex extension) to which the ouput is written
+        :type filename: str
         """
-        # FIXME: This is a hard-coded dependency on console input, which needs to be removed for use with a GUI.
-        filename = input("Name of the file (include extension): ")
-        if filename == '':
-            writer = LW(self)
-        else:
-            writer = LW(self, filename)
+        writer = LW(self, filename)
         writer.write()
 
     def get_age(self) -> int:

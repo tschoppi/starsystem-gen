@@ -1,5 +1,5 @@
 from .orbitcontents import OrbitContent
-from .tables import world_climate
+from .tables import world_climate, asteroid_resource_table
 
 
 class AsteroidBelt(OrbitContent):
@@ -31,41 +31,11 @@ class AsteroidBelt(OrbitContent):
         print("")
 
     def make_resources(self):
-        # TODO: Refactor into dictionary of tuples
+        """
+        Return resource value modifier (RVM) and corresponding string
+        """
         dice = self.roller.roll_dice(3, 0)
-        rvm = -5
-        value = 'Worthless'
-        if dice == 4:
-            rvm = -4
-            value = 'Very Scant'
-        if dice == 5:
-            rvm = -3
-            value = 'Scant'
-        if 6 <= dice <= 7:
-            rvm = -2
-            value = 'Very Poor'
-        if 8 <= dice <= 9:
-            rvm = -1
-            value = 'Poor'
-        if 10 <= dice <= 11:
-            rvm = 0
-            value = 'Average'
-        if 12 <= dice <= 13:
-            rvm = 1
-            value = 'Abundant'
-        if 14 <= dice <= 15:
-            rvm = 2
-            value = 'Very Abundant'
-        if dice == 16:
-            rvm = 3
-            value = 'Rich'
-        if dice == 17:
-            rvm = 4
-            value = 'Very Rich'
-        if dice == 16:
-            rvm = 5
-            value = 'Motherlode'
-        return rvm, value
+        return asteroid_resource_table[dice]
 
     def make_surface_temp(self):
         return self.get_blackbody_temp() * 0.97

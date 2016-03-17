@@ -1,6 +1,6 @@
 from .orbitcontents import OrbitContent
 from .tables import MAtmoTable, TempFactor, world_climate
-from .tables import SizeConstraintsTable, pressure_category
+from .tables import SizeConstraintsTable, pressure_category, world_resource_table
 from math import floor
 
 
@@ -383,29 +383,12 @@ class World(OrbitContent):
         return bonus
 
     def make_resources(self):
+        """
+        Return resource value modifier (RVM) and corresponding string
+        """
         rollbonus = self.get_resourcebonus()
         dice = self.roller.roll_dice(3, rollbonus)
-        rvm = -3
-        value = 'Scant'
-        if dice > 2:
-            rvm = -2
-            value = 'Very Poor'
-        if dice > 4:
-            rvm = -1
-            value = 'Poor'
-        if dice > 7:
-            rvm = 0
-            value = 'Average'
-        if dice > 13:
-            rvm = 1
-            value = 'Abundant'
-        if dice > 16:
-            rvm = 2
-            value = 'Very Abundant'
-        if dice > 18:
-            rvm = 3
-            value = 'Rich'
-        return rvm, value
+        return world_resource_table[dice]
 
     def get_rvm(self):
         return self._rvm

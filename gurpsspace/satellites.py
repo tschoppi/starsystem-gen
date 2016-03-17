@@ -235,8 +235,8 @@ class Moonlet:
         self.parent = parentplanet
         self.roller = dice.DiceRoller()
         self.family = family
-        self.make_orbit()
-        self.make_period()
+        self._orbit = self.make_orbit()
+        self._period = self.make_period()
 
     def print_info(self):
         print("Moonlet Information")
@@ -247,15 +247,15 @@ class Moonlet:
     def make_orbit(self):
         ptype = self.parent.type()
         if ptype == 'Gas Giant' and self.family == 'first':
-            self._orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
+            return self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
         if ptype == 'Gas Giant' and self.family == 'third':
             # Make random orbits between 20 and 200 planetary diameters
             import random as r
             multiplier = r.uniform(20, 200)
-            self._orbit = multiplier * self.parent.get_diameter()
+            return multiplier * self.parent.get_diameter()
 
         if ptype == 'Terrestrial':
-            self._orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
+            return self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
 
     def get_orbit(self):
         return self._orbit
@@ -263,7 +263,7 @@ class Moonlet:
     def make_period(self):
         m = self.parent.get_mass()
         orbit = self.get_orbit()
-        self._period = 0.166 * (orbit ** 3 / m) ** 0.5
+        return 0.166 * (orbit ** 3 / m) ** 0.5
 
     def get_period(self):
         return self._period

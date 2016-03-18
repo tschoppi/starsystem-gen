@@ -1,4 +1,7 @@
 import cherrypy
+import os
+import random as r
+import sys
 
 import operator
 
@@ -11,6 +14,13 @@ env = Environment(loader=FileSystemLoader('webgui/templates'))
 
 class WebServer(object):
 
+    random_seed = None
+
+    def set_seed(self, seed=None):
+        if seed is None:
+            seed = r.randint(1, sys.maxsize)
+        self.random_seed = seed
+
     @cherrypy.expose
     def index(self):
         # List the available naming schemes
@@ -22,7 +32,12 @@ class WebServer(object):
         return tmpl.render(naming_schemes=naming_schemes)
 
     @cherrypy.expose
-    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1):
+    def starsystem(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1, seed=None):
+
+        input_seed = None if seed == '' or None else seed  # Correctly interpret "no input"
+        self.set_seed(input_seed)  # reseed the PRNG, so that there is a unique seed every time
+        r.seed(self.random_seed)
+
         if num_stars == "":
             num_stars = None
         elif int(num_stars) < 1 or int(num_stars) > 3:
@@ -56,7 +71,7 @@ class WebServer(object):
         tmpl = env.get_template('overview.html')
         cherrypy.session['starsystem'] = mysys
         cherrypy.response.cookie['names'] = {}
-        return tmpl.render(starsystem=mysys)
+        return tmpl.render(starsystem=mysys, seed=self.random_seed)
 
     @cherrypy.expose
     def planetsystem(self, star_id=""):
@@ -197,8 +212,26 @@ class WebServer(object):
 
 if __name__ == '__main__':
 
-    # This line reads the global server config from the file
-    cherrypy.config.update("webgui/server.conf")
-    # The third argument reads the application config from the file.
-    # This is necessary, because apparently the route mapping is application-specific.
-    cherrypy.quickstart(WebServer(), '/', "webgui/server.conf")
+    # Configure CherryPy with a Python dictionary for Python 3.5 compatibility.
+    conf = {
+        'global': {
+            'server.socket_host': '0.0.0.0',
+            'server.socket_port': 8000
+        },
+        '/': {
+            'tools.sessions.on': True,
+            'tools.sessions.timeout': 60,
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': "webgui/static",
+            'tools.staticdir.root': os.path.abspath(os.getcwd())
+        },
+        '/favicon': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': os.path.abspath(os.getcwd()) + "/webgui/static/favicon.ico"
+        },
+        '/scripts': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': "webgui/scripts"
+        }
+    }
+    cherrypy.quickstart(WebServer(), '/', conf)

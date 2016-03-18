@@ -6,27 +6,31 @@ from .tables import SizeToInt
 class Planet(World):
     def __init__(self, primary, orbitalradius, sizeclass):
         World.__init__(self, primary, orbitalradius, sizeclass)
-        self.generate_moons()
-        self.make_tidals()
-        self.make_rotation()
-        self.make_volcanism()
-        self.make_tectonism()
-        self.make_resources()
-        self.make_habitability()
-        self.make_affinity()
-        self.make_calendar()
-        self.make_axial_tilt()
+        self._nummoons, self._moons = self.generate_moons()
+        if self._nummoons == 0:
+            self._nummoonlets, self._moonlets = self.generate_moonlets()
+        else:
+            self._nummoonlets, self._moonlets = 0, []
+        self._tte = self.make_tidals()
+        self._rotperiod = self.make_rotation()
+        self._volcanism = self.make_volcanism()
+        self._tectonic = self.make_tectonism()
+        self._rvm, self._resources = self.make_resources()
+        self._habitability = self.make_habitability()
+        self._affinity = self.make_affinity()
+        self._daylength, self._moonlength = self.make_calendar()
+        self._axtilt = self.make_axial_tilt()
 
     def print_info(self):
         print("--- Planet {} Info ---".format(self.get_angled_name()))
         print("        Orbit:\t{}".format(self.get_orbit()))
         print("   World Type:\t{} ({})".format(self.get_size(), self.get_type()))
-        if self.__nummoons > 0:
-            print("      # Moons:\t{}".format(self.__nummoons))
-            for moon in self.__moons:
+        if self._nummoons > 0:
+            print("      # Moons:\t{}".format(self._nummoons))
+            for moon in self._moons:
                 moon.print_info()
-        if self.__nummoonlets > 0:
-            print("    # Moonlets:\t{}".format(self.__nummoonlets))
+        if self._nummoonlets > 0:
+            print("    # Moonlets:\t{}".format(self._nummoonlets))
         self.print_atmosphere()
         print("  Hydrogr Cov:\t{}".format(self.get_hydrographic_cover()))
         print("    Av Surf T:\t{}".format(self.get_average_surface_temp()))
@@ -70,22 +74,16 @@ class Planet(World):
     def generate_moons(self):
         roll_mod = -4
         roll_mod += self.moon_roll_modifier()
-        moon_roll = self.roller.roll(1, roll_mod)
-        if moon_roll <= 0:
-            # If we have no major moons, generate moonlets
-            self.generate_moonlets()
-        else:
-            self.__nummoonlets = 0
-            self.__moonlets = []
-        self.__nummoons = moon_roll
-        self.__moons = sorted([Moon(self, self.primary_star) for moonnum in range(moon_roll)], key=lambda moon: moon.get_orbit())
+        moon_roll = self.roller.roll_dice(1, roll_mod)
+
+        return moon_roll, sorted([Moon(self, self.primary_star) for _ in range(moon_roll)], key=lambda moon: moon.get_orbit())
 
     def generate_moonlets(self):
         roll_mod = -2
         roll_mod += self.moon_roll_modifier()
-        moonlet_roll = self.roller.roll(1, roll_mod)
-        self.__nummoonlets = moonlet_roll
-        self.__moonlets = [Moonlet(self) for moonletnum in range(moonlet_roll)]
+        moonlet_roll = self.roller.roll_dice(1, roll_mod)
+
+        return moonlet_roll, [Moonlet(self) for _ in range(moonlet_roll)]
 
     def moon_roll_modifier(self):
         modifier = 0
@@ -100,29 +98,29 @@ class Planet(World):
         return modifier
 
     def get_satellites(self):
-        if self.__nummoons > 0:
-            return self.__moons
-        if self.__nummoonlets > 0:
-            return self.__moonlets
+        if self._nummoons > 0:
+            return self._moons
+        if self._nummoonlets > 0:
+            return self._moonlets
 
     def get_volcanic_bonus(self):
-        if self.__nummoons == 1:
+        if self._nummoons == 1:
             return 5
-        if self.__nummoons > 1:
+        if self._nummoons > 1:
             return 10
         return 0
 
     def get_tectonic_bonus(self):
-        if self.__nummoons == 1:
+        if self._nummoons == 1:
             return 2
-        if self.__nummoons > 1:
+        if self._nummoons > 1:
             return 4
         return 0
 
     def make_tidals(self):
         # Collect tidal effects for Moons
         moon_tide = 0
-        if self.__nummoons > 0:
+        if self._nummoons > 0:
             moons = self.get_satellites()
             for moon in moons:
                 m = moon.get_mass()
@@ -135,14 +133,15 @@ class Planet(World):
         orbit = self.get_orbit()
         star_tide = 0.46 * sun_mass * diameter / orbit ** 3
         total_tide = (moon_tide + star_tide) * self.primary_star.get_age() / self.get_mass()
-        self.__tte = round(total_tide)
+        return round(total_tide)
 
     def get_total_tidal_effect(self):
-        return self.__tte
+        return self._tte
 
     def make_rotation(self):
+        bonus = 0
         if self.get_total_tidal_effect() > 50:
-            if self.__nummoons == 0:
+            if self._nummoons == 0:
                 rotational_period = self.get_period() * 365.26
             else:
                 # Find innermost moon and its orbital period
@@ -158,30 +157,30 @@ class Planet(World):
                 bonus = 14
             if self.get_size() == 'Tiny':
                 bonus = 18
-            diceroll = self.roller.roll(3, bonus)
+            diceroll = self.roller.roll_dice(3, bonus)
             rotational_period = (diceroll + self.get_total_tidal_effect()) / 24.
             if rotational_period > 1.5 or diceroll - bonus >= 16:
-                roll2 = self.roller.roll(2, 0)
+                roll2 = self.roller.roll_dice(2, 0)
                 if roll2 == 7:
-                    rotational_period = self.roller.roll(1, 0) * 2
+                    rotational_period = self.roller.roll_dice(1, 0) * 2
                 if roll2 == 8:
-                    rotational_period = self.roller.roll(1, 0) * 5
+                    rotational_period = self.roller.roll_dice(1, 0) * 5
                 if roll2 == 9:
-                    rotational_period = self.roller.roll(1, 0) * 10
+                    rotational_period = self.roller.roll_dice(1, 0) * 10
                 if roll2 == 10:
-                    rotational_period = self.roller.roll(1, 0) * 20
+                    rotational_period = self.roller.roll_dice(1, 0) * 20
                 if roll2 == 11:
-                    rotational_period = self.roller.roll(1, 0) * 50
+                    rotational_period = self.roller.roll_dice(1, 0) * 50
                 if roll2 == 12:
-                    rotational_period = self.roller.roll(1, 0) * 100
+                    rotational_period = self.roller.roll_dice(1, 0) * 100
             if rotational_period > self.get_period() * 365.26:
                 rotational_period = self.get_period() * 365.26
-        if self.roller.roll(3, 0) >= 13:
+        if self.roller.roll_dice(3, 0) >= 13:
             rotational_period = -rotational_period
-        self.__rotperiod = rotational_period
+        return rotational_period
 
     def get_rotation(self):
-        return self.__rotperiod
+        return self._rotperiod
 
     def make_calendar(self):
         """Make the local calendar, including:
@@ -195,29 +194,30 @@ class Planet(World):
             alen = None
         else:
             alen = s * r / (s - r)
-        self.__daylength = alen
+        day_length = alen
 
-        if self.__nummoons > 0:
-            self.__moonlength = []
+        moon_length = []
+        if self._nummoons > 0:
             for moon in self.get_satellites():
                 s = moon.get_period()
                 if s == r:
                     alen = None
                 else:
                     alen = s * r / (s - r)
-                self.__moonlength.append(alen)
+                moon_length.append(alen)
+        return day_length, moon_length
 
     def get_day_length(self):
-        return self.__daylength
+        return self._daylength
 
     def get_moon_lengths(self):
-        if self.__nummoons > 0:
-            return self.__moonlength
+        if self._nummoons > 0:
+            return self._moonlength
         else:
             return None
 
     def make_axial_tilt(self):
-        roll1 = self.roller.roll(3, 0)
+        roll1 = self.roller.roll_dice(3, 0)
         base = 0
         if roll1 > 6:
             base = 10
@@ -228,7 +228,7 @@ class Planet(World):
         if roll1 > 14:
             base = 40
         if roll1 > 16:
-            roll2 = self.roller.roll(1, 0)
+            roll2 = self.roller.roll_dice(1, 0)
             if roll2 in [1, 2]:
                 base = 50
             if roll2 in [3, 4]:
@@ -237,22 +237,22 @@ class Planet(World):
                 base = 70
             if roll2 == 6:
                 base = 80
-        self.__axtilt = base + self.roller.roll(2, -2)
+        return base + self.roller.roll_dice(2, -2)
 
     def get_axial_tilt(self):
-        return self.__axtilt
+        return self._axtilt
 
     def num_moons(self):
-        return self.__nummoons
+        return self._nummoons
 
     def num_moonlets(self):
-        return self.__nummoonlets
+        return self._nummoonlets
 
     def set_number(self, number):
         World.set_number(self, number)
         # Name the moons
         counter = 0
-        for moon in self.__moons:
+        for moon in self._moons:
             counter += 1
             moon.set_number(counter)
             letter = self.primary_star.get_letter()

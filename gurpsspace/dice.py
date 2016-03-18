@@ -2,7 +2,8 @@ import random as r
 
 
 class DiceRoller:
-    def roll(self, dice_num, modifier, sides=6) -> int:
+
+    def roll_dice(self, dice_num, modifier, sides=6) -> int:
         """
         Rolls XdY +- Z.
 

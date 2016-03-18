@@ -5,48 +5,44 @@ class OrbitContent:
     """
     Generic class for contents of orbits.
     """
-#    def roll(self, dice_num, modifier, sides=6):
-#        """
-#        Rolls XdY +- Z.
-#
-#        :param dice_num: X, the number of dice.
-#        :param modifier: Z, a static modifier to the result.
-#        :param sides: Y, the type of dice, defaults to 6-sided.
-#        :type dice_num: int
-#        :type modifier: int
-#        :type sides: int
-#        :return: An int, representing the result of the roll.
-#        """
-#        return self.roller.roll(dice_num, modifier, sides)
 
     def __init__(self,
                  primary,    # Primary star
                  orbitalradius):
         self.roller = dice.DiceRoller()
-        self.__orbit = orbitalradius
+        self.orbit = orbitalradius
         self.primary_star = primary
-        primarylum = self.primary_star.get_luminosity()
-        self.make_blackbody_temperature(primarylum, self.__orbit)
-        self.make_orbital_period()
+        primary_luminosity = self.primary_star.get_luminosity()
+        self.blackbody_temp = self.make_blackbody_temperature(primary_luminosity, self.orbit)
+        self.period = self.make_orbital_period()
+        self.name = ''
+        self.number = None
+        self.size = ''
+        self.has_eccentricity = False
+        self.eccentricity = 0
+        self.min_max = ()
 
-    def make_blackbody_temperature(self, lum, orb):
-        self.__bbtemp = 278 * lum ** 0.25 * orb ** -0.5
+    def make_blackbody_temperature(self, luminosity, orbit) -> float:
+        return 278 * luminosity ** 0.25 * orbit ** -0.5
 
-    def get_blackbody_temp(self):
-        return self.__bbtemp
+    def get_blackbody_temp(self) -> float:
+        return self.blackbody_temp
 
-    def get_orbit(self):
-        return self.__orbit
+    def get_orbit(self) -> float:
+        return self.orbit
 
-    def make_orbital_period(self):
+    def make_orbital_period(self) -> float:
         m = self.primary_star.get_mass()
-        self.__period = (self.__orbit ** 3 / m) ** 0.5
+        return (self.orbit ** 3 / m) ** 0.5
 
     def get_period(self):
-        return self.__period
+        return self.period
 
-    def set_eccentricity(self, droll):
-        """Determine eccentricity of orbit with the roll result."""
+    def make_eccentricity(self, droll):
+        """
+        Determine eccentricity of orbit with the roll result.
+        :param droll: Dice roll value
+        """
         ecc = 0
         if droll > 3:
             ecc = 0.05
@@ -68,45 +64,43 @@ class OrbitContent:
             ecc = 0.7
         if droll >= 18:
             ecc = 0.8
-        self.__ecc = ecc
-        self.__eccset = True
-        self.make_min_max()
+        return ecc, self.make_min_max()
 
     def get_eccentricity(self):
-        if self.__eccset:
-            return self.__ecc
+        if self.has_eccentricity:
+            return self.eccentricity
         else:
             return None
 
-    def make_min_max(self):
-        min = self.get_orbit() * (1 - self.__ecc)
-        max = self.get_orbit() * (1 + self.__ecc)
-        self.__minmax = (min, max)
+    def make_min_max(self) -> tuple:
+        min_orbit = self.get_orbit() * (1 - self.eccentricity)
+        max_orbit = self.get_orbit() * (1 + self.eccentricity)
+        return min_orbit, max_orbit
 
-    def get_min_max(self):
-        return self.__minmax
+    def get_min_max(self) -> tuple:
+        return self.min_max
 
     def set_name(self, name):
-        self.__name = name
+        self.name = name
 
     def get_name(self):
-        return self.__name
+        return self.name
 
     def get_angled_name(self):
-        return "<" + self.__name + ">"
+        return "<" + self.name + ">"
 
     def set_number(self, number):
-        self.__number = number
+        self.number = number
 
     def get_number(self):
-        return self.__number
+        return self.number
 
     # Overload in subclasses if applicable
     def get_type(self):
         return ''
 
     def get_size(self):
-        return ''
+        return self.size
 
     def num_moons(self):
         return ''

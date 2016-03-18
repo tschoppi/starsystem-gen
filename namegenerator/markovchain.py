@@ -1,95 +1,13 @@
 import random
 
-
-class MarkovStateFactory:
-    """
-    Keeps a copy of all MarkovStates, so that only one is ever created for any given value.
-    :type __states: dict[str, MarkovState]
-    """
-    __states = dict()
-
-    def get_markov_state(self, value):
-        """
-        Provides the MarkovState corresponding to the given value. Only creates a new MarkovState once per value.
-        :param value: The character(s) that the MarkovState represents.
-        :type value: list[str]
-        :return: An instance of MarkovState.
-        """
-        key = ""
-        if len(value) < 1:
-            value = ["@"]
-        for s in value:
-            key += s
-        # value is a list, which is not itself hashable for use as a dictionary key. Its values are joined as a key instead.
-        if key in self.__states:
-            return self.__states[key]
-        else:
-            state = MarkovState(value)
-            self.__states[key] = state
-            return state
-
-    def reset_states(self) -> None:
-        """
-        Forget all generated MarkovStates, therefore also forgetting all previous transitions.
-        """
-        self.__states = dict()
-
-
-class MarkovState:
-    """
-    :type transitions: list[list[str]]
-    :type value: list[str]
-    :type depth: int
-    """
-
-    value = [""]
-    depth = 1
-
-    def __init__(self, value):
-        """
-        Represents a state in the markov chain.
-        :param value: The letter that this state represents.
-        :type value: list[str]
-        """
-        self.value = value
-        self.depth = len(value)
-        self.transitions = []
-
-    def __str__(self):
-        retval = "MarkovState:"
-        for s in self.value:
-            retval += " "
-            retval += s
-        return retval
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def next_state(self) -> [str]:
-        """
-        Returns the value of the next state.
-        """
-        if len(self.transitions) > 0:
-            return self.transitions[random.randint(0, len(self.transitions) - 1)]
-        else:
-            arr = []
-            for i in range(1, self.depth):
-                arr.append("@")
-            return arr
-
-    def add_transition(self, value) -> None:
-        """
-        Stores a new transition from this state to the state given by value.
-        :param value: The value of the target state.
-        """
-        self.transitions.append(value)
+from namegenerator.markovstatefactory import MarkovStateFactory
 
 
 class MarkovStateMachine:
     """
     Represents a markov chain, and provides methods to generate a chain from a corpus and move from state to state.
-    :type currentState: MarkovState
-    :type startState: MarkovState
+    :type currentState: namegenerator.markovstate.MarkovState
+    :type startState: namegenerator.markovstate.MarkovState
     :type depth: int
     """
 
@@ -177,6 +95,8 @@ class MarkovStateMachine:
             elif not self.get_letter() == "@" and len(result) > 1 and length - len(result) > 2:
                 # Punctuation is never the first letter nor one of the last two letters. Looks better
                 result += self.get_letter()
+            elif not self.get_letter() == "@":
+                break
             else:  # Restart the chain, since the last letter was a word-end and the output is still too short.
                 self.reset_state()
         # In some of the corpuses, a name can contain spaces and all parts must be capitalized.

@@ -8,8 +8,9 @@ LW = latexout.LatexWriter
 class StarSystem:
     roller = dice.DiceRoller()
 
-    def __init__(self, **kwargs):  # FIXME: Stop using **kwargs or make it conform to PEP448
+    def __init__(self, **kwargs):
         open_cluster = kwargs.get('open_cluster', None)
+
         if open_cluster is not None:
             self.__opencluster = open_cluster
         else:
@@ -61,7 +62,7 @@ class StarSystem:
         """
         # Criteria for a success (star system in an open cluster):
         #    - Roll of 10 or less
-        return self.roller.roll(3, 0) <= 10
+        return self.roller.roll_dice(3, 0) <= 10
 
     def random_star_number(self) -> int:
         """
@@ -72,7 +73,7 @@ class StarSystem:
             roll_mod = 3
         else:
             roll_mod = 0
-        dice_roll = self.roller.roll(3, roll_mod)
+        dice_roll = self.roller.roll_dice(3, roll_mod)
 
         if dice_roll >= 16:
             return 3
@@ -100,20 +101,20 @@ class StarSystem:
         Randomly determines the age of the star system in billions of years.
         :return: An int factor of billion years.
         """
-        dice_roll = self.roller.roll(3, 0)
+        dice_roll = self.roller.roll_dice(3, 0)
         if dice_roll == 3:
             # Extreme Population I: Age is set to 1 million years
             return 0.001
         elif dice_roll <= 6:
-            return 0.1 + self.roller.roll(1, -1) * 0.3 + self.roller.roll(1, -1) * 0.05
+            return 0.1 + self.roller.roll_dice(1, -1) * 0.3 + self.roller.roll_dice(1, -1) * 0.05
         elif dice_roll <= 10:
-            return 2.0 + self.roller.roll(1, -1) * 0.6 + self.roller.roll(1, -1) * 0.1
+            return 2.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
         elif dice_roll <= 14:
-            return 5.6 + self.roller.roll(1, -1) * 0.6 + self.roller.roll(1, -1) * 0.1
+            return 5.6 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
         elif dice_roll <= 17:
-            return 8.0 + self.roller.roll(1, -1) * 0.6 + self.roller.roll(1, -1) * 0.1
+            return 8.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
         else:
-            return 10 + self.roller.roll(1, -1) * 0.6 + self.roller.roll(1, -1) * 0.1
+            return 10 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
 
     def sortstars(self) -> None:
         """
@@ -153,13 +154,13 @@ class StarSystem:
             # Don't do anything for just one star
             return None
         if self.__numstars >= 2:
-            dice = self.roller.roll(3, 0)
+            dice = self.roller.roll_dice(3, 0)
             osepindex = self.find_orbital_separation_index(dice)
             orbsep = OrbSepTable[osepindex]
-            orbit = self.roller.roll(2, 0) * orbsep[1]
+            orbit = self.roller.roll_dice(2, 0) * orbsep[1]
 
             eccmod = orbsep[2]
-            eccroll = self.roller.roll(3, eccmod)
+            eccroll = self.roller.roll_dice(3, eccmod)
             if eccroll < 3:
                 eccroll = 3
             if eccroll > 18:
@@ -169,13 +170,13 @@ class StarSystem:
             self.__orbsepentry.append(orbsep)
             self.__orbits.append((orbit, eccentricity))
         if self.__numstars == 3:
-            dice = self.roller.roll(3, 6)
+            dice = self.roller.roll_dice(3, 6)
             osepindex = self.find_orbital_separation_index(dice)
             orbsep = OrbSepTable[osepindex]
-            orbit = self.roller.roll(2, 0) * orbsep[1]
+            orbit = self.roller.roll_dice(2, 0) * orbsep[1]
 
             eccmod = orbsep[2]
-            eccroll = self.roller.roll(3, eccmod)
+            eccroll = self.roller.roll_dice(3, eccmod)
             if eccroll < 3:
                 eccroll = 3
             if eccroll > 18:
@@ -248,16 +249,14 @@ class StarSystem:
             m = m1 + m2
             self.__periods.append((orbit ** 3 / m) ** 0.5)
 
-    def write_latex(self) -> None:
+    def write_latex(self, filename='starsystem.tex') -> None:
         """
         Write all information about the starsystem to a latex file.
+
+        :param filename: Name of file (with the .tex extension) to which the ouput is written
+        :type filename: str
         """
-        # FIXME: This is a hard-coded dependency on console input, which needs to be removed for use with a GUI.
-        filename = input("Name of the file (include extension): ")
-        if filename == '':
-            writer = LW(self)
-        else:
-            writer = LW(self, filename)
+        writer = LW(self, filename)
         writer.write()
 
     def get_age(self) -> int:

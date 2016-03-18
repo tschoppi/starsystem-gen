@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Planetary system details - Starsystem Generator for GURPS</title>
     <link rel="stylesheet" type="text/css" href="mainstyle.css" />
+    <link rel="stylesheet" type="text/css" href="diagramstyle.css" />
     <link rel="icon" type="image/png" href="/favicon" />
     <script src="scripts/planets.js"></script>
 </head>
@@ -16,7 +17,12 @@
     <div id="star-radius" style="display: none">{{planetsystem.parentstar.get_radius()}}</div>
     <div id="star-limit" style="display: none">{{planetsystem.parentstar.get_orbit_limits()[1]}}</div>
     <div id="star-letter" style="display: none">{{planetsystem.parentstar.get_letter()}}</div>
-    <canvas id="diagram" height="100" width="100" style="border: 1px solid black"></canvas>
+    <canvas id="diagram" height="610" width="610" style="border: 1px solid black"></canvas>
+    <div class="diagram-buttons">
+        <button onclick="zoomIn()">Zoom +</button>
+        <button onclick="zoomOut()">Zoom -</button>
+        <button onclick="resetZoom()">Reset</button>
+    </div>
     <p id="diagram-legend" class="tablenote"></p>
 
 <div id="objects-overview">
@@ -39,12 +45,12 @@
         {% for key, planet in planetsystem.get_orbitcontents().items()|sort %}
         {% set astro_body = planetsystem.get_orbitcontents()[key] %}
         <tr>
-            <td>{{astro_body.get_name()|e}}</td>
+            <td id={{'name' ~ loop.index}}>{{astro_body.get_name()|e}}</td>
             <td>{{astro_body.type()}}</td>
             <td>{% if astro_body.get_size() != '' %}{{astro_body.get_size()}}{% else %} N/A {% endif %}</td>
             <td>{% if astro_body.get_type() != '' %}{{astro_body.get_type()}}{% else %} N/A {% endif %}</td>
             <td>{{astro_body.get_orbit()|round(2)}} AU</td>
-            <td>{{(astro_body.get_period() * 365)|round(2)}} days</td>
+            <td id={{'orbit_period' ~ loop.index}}>{{(astro_body.get_period() * 365)|round(2)}} days</td>
             <td>{{astro_body.get_eccentricity()}}</td>
             <td id={{'min_radius' ~ loop.index}}>{{astro_body.get_min_max()[0]|round(2)}} AU</td>
             <td id={{'max_radius' ~ loop.index}}>{{astro_body.get_min_max()[1]|round(2)}} AU</td>
@@ -155,7 +161,7 @@
         </table>
 
 		<p class="tablenote">*: Atmospheric mass, density, diameter, and mass are all relative to Earth dimensions; 1.0 is what you'd expect on Earth.</p>
-{% endif %}
 </div>
+{% endif %}
 </body>
 </html>

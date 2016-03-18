@@ -4,47 +4,47 @@ from .tables import GGSizeTable
 
 
 class GasGiant(OrbitContent):
+
     def __init__(self, primary, orbitalradius, rollbonus=True):
         OrbitContent.__init__(self, primary, orbitalradius)
-        self.make_size(rollbonus)
-        self.make_mass()
-        self.make_diameter()
-        self.make_cloudtop_gravity()
-        self.make_moons()
-        # self.print_info()
+        self.size = self.make_size(rollbonus)
+        self.mass, self.density = self.make_mass()
+        self.diameter = self.make_diameter()
+        self.cloudtop_gravity = self.make_cloudtop_gravity()
+        # TODO: Can't these be collapsed into the semantically clearer Moons and Moonlets?
+        self.first_family, self.second_family, self.third_family = self.make_moons()
 
     def __repr__(self):
-        return repr("{} Gas Giant".format(self.__size))
+        return repr("{} Gas Giant".format(self.size))
 
-    def make_size(self, rollbonus):
+    def make_size(self, rollbonus) -> str:
         if rollbonus:
             modifier = 4
         else:
             modifier = 0
-        dice = self.roller.roll(3, modifier)
-        self.__size = "Small"
+        dice = self.roller.roll_dice(3, modifier)
+        size = "Small"
         if dice > 10:
-            self.__size = "Medium"
+            size = "Medium"
         if dice > 16:
-            self.__size = "Large"
+            size = "Large"
 
-    def get_size(self):
-        return self.__size
+        return size
 
     def print_info(self):
         print("---- Gas Giant {} Properties ----".format(self.get_angled_name()))
-        print("     Size:\t{}".format(self.__size))
+        print("     Size:\t{}".format(self.size))
         print("  BB Temp:\t{}".format(self.get_blackbody_temp()))
-        print("     Mass:\t{}".format(self.__mass))
-        print("     Dens:\t{}".format(self.__density))
-        print("     Diam:\t{}".format(self.__diameter))
+        print("     Mass:\t{}".format(self.mass))
+        print("     Dens:\t{}".format(self.density))
+        print("     Diam:\t{}".format(self.diameter))
         print("  Orb Per:\t{}".format(self.get_period()))
         print("  Orb Ecc:\t{}".format(self.get_eccentricity()))
-        print(" Cl Top G:\t{}".format(self.__gravity))
-        print("  # 1st M:\t{}".format(len(self.__firstfamily)))
-        print("  # 2nd M:\t{}".format(len(self.__secondfamily)))
-        print("  # 3rd M:\t{}".format(len(self.__thirdfamily)))
-        for moon in self.__secondfamily:
+        print(" Cl Top G:\t{}".format(self.cloudtop_gravity))
+        print("  # 1st M:\t{}".format(len(self.first_family)))
+        print("  # 2nd M:\t{}".format(len(self.second_family)))
+        print("  # 3rd M:\t{}".format(len(self.third_family)))
+        for moon in self.second_family:
             moon.print_info()
         print("------------------------------\n")
 
@@ -52,11 +52,12 @@ class GasGiant(OrbitContent):
         return "Gas Giant"
 
     def make_moons(self):
-        self.make_first_family()
-        self.make_second_family()
-        self.make_third_family()
+        first_family = self.make_first_family()
+        second_family = self.make_second_family()
+        third_family = self.make_third_family()
+        return first_family, second_family, third_family
 
-    def make_first_family(self):
+    def make_first_family(self) -> list:
         orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.1:
@@ -67,10 +68,10 @@ class GasGiant(OrbitContent):
             modifier = -6
         if 0.75 < orbit <= 1.5:
             modifier = -3
-        num_moonlets = self.roller.roll(2, modifier)
-        self.__firstfamily = [Moonlet(self, 'first') for nummoonlet in range(num_moonlets)]
+        num_moonlets = self.roller.roll_dice(2, modifier)
+        return [Moonlet(self, 'first') for _ in range(num_moonlets)]
 
-    def make_second_family(self):
+    def make_second_family(self) -> list:
         orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.1:
@@ -81,10 +82,10 @@ class GasGiant(OrbitContent):
             modifier = -3
         if 0.75 < orbit <= 1.5:
             modifier = -1
-        num_moons = self.roller.roll(1, modifier)
-        self.__secondfamily = sorted([Moon(self, self.primary_star) for _ in range(num_moons)], key=lambda moon: moon.get_orbit())
+        num_moons = self.roller.roll_dice(1, modifier)
+        return sorted([Moon(self, self.primary_star) for _ in range(num_moons)], key=lambda moon: moon.get_orbit())
 
-    def make_third_family(self):
+    def make_third_family(self) -> list:
         orbit = self.get_orbit()
         modifier = 0
         if orbit <= 0.5:
@@ -95,39 +96,37 @@ class GasGiant(OrbitContent):
             modifier = -4
         if 1.5 < orbit <= 3:
             modifier = -1
-        num_moonlets = self.roller.roll(1, modifier)
-        self.__thirdfamily = [Moonlet(self, 'third') for _ in range(num_moonlets)]
+        num_moonlets = self.roller.roll_dice(1, modifier)
+        return [Moonlet(self, 'third') for _ in range(num_moonlets)]
 
-    def make_mass(self):
+    def make_mass(self) -> tuple:
         size = self.get_size()
-        diceroll = self.roller.roll(3, 0)
-        mass, density = GGSizeTable[size][diceroll]
-        self.__mass = mass
-        self.__density = density
+        diceroll = self.roller.roll_dice(3, 0)
+        return GGSizeTable[size][diceroll]
 
     def get_mass(self):
-        return self.__mass
+        return self.mass
 
-    def make_diameter(self):
-        self.__diameter = (self.__mass / self.__density) ** (1 / 3.)
+    def make_diameter(self) -> float:
+        return (self.mass / self.density) ** (1 / 3.)
 
     def get_diameter(self):
-        return self.__diameter
+        return self.diameter
 
-    def make_cloudtop_gravity(self):
-        self.__gravity = self.__density * self.__diameter
+    def make_cloudtop_gravity(self) -> float:
+        return self.density * self.diameter
 
     def num_moons(self):
-        return len(self.__secondfamily)
+        return len(self.second_family)
 
     def num_moonlets(self):
-        return len(self.__firstfamily) + len(self.__thirdfamily)
+        return len(self.first_family) + len(self.third_family)
 
     def set_number(self, number):
         OrbitContent.set_number(self, number)
         # Name the moons
         counter = 0
-        for moon in self.__secondfamily:
+        for moon in self.second_family:
             counter += 1
             moon.set_number(counter)
             letter = self.primary_star.get_letter()
@@ -135,16 +134,16 @@ class GasGiant(OrbitContent):
             moon.set_name(name)
 
     def get_moons(self):
-        return self.__secondfamily
+        return self.second_family
 
     def get_density(self):
-        return self.__density
+        return self.density
 
     def get_gravity(self):
-        return self.__gravity
+        return self.cloudtop_gravity
 
     def get_first_family(self):
-        return self.__firstfamily
+        return self.first_family
 
     def get_third_family(self):
-        return self.__thirdfamily
+        return self.third_family

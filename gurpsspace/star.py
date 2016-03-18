@@ -7,6 +7,9 @@ class Star:
     roller = dice.DiceRoller()
 
     def __init__(self, age):
+        if age <= 0:
+            raise ValueError("Age needs to be a positive number.")
+
         self.__hasforbiddenzone = False
         self.__forbiddenzone = None
         self.__age = age
@@ -18,7 +21,7 @@ class Star:
         self.__radius = self.make_radius()
         self.__innerlimit, self.__outerlimit = self.compute_orbit_limits()
         self.__snowline = self.compute_snow_line()
-        self.__letter = ""
+        self.__letter = 'A'
         self.planetsystem = None
 
     def __repr__(self):
@@ -173,6 +176,8 @@ class Star:
         return 4.85 * initlum ** 0.5
 
     def set_forbidden_zone(self, inner, outer):
+        if inner >= outer:
+            raise ValueError("Inner limit must be smaller than outer limit.")
         self.__forbiddenzone = (inner, outer)
         self.__hasforbiddenzone = True
 

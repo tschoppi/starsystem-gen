@@ -58,6 +58,7 @@ class StarSystem:
     def random_cluster(self) -> bool:
         """
         Randomly determines whether the star system is in an open cluster.
+
         :return: True if the system is in an open cluster.
         """
         # Criteria for a success (star system in an open cluster):
@@ -67,6 +68,7 @@ class StarSystem:
     def random_star_number(self) -> int:
         """
         Randomly determines the number of stars in the system.
+
         :return: The number of stars
         """
         if self.__opencluster:
@@ -93,6 +95,8 @@ class StarSystem:
             while self.__opencluster and provage > 2:
                 provage = self.random_age()
             return provage
+        elif age <= 0:
+            raise ValueError("Starsystem age needs to be larger than zero billion years.")
         else:
             return age
 
@@ -193,7 +197,13 @@ class StarSystem:
                 return self.make_orbits()
 
     def find_orbital_separation_index(self, dice_roll) -> int:
-        # TODO: This needs a proper description
+        """
+        Return index for the orbital separation table
+
+        :return: An int in the interval [1, 4]
+        """
+        if dice_roll < 3:
+            raise ValueError("The dice result should be >= 3")
         if dice_roll <= 6:
             return 0
         if dice_roll <= 9:

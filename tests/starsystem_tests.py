@@ -24,3 +24,7 @@ class TestStarsystem(unittest.TestCase):
 
     def test_random_age(self):
         self.assertTrue(self.system.random_age() > 0)
+
+    def test_find_orbital_separation_index(self):
+        self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=2)
+        self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=-2)

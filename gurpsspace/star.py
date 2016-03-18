@@ -21,7 +21,7 @@ class Star:
         self.__radius = self.make_radius()
         self.__innerlimit, self.__outerlimit = self.compute_orbit_limits()
         self.__snowline = self.compute_snow_line()
-        self.__letter = ""
+        self.__letter = 'A'
         self.planetsystem = None
 
     def __repr__(self):

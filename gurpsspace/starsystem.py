@@ -87,19 +87,22 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars.append(star.Star(age=self.__age))
 
-    def make_age(self, age) -> None:
+    def make_age(self, age=None) -> float:
         if age is None:
             provage = self.random_age()
             while self.__opencluster and provage > 2:
                 provage = self.random_age()
             self.__age = provage
+        elif age <= 0:
+            raise ValueError("Starsystem age needs to be larger than zero billion years.")
         else:
             self.__age = age
 
-    def random_age(self) -> int:
+    def random_age(self) -> float:
         """
         Randomly determines the age of the star system in billions of years.
-        :return: An int factor of billion years.
+
+        :return: A float factor of billion years.
         """
         dice_roll = self.roller.roll_dice(3, 0)
         if dice_roll == 3:

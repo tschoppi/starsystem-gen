@@ -27,7 +27,7 @@ class StarSystem:
             self.__numstars = self.random_star_number()
 
         age = kwargs.get('age', None)
-        self.make_age(age)
+        self.__age = self.make_age(age)
         self.generate_stars()
         self.sortstars()
         self.name_stars()
@@ -92,11 +92,11 @@ class StarSystem:
             provage = self.random_age()
             while self.__opencluster and provage > 2:
                 provage = self.random_age()
-            self.__age = provage
+            return provage
         elif age <= 0:
             raise ValueError("Starsystem age needs to be larger than zero billion years.")
         else:
-            self.__age = age
+            return age
 
     def random_age(self) -> float:
         """

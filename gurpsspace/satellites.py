@@ -11,31 +11,32 @@ class Moon(World):
         self.primary_star = primary_star
         self.blackbody_temperature = self.make_blackbody_temperature()
         self.orbit = None
-        self.__sizeclass = self.make_size()
-        self.__type = self.make_type()
+        self._sizeclass = self.make_size()
+        self._type = self.make_type()
         self.make_atmosphere()
-        self.__hydrocover = self.make_hydrographics()
-        self.__averagesurface, self.__climatetype = self.make_climate()
-        self.__density = self.make_density()
-        self.__diameter = self.make_diameter()
-        self.__surfacegravity = self.make_gravity()
-        self.__mass = self.make_mass()
-        self.__pressure, self.__presscat = self.make_pressure()
-        self.make_volcanism()
-        self.make_tectonism()
-        self.make_resources()
-        self.make_habitability()
-        self.make_affinity()
-        self.make_orbit()
-        self.make_period()
-        self.make_tidals()
-        self.make_rotation()
-        self.make_calendar()
+        self._hydrocover = self.make_hydrographics()
+        self._averagesurface, self._climatetype = self.make_climate()
+        self._density = self.make_density()
+        self._diameter = self.make_diameter()
+        self._surfacegravity = self.make_gravity()
+        self._mass = self.make_mass()
+        self._pressure, self._presscat = self.make_pressure()
+        self._volcanism = self.make_volcanism()
+        self._tectonic = self.make_tectonism()
+        self._rvm, self._resources = self.make_resources()
+        self._habitability = self.make_habitability()
+        self._affinity = self.make_affinity()
+        self.orbit = self.make_orbit()
+        self.period = self.make_period()
+        self._tte = self.make_tidals()
+        self._rotperiod = self.make_rotation()
+        self._alenday = self.make_calendar()
+        self._alenplanet = self.make_planet_length()
 
     def print_info(self):
         print("         *** Moon {} Information *** ".format(self.get_angled_name()))
         # print("Parent Planet:\t{}".format(self.parent))
-        print("           World Type:\t{} ({})".format(self.__sizeclass, self.get_type()))
+        print("           World Type:\t{} ({})".format(self._sizeclass, self.get_type()))
         print("                Orbit:\t{} Earth Diameters".format(self.orbit))
         print("             Orb Per.:\t{} d".format(self.get_period()))
         print("             Rot Per.:\t{} d".format(self.get_rotation()))
@@ -81,7 +82,7 @@ class Moon(World):
         return IntToSize[childsize]
 
     def get_size(self):
-        return self.__sizeclass
+        return self._sizeclass
 
     def set_orbit(self, orbit):
         self.orbit = orbit
@@ -110,38 +111,47 @@ class Moon(World):
             if diff == 1:
                 bonus = 4
             dice = self.roller.roll_dice(2, bonus)
-            self.orbit = dice * 2.5 * self.parent.get_diameter()
+            return dice * 2.5 * self.parent.get_diameter()
         if ptype == 'Gas Giant':
             roll = self.roller.roll_dice(3, 3)
             if roll >= 15:
                 roll += self.roller.roll_dice(2, 0)
-            self.orbit = roll / 2. * self.parent.get_diameter()
+            return roll / 2. * self.parent.get_diameter()
 
     def get_orbit(self):
         return self.orbit
 
     def make_period(self):
+        """
+        Calculate and return the orbital period
+        """
         m1 = self.get_mass()
         mp = self.parent.get_mass()
         m = m1 + mp
         orbit = self.get_orbit()
-        self.period = 0.166 * (orbit ** 3 / m) ** 0.5
+        return 0.166 * (orbit ** 3 / m) ** 0.5
 
     def get_period(self):
         return self.period
 
     def make_tidals(self):
+        """
+        Calculate and return the total tidal effect (TTE)
+        """
         m = self.parent.get_mass()
         d = self.get_diameter()
         r = self.get_orbit()
         tidal = 2230000 * m * d / r ** 3
         tte = tidal * self.primary_star.get_age() / m
-        self.__tte = round(tte)
+        return round(tte)
 
     def get_total_tidal_effect(self):
-        return self.__tte
+        return self._tte
 
     def make_rotation(self):
+        """
+        Calculate and return the rotational period
+        """
         if self.get_total_tidal_effect() > 50:
             rotperiod = self.get_period()  # [d]
         else:
@@ -173,43 +183,49 @@ class Moon(World):
                 rotperiod = self.get_period()
         if self.roller.roll_dice(3, 0) >= 17:
             rotperiod = -rotperiod
-        self.__rotperiod = rotperiod
+        return rotperiod
 
     def get_rotation(self):
-        return self.__rotperiod
+        return self._rotperiod
 
     def make_calendar(self):
-        # Calculate apparent length of a day for this moon
+        """
+        Calculate and return the apparent length of a day for this moon
+        """
         s = self.parent.get_period() * 365.26  # [d]
         r = self.get_rotation()  # [d]
         if s == r:
             alen = None
         else:
             alen = s * r / (s - r)
-        self.__alenday = alen
+        return alen
 
-        # Calculate the time in which the planet can be seen
+    def make_planet_length(self):
+        """
+        Calculate the time in which the planet can be seen
+        """
         s = self.get_period()  # [d]
+        r = self.get_rotation()  # [d]
         if s == r:
             alen = None
         else:
             alen = s * r / (s - r)
-        self.__alenplanet = alen
+        return alen
 
     def get_day_length(self):
-        return self.__alenday
+        return self._alenday
 
     def get_planet_length(self):
-        return self.__alenplanet
+        return self._alenplanet
 
     def set_name(self, name):
-        self.__name = name
+        self._name = name
 
     def get_name(self):
-        return self.__name
+        return self._name
 
     def get_angled_name(self):
-        return "<" + self.__name + ">"
+        return "<" + self._name + ">"
 
     def set_number(self, number):
         self.number = number
@@ -224,8 +240,8 @@ class Moonlet:
         self.parent = parentplanet
         self.roller = dice.DiceRoller()
         self.family = family
-        self.make_orbit()
-        self.make_period()
+        self._orbit = self.make_orbit()
+        self._period = self.make_period()
 
     def print_info(self):
         print("Moonlet Information")
@@ -236,23 +252,23 @@ class Moonlet:
     def make_orbit(self):
         ptype = self.parent.type()
         if ptype == 'Gas Giant' and self.family == 'first':
-            self.__orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
+            return self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
         if ptype == 'Gas Giant' and self.family == 'third':
             # Make random orbits between 20 and 200 planetary diameters
             import random as r
             multiplier = r.uniform(20, 200)
-            self.__orbit = multiplier * self.parent.get_diameter()
+            return multiplier * self.parent.get_diameter()
 
         if ptype == 'Terrestrial':
-            self.__orbit = self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
+            return self.roller.roll_dice(1, 4) / 4. * self.parent.get_diameter()
 
     def get_orbit(self):
-        return self.__orbit
+        return self._orbit
 
     def make_period(self):
         m = self.parent.get_mass()
         orbit = self.get_orbit()
-        self.__period = 0.166 * (orbit ** 3 / m) ** 0.5
+        return 0.166 * (orbit ** 3 / m) ** 0.5
 
     def get_period(self):
-        return self.__period
+        return self._period

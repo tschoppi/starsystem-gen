@@ -1,5 +1,6 @@
 from . import dice
 
+from typing import Tuple
 
 class OrbitContent:
     """
@@ -64,7 +65,7 @@ class OrbitContent:
             ecc = 0.7
         if droll >= 18:
             ecc = 0.8
-        return ecc, self.make_min_max()
+        return ecc
 
     def get_eccentricity(self):
         if self.has_eccentricity:
@@ -72,12 +73,14 @@ class OrbitContent:
         else:
             return None
 
-    def make_min_max(self) -> tuple:
+    def make_min_max(self) -> Tuple[float, float]:
         min_orbit = self.get_orbit() * (1 - self.eccentricity)
         max_orbit = self.get_orbit() * (1 + self.eccentricity)
+        print(self.eccentricity)
+        print(min_orbit, max_orbit)
         return min_orbit, max_orbit
 
-    def get_min_max(self) -> tuple:
+    def get_min_max(self) -> Tuple[float, float]:
         return self.min_max
 
     def set_name(self, name):

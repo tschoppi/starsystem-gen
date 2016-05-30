@@ -13,7 +13,7 @@ class OrbitContent:
         self.orbit = orbitalradius
         self.primary_star = primary
         primarylum = self.primary_star.get_luminosity()
-        self.blackbody_temperature = self.make_blackbody_temperature(primarylum, self.__orbit)
+        self.blackbody_temperature = self.make_blackbody_temperature(primarylum, self.orbit)
         self.period = self.make_orbital_period()
         self.name = ''
         self.number = None

@@ -317,7 +317,7 @@ class PlanetSystem:
                 bonus = +4
             else:
                 bonus = 0
-            oc.eccentricity, oc.min_max = oc.make_eccentricity(self.roller.roll_dice(3, bonus))
+            oc.eccentricity, oc.min_max = oc.set_eccentricity(self.roller.roll_dice(3, bonus))
 
     def has_garden(self):
         ret = False

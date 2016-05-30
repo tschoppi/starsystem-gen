@@ -1,7 +1,8 @@
 from .world import World
 from .satellites import Moon, Moonlet
 from .tables import SizeToInt
-import random
+
+from typing import Tuple, List, Union
 
 
 class Planet(World):
@@ -73,21 +74,21 @@ class Planet(World):
     def type(self):
         return "Terrestrial"
 
-    def generate_moons(self):
+    def generate_moons(self) -> Tuple[int, List]:
         roll_mod = -4
         roll_mod += self.moon_roll_modifier()
         moon_roll = self.roller.roll_dice(1, roll_mod)
 
         return moon_roll, sorted([Moon(self, self.primary_star) for _ in range(moon_roll)], key=lambda moon: moon.get_orbit())
 
-    def generate_moonlets(self):
+    def generate_moonlets(self) -> Tuple[int, List]:
         roll_mod = -2
         roll_mod += self.moon_roll_modifier()
         moonlet_roll = self.roller.roll_dice(1, roll_mod)
 
         return moonlet_roll, [Moonlet(self) for _ in range(moonlet_roll)]
 
-    def moon_roll_modifier(self):
+    def moon_roll_modifier(self) -> int:
         modifier = 0
         orbit = self.get_orbit()
         if orbit <= 0.5:
@@ -99,27 +100,27 @@ class Planet(World):
         modifier += (SizeToInt[self.get_size()] - 2)
         return modifier
 
-    def get_satellites(self):
+    def get_satellites(self) -> List:
         if self._nummoons > 0:
             return self._moons
         if self._nummoonlets > 0:
             return self._moonlets
 
-    def get_volcanic_bonus(self):
+    def get_volcanic_bonus(self) -> int:
         if self._nummoons == 1:
             return 5
         if self._nummoons > 1:
             return 10
         return 0
 
-    def get_tectonic_bonus(self):
+    def get_tectonic_bonus(self) -> int:
         if self._nummoons == 1:
             return 2
         if self._nummoons > 1:
             return 4
         return 0
 
-    def make_tidals(self):
+    def make_tidals(self) -> Union[float, int]:
         # Collect tidal effects for Moons
         moon_tide = 0
         if self._nummoons > 0:
@@ -140,7 +141,7 @@ class Planet(World):
     def get_total_tidal_effect(self):
         return self._tte
 
-    def make_rotation(self):
+    def make_rotation(self) -> Union[float, int]:
         bonus = 0
         if self.get_total_tidal_effect() > 50:
             if self._nummoons == 0:
@@ -184,12 +185,8 @@ class Planet(World):
     def get_rotation(self):
         return self._rotperiod
 
-    def make_calendar(self):
-        """Make the local calendar, including:
-
-            - Apparent length of day
-            - Apparent length of moon cycles
-        """
+    def make_calendar(self) -> Tuple[float, List[float]]:
+        """Make the local calendar, consisting of apparent lengths of day and moon cycles (if any moons are present)."""
         s = self.get_period() * 365.26
         r = self.get_rotation()
         if s == r:
@@ -212,13 +209,14 @@ class Planet(World):
     def get_day_length(self):
         return self._daylength
 
-    def get_moon_lengths(self):
+    def get_moon_lengths(self) -> Union[List[float], None]:
+        # TODO: Should this not return an empty list instead of None? Could preempt possible NPEs...
         if self._nummoons > 0:
             return self._moonlength
         else:
             return None
 
-    def make_axial_tilt(self):
+    def make_axial_tilt(self) -> int:
         roll1 = self.roller.roll_dice(3, 0)
         base = 0
         if roll1 > 6:

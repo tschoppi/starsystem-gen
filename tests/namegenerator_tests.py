@@ -5,7 +5,7 @@ from namegenerator import namegenerator
 class TestNameGenerator(unittest.TestCase):
 
     def setUp(self):
-        self.generator = namegenerator.NameGenerator()
+        self.generator = namegenerator.NameGenerator(1, 1)  # Fixed depth and seed
 
     def test_get_random_name_select_one_name(self):
         self.generator.read_file("../../tests/test_corpus_one_name.csv")
@@ -24,3 +24,8 @@ class TestNameGenerator(unittest.TestCase):
         self.generator.read_file("../../tests/test_corpus_one_name.csv")
         self.generator.reload_file()
         self.assertTrue(self.generator.get_random_name().endswith("-Beta"))
+
+    def test_markov_generation(self):
+        self.generator.read_file("roman.csv")
+        self.generator.use_chain = True
+        self.assertEqual("Vesaptan", self.generator.get_random_name(8))

@@ -69,13 +69,13 @@ class NameGenerator:
             if file.endswith('.csv'):
                 yield (file)
 
-    def get_random_name(self) -> str:
+    def get_random_name(self, length=0) -> str:
         """
             Get a name from the name generator.
             :return: Return a name, either from the corpus or generate by the markov chain.
         """
         if self.use_chain:
-            return self.markov_chain.get_name()
+            return self.markov_chain.get_name(length)
         else:
             result = self.names.pop(random.randint(0, len(self.names) - 1)) + self.suffixes[self.reload_counter]
             if len(self.names) == 0:

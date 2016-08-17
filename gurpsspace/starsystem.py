@@ -27,7 +27,7 @@ class StarSystem:
             self.__numstars = self.random_star_number()
 
         age = kwargs.get('age', None)
-        self.make_age(age)
+        self.__age = self.make_age(age)
         self.generate_stars()
         self.sortstars()
         self.name_stars()
@@ -58,6 +58,7 @@ class StarSystem:
     def random_cluster(self) -> bool:
         """
         Randomly determines whether the star system is in an open cluster.
+
         :return: True if the system is in an open cluster.
         """
         # Criteria for a success (star system in an open cluster):
@@ -67,6 +68,7 @@ class StarSystem:
     def random_star_number(self) -> int:
         """
         Randomly determines the number of stars in the system.
+
         :return: The number of stars
         """
         if self.__opencluster:
@@ -87,19 +89,22 @@ class StarSystem:
         for i in range(self.__numstars):
             self.stars.append(star.Star(age=self.__age))
 
-    def make_age(self, age) -> None:
+    def make_age(self, age=None) -> float:
         if age is None:
             provage = self.random_age()
             while self.__opencluster and provage > 2:
                 provage = self.random_age()
-            self.__age = provage
+            return provage
+        elif age <= 0:
+            raise ValueError("Starsystem age needs to be larger than zero billion years.")
         else:
-            self.__age = age
+            return age
 
-    def random_age(self) -> int:
+    def random_age(self) -> float:
         """
         Randomly determines the age of the star system in billions of years.
-        :return: An int factor of billion years.
+
+        :return: A float factor of billion years.
         """
         dice_roll = self.roller.roll_dice(3, 0)
         if dice_roll == 3:
@@ -192,7 +197,13 @@ class StarSystem:
                 return self.make_orbits()
 
     def find_orbital_separation_index(self, dice_roll) -> int:
-        # TODO: This needs a proper description
+        """
+        Return index for the orbital separation table
+
+        :return: An int in the interval [1, 4]
+        """
+        if dice_roll < 3:
+            raise ValueError("The dice result should be >= 3")
         if dice_roll <= 6:
             return 0
         if dice_roll <= 9:
@@ -249,16 +260,14 @@ class StarSystem:
             m = m1 + m2
             self.__periods.append((orbit ** 3 / m) ** 0.5)
 
-    def write_latex(self) -> None:
+    def write_latex(self, filename='starsystem.tex') -> None:
         """
         Write all information about the starsystem to a latex file.
+
+        :param filename: Name of file (with the .tex extension) to which the ouput is written
+        :type filename: str
         """
-        # FIXME: This is a hard-coded dependency on console input, which needs to be removed for use with a GUI.
-        filename = input("Name of the file (include extension): ")
-        if filename == '':
-            writer = LW(self)
-        else:
-            writer = LW(self, filename)
+        writer = LW(self, filename)
         writer.write()
 
     def get_age(self) -> int:

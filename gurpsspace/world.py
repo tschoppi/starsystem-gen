@@ -1,6 +1,6 @@
 from .orbitcontents import OrbitContent
 from .tables import MAtmoTable, TempFactor, world_climate
-from .tables import SizeConstraintsTable, pressure_category
+from .tables import SizeConstraintsTable, pressure_category, world_resource_table
 from math import floor
 
 
@@ -10,21 +10,19 @@ class World(OrbitContent):
         self.sizeclass = sizeclass
         self.world_type = self.make_type()
         self.make_atmosphere()
-        self.hydrocover = self.make_hydrographics()
-        self.averagesurface, self.climatetype = self.make_climate()
-        self.density = self.make_density()
-        self.diameter = self.make_diameter()
-        self.surfacegravity = self.make_gravity()
-        self.mass = self.make_mass()
-        self.pressure, self.presscat = self.make_pressure()
-        self.volcanism = self.make_volcanism()
-        # self.habitability = self.make_habitability()
-        # self.affinity = self.make_affinity()
-        # self.rvm, self.resources = self.make_resources()
-        # self.settlement_type = self.make_settlement_type()
-        # self.tech_level = self.make_tech_level()
-        # self.population = self.make_population(self.setting, self.setting.generate_race())
-        # self.population_rating = self.make_population_rating()
+        self._hydrocover = self.make_hydrographics()
+        self._averagesurface, self._climatetype = self.make_climate()
+        self._density = self.make_density()
+        self._diameter = self.make_diameter()
+        self._surfacegravity = self.make_gravity()
+        self._mass = self.make_mass()
+        self._pressure, self._presscat = self.make_pressure()
+        self._volcanism = ""
+        self._tectonic = ""
+        self._rvm = 0
+        self._resources = ""
+        self._habitability = 0
+        self._affinity = 0
 
     def __repr__(self):
         return repr("World")
@@ -37,7 +35,9 @@ class World(OrbitContent):
 
     def make_type(self) -> str:
         """
-        Determine and set the world type, according to blackbody temperature, size and primary star.
+        Return world type
+
+        Determine the world type according to blackbody temperature, size, and primary star.
         """
         blackbody_temp = self.get_blackbody_temp()
         size = self.get_size()
@@ -204,8 +204,9 @@ class World(OrbitContent):
         abs, green = self.get_absorption_greenhouse()
         matm = self.get_atmospheric_mass()
         bbcorr = abs * (1 + (matm * green))
+        averagesurface = bbcorr * self.get_blackbody_temp()
 
-        return bbcorr * self.get_blackbody_temp(), world_climate(bbcorr * self.get_blackbody_temp())
+        return averagesurface, world_climate(averagesurface)
 
     def get_average_surface_temp(self):
         return self.averagesurface
@@ -384,29 +385,12 @@ class World(OrbitContent):
         return bonus
 
     def make_resources(self):
+        """
+        Return resource value modifier (RVM) and corresponding string
+        """
         rollbonus = self.get_resourcebonus()
         dice = self.roller.roll_dice(3, rollbonus)
-        rvm = -3
-        value = 'Scant'
-        if dice > 2:
-            rvm = -2
-            value = 'Very Poor'
-        if dice > 4:
-            rvm = -1
-            value = 'Poor'
-        if dice > 7:
-            rvm = 0
-            value = 'Average'
-        if dice > 13:
-            rvm = 1
-            value = 'Abundant'
-        if dice > 16:
-            rvm = 2
-            value = 'Very Abundant'
-        if dice > 18:
-            rvm = 3
-            value = 'Rich'
-        return rvm, value
+        return world_resource_table[dice]
 
     def get_rvm(self):
         return self.rvm
@@ -479,160 +463,3 @@ class World(OrbitContent):
 
     def get_affinity(self):
         return self.affinity
-
-    def make_settlement_type(self):
-        # TODO: Check if space has been claimed / generate societies which could claim space
-        if self.get_affinity() > 0:
-            return "Colony"
-        else:
-            return "Outpost"
-
-    def get_settlement_type(self) -> str:
-        return self.settlement_type
-
-    def make_tech_level(self):
-
-        # TODO: Make TL a global setting and actually calculate the TL here
-        # TODO: Check for TL8 if habitability <= 3
-        modifier = 0
-        if self.get_settlement_type() == "Homeworld (Non-Spacefaring)":
-            modifier += -10
-
-        if self.get_settlement_type() == "Homeworld" or "Colony":
-            if 4 <= self.get_habitability() <= 6:
-                modifier += 1
-            if self.get_habitability() <= 3:
-                modifier += 2
-
-        if self.get_settlement_type() == "Outpost" and self.get_habitability() <= 3:
-            modifier += 3
-
-        roll = self.roller.roll(3, modifier)
-        if roll == 3:
-            return "Primitive", 1
-        elif roll == 4:
-            return "Standard - 3", self.setting.tech_level - 3
-        elif roll == 5:
-            return "Standard - 2", self.setting.tech_level - 2
-        elif 6 <= roll <= 7:
-            return "Standard - 1", self.setting.tech_level - 1
-        elif 8 <= roll <= 11:
-            return "Standard (Delayed)", self.setting.tech_level
-        elif 12 <= roll <= 15:
-            return "Standard", self.setting.tech_level
-        else:
-            return "Standard (Advanced)", self.setting.tech_level
-
-    def make_population(self, setting, race):
-        if self.get_settlement_type() == "Outpost":
-            return self.make_outpost_population()
-        else:
-            # if self.get_habitability() <= 3 and tech_level <= 7: self.population = 0 Set settlement to uninhabited!
-            base_capacity = self.get_carrying_capacity_by_tech_level()
-            base_capacity *= self.get_diameter() ** 2
-            base_capacity *= self.get_affinity_population_modifier()
-            if setting.tech_level < 8 and race.is_carnivore:
-                base_capacity /= 10
-            for _ in range(race.increased_consumption):
-                base_capacity /= 2
-            if race.reduced_consumption > 0:
-                multipliers = [1.5, 3, 10]
-                base_capacity *= multipliers[race.reduced_consumption]
-
-            if self.get_settlement_type() == "Homeworld" and setting.tech_level < 5:
-                return round(base_capacity * (self.roller.roll(2, -3) / 10))
-            if self.get_settlement_type() == "Homeworld" and setting.tech_level >= 5:
-                return round(base_capacity * (10 / self.roller.roll(2, 0)), 2)
-
-            # In case of colony:
-            if self.get_settlement_type() == "Colony":
-                modified_roll = self.roller.roll(3, 0) + (3 * self.get_affinity())  # + 1 per 10 yrs of colony age
-                progression = [10, 13, 15, 20, 25, 30, 40, 50, 60, 80]
-                multiplier = 1000
-                while modified_roll > 10:
-                    modified_roll -= 10
-                    multiplier *= 10
-                return round(progression[modified_roll % 10] * multiplier, 2)
-
-    def get_carrying_capacity_by_tech_level(self, tech_level=0):
-        # TODO: move this to a setting class?
-        if tech_level == 0:
-            return 10000
-        elif tech_level == 1:
-            return 100000
-        elif tech_level == 2:
-            return 500000
-        elif tech_level == 3:
-            return 600000
-        elif tech_level == 4:
-            return 700000
-        elif tech_level == 5:
-            return 2500000
-        elif tech_level == 6:
-            return 5000000
-        elif tech_level == 7:
-            return 7500000
-        elif tech_level == 8:
-            return 10000000
-        elif tech_level == 9:
-            return 15000000
-        elif tech_level == 10:
-            return 20000000
-        else:
-            # FIXME: This should be "GM option". How to handle that?
-            return 50000000
-
-    def make_population_rating(self) -> int:
-        population = self.population
-        pop_rating = 0
-        while population >= 10:
-            pop_rating += 1
-            population /= 10
-        return pop_rating
-
-    def make_outpost_population(self):
-        progression = [1, 1.5, 2.5, 4, 6]
-        multiplier = 100
-        roll = self.roller.roll(3, -3)  # Get one of 16 results between 0 and 15
-        while roll > 4:
-            roll -= 5
-            multiplier *= 10
-
-        adjustment = round(1 + (random.randint(-25, 25) / 100), 2)  # Generate an adjustment factor of +-25%
-        return round(progression[roll % 5] * multiplier * adjustment, 2)
-
-    def get_affinity_population_modifier(self):
-        affinity = self.get_affinity()
-        # progression here: 3, 6, 13, 25, 50, 100; except for middle bit, where it is [1,] 2, 4, 8, 15
-        if affinity <= -5:
-            return 0.03
-        if affinity == -4:
-            return 0.06
-        if affinity == -3:
-            return 0.13
-        if affinity == -2:
-            return 0.25
-        if affinity == -1:
-            return 0.5
-        if affinity == 0:
-            return 1
-        if affinity == 1:
-            return 2
-        if affinity == 2:
-            return 4
-        if affinity == 3:
-            return 8
-        if affinity == 4:
-            return 15
-        if affinity == 5:
-            return 30
-        if affinity == 6:
-            return 60
-        if affinity == 7:
-            return 130
-        if affinity == 8:
-            return 250
-        if affinity == 9:
-            return 500
-        else:
-            return 1000

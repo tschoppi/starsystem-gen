@@ -275,3 +275,49 @@ GGSizeTable = {
               (3000, 1.2), (3500, 1.4)] +
              [(4000, 1.6)] * 2
 }
+
+# Resource Class Table for asteroid belts
+# Usage: asteroid_resource_table[3d roll]
+asteroid_resource_table = {
+    3: [-5, 'Worthless'],
+    4: [-4, 'Very Scant'],
+    5: [-3, 'Scant'],
+    6: [-2, 'Very Poor'],
+    7: [-2, 'Very Poor'],
+    8: [-1, 'Poor'],
+    9: [-1, 'Poor'],
+    10: [0, 'Average'],
+    11: [0, 'Average'],
+    12: [1, 'Abundant'],
+    13: [1, 'Abundant'],
+    14: [2, 'Very Abundant'],
+    15: [2, 'Very Abundant'],
+    16: [3, 'Rich'],
+    17: [4, 'Very Rich'],
+    18: [5, 'Motherlode']
+}
+
+# Resource Class Table for Worlds
+# Usage: world_resource_table[3d roll with max bonus of +-2]
+world_resource_table = {
+    1: [-3, 'Scant'],
+    2: [-3, 'Scant'],
+    3: [-2, 'Very Poor'],
+    4: [-2, 'Very Poor'],
+    5: [-1, 'Poor'],
+    6: [-1, 'Poor'],
+    7: [-1, 'Poor'],
+    8: [0, 'Average'],
+    9: [0, 'Average'],
+    10: [0, 'Average'],
+    11: [0, 'Average'],
+    12: [0, 'Average'],
+    13: [0, 'Average'],
+    14: [1, 'Abundant'],
+    15: [1, 'Abundant'],
+    16: [1, 'Abundant'],
+    17: [2, 'Very Abundant'],
+    18: [2, 'Very Abundant'],
+    19: [3, 'Rich'],
+    20: [3, 'Rich']
+}

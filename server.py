@@ -19,7 +19,7 @@ class WebServer(object):
     def set_seed(self, seed=None):
         if seed is None:
             seed = r.randint(1, sys.maxsize)
-        self.random_seed = seed
+        self.random_seed = int(seed)
 
     @cherrypy.expose
     def index(self):

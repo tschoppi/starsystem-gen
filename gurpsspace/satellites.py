@@ -240,8 +240,8 @@ class Moonlet:
         self.parent = parentplanet
         self.roller = dice.DiceRoller()
         self.family = family
-        self._orbit = self.make_orbit()
-        self._period = self.make_period()
+        self.orbit = self.make_orbit()
+        self.period = self.make_period()
 
     def print_info(self):
         print("Moonlet Information")

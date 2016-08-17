@@ -10,19 +10,19 @@ class World(OrbitContent):
         self.sizeclass = sizeclass
         self.world_type = self.make_type()
         self.make_atmosphere()
-        self._hydrocover = self.make_hydrographics()
-        self._averagesurface, self._climatetype = self.make_climate()
-        self._density = self.make_density()
-        self._diameter = self.make_diameter()
-        self._surfacegravity = self.make_gravity()
-        self._mass = self.make_mass()
-        self._pressure, self._presscat = self.make_pressure()
-        self._volcanism = ""
-        self._tectonic = ""
-        self._rvm = 0
-        self._resources = ""
-        self._habitability = 0
-        self._affinity = 0
+        self.hydrocover = self.make_hydrographics()
+        self.averagesurface, self.climatetype = self.make_climate()
+        self.density = self.make_density()
+        self.diameter = self.make_diameter()
+        self.surfacegravity = self.make_gravity()
+        self.mass = self.make_mass()
+        self.pressure, self.presscat = self.make_pressure()
+        self.volcanism = ""
+        self.tectonic = ""
+        self.rvm = 0
+        self.resources = ""
+        self.habitability = 0
+        self.affinity = 0
 
     def __repr__(self):
         return repr("World")

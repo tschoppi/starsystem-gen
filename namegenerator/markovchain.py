@@ -13,7 +13,8 @@ class MarkovStateMachine:
 
     factory = MarkovStateFactory()
 
-    def __init__(self, depth=1):
+    def __init__(self, depth=1, seed=None):
+        random.seed(seed)
         if depth < 1:
             depth = 1
         self.depth = depth

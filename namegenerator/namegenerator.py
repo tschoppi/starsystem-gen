@@ -30,8 +30,8 @@ class NameGenerator:
 
     suffixes = ['', '-Beta', '-Gamma', '-Delta', '-Epsilon']
 
-    def __init__(self, depth=1):
-        self.markov_chain = MarkovStateMachine(depth)
+    def __init__(self, depth=1, seed=None):
+        self.markov_chain = MarkovStateMachine(depth, seed)
 
     def read_file(self, path) -> None:
         """

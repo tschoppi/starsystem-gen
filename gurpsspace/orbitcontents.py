@@ -1,6 +1,7 @@
+from typing import Tuple
+
 from . import dice
 
-from typing import Tuple
 
 class OrbitContent:
     """

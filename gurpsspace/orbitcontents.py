@@ -20,7 +20,6 @@ class OrbitContent:
         self.name = ''
         self.number = None
         self.size = ''
-        self.has_eccentricity = False
         self.eccentricity = 0
         self.min_max = ()
 
@@ -69,10 +68,7 @@ class OrbitContent:
         return ecc
 
     def get_eccentricity(self):
-        if self.has_eccentricity:
-            return self.eccentricity
-        else:
-            return None
+        return self.eccentricity
 
     def make_min_max(self) -> Tuple[float, float]:
         min_orbit = self.get_orbit() * (1 - self.eccentricity)

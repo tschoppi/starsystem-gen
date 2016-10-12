@@ -28,3 +28,8 @@ class TestStarsystem(unittest.TestCase):
     def test_find_orbital_separation_index(self):
         self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=2)
         self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=-2)
+
+    def test_descending_sort(self):
+        arguments = {'num_stars': 2}
+        testsystem = starsystem.StarSystem(**arguments)
+        self.assertTrue(testsystem.stars[0].get_mass() > testsystem.stars[1].get_mass())

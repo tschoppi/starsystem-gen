@@ -32,4 +32,13 @@ class TestStarsystem(unittest.TestCase):
     def test_descending_sort(self):
         arguments = {'num_stars': 2}
         testsystem = starsystem.StarSystem(**arguments)
-        self.assertTrue(testsystem.stars[0].get_mass() > testsystem.stars[1].get_mass())
+        self.assertTrue(testsystem.stars[0].get_mass() >= testsystem.stars[1].get_mass())
+
+    def test_orbit_generation(self):
+        unisystem = starsystem.StarSystem(num_stars=1)
+        bisystem = starsystem.StarSystem(num_stars=2)
+        trisystem = starsystem.StarSystem(num_stars=3)
+        self.assertTrue(len(unisystem.orbits) == 0)
+        self.assertTrue(len(bisystem.orbits) == 1)
+        self.assertTrue(len(trisystem.orbits) == 2)
+        self.assertTrue(trisystem.orbits[1][0] > trisystem.orbits[0][0])

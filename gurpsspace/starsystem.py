@@ -31,7 +31,7 @@ class StarSystem:
         self.stars = self.generate_stars(self.num_stars)
         self.stars = sorted(self.stars, key=lambda star: star.get_mass(), reverse=True)
         self.stars = self.name_stars(self.stars)
-        self.make_orbits()
+        self.orbits = self.make_orbits()
         self.make_min_max_separations()
         self.make_forbidden_zones()
         self.create_planetsystem()
@@ -48,7 +48,7 @@ class StarSystem:
         print(" # of Stars:\t{}".format(len(self.stars)))
         print("OpenCluster:\t{}".format(self.__opencluster))
         if len(self.stars) > 1:
-            print("Stellar Orb:\t{}".format(self.__orbits))
+            print("Stellar Orb:\t{}".format(self.orbits))
             print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
             print(" Orbit Per.:\t{}".format(self.__periods))
         print("================\n")
@@ -139,18 +139,17 @@ class StarSystem:
         return starlist
 
     # TODO: Sub-companion star for distant second companion star
-    # TODO: Complete type-hinting, once the returns have been sorted out
-    def make_orbits(self):
+    def make_orbits(self) -> list:
         """
         Generate stellar orbits for multiple-star systems.
-        :return:
+
+        :return: A list of orbits, the entries are of the form
+            [orbital_separation, eccentricity]
         """
-        # FIXME: This looks like it shouldn't return anything, but it has two return statements!
-        self.__orbsepentry = []
-        self.__orbits = []
+        orbsepentry = []
+        orbits = []
         if len(self.stars) == 1:
-            # Don't do anything for just one star
-            return None
+            return orbits
         if len(self.stars) >= 2:
             dice = self.roller.roll_dice(3, 0)
             osepindex = self.find_orbital_separation_index(dice)
@@ -165,29 +164,34 @@ class StarSystem:
                 eccroll = 18
             eccentricity = StOEccTable[eccroll]
 
-            self.__orbsepentry.append(orbsep)
-            self.__orbits.append((orbit, eccentricity))
+            orbsepentry.append(orbsep)
+            orbits.append((orbit, eccentricity))
         if len(self.stars) == 3:
-            dice = self.roller.roll_dice(3, 6)
-            osepindex = self.find_orbital_separation_index(dice)
-            orbsep = OrbSepTable[osepindex]
-            orbit = self.roller.roll_dice(2, 0) * orbsep[1]
+            close_companion = True
+            while close_companion:
+                dice = self.roller.roll_dice(3, 6)
+                osepindex = self.find_orbital_separation_index(dice)
+                orbsep = OrbSepTable[osepindex]
+                orbit = self.roller.roll_dice(2, 0) * orbsep[1]
 
-            eccmod = orbsep[2]
-            eccroll = self.roller.roll_dice(3, eccmod)
-            if eccroll < 3:
-                eccroll = 3
-            if eccroll > 18:
-                eccroll = 18
-            eccentricity = StOEccTable[eccroll]
+                # The second companion star has to be further away than the
+                # first companion star. Both the orbital modifier and orbit
+                # values need to differ
+                if orbsepentry[0][1] > orbsep[1] or orbits[0][0] >= orbit:
+                    continue
+                else:
+                    close_companion = False
 
-            self.__orbsepentry.append(orbsep)
-            self.__orbits.append((orbit, eccentricity))
+                eccmod = orbsep[2]
+                eccroll = self.roller.roll_dice(3, eccmod)
+                if eccroll < 3:
+                    eccroll = 3
+                if eccroll > 18:
+                    eccroll = 18
+                eccentricity = StOEccTable[eccroll]
 
-            # Recursively contine until second companion is significantly
-            # further away than the first
-            if self.__orbsepentry[0][1] >= self.__orbsepentry[1][1]:
-                return self.make_orbits()
+                orbits.append((orbit, eccentricity))
+        return orbits
 
     def find_orbital_separation_index(self, dice_roll) -> int:
         """
@@ -210,8 +214,8 @@ class StarSystem:
 
     def make_min_max_separations(self) -> None:
         self.__minmaxorbits = []
-        for i in range(len(self.__orbits)):
-            orbit, ecc = self.__orbits[i]
+        for i in range(len(self.orbits)):
+            orbit, ecc = self.orbits[i]
             min = (1 - ecc) * orbit
             max = (1 + ecc) * orbit
             self.__minmaxorbits.append((min, max))
@@ -241,13 +245,13 @@ class StarSystem:
     def make_periods(self):
         self.__periods = []
         if len(self.stars) >= 2:
-            orbit, ecc = self.__orbits[0]
+            orbit, ecc = self.orbits[0]
             m1 = self.stars[0].get_mass()
             m2 = self.stars[1].get_mass()
             m = m1 + m2
             self.__periods.append((orbit ** 3 / m) ** 0.5)
         if len(self.stars) == 3:
-            orbit, ecc = self.__orbits[1]
+            orbit, ecc = self.orbits[1]
             m1 = self.stars[0].get_mass() + self.stars[1].get_mass()
             m2 = self.stars[2].get_mass()
             m = m1 + m2
@@ -266,11 +270,11 @@ class StarSystem:
     def get_age(self) -> int:
         return self.__age
 
-    def get_orbits(self):
+    def get_orbits(self) -> list:
         """
-        Return tuple (orbital separation, eccentricity).
+        Return list of tuples of the form (orbital separation, eccentricity).
         """
-        return self.__orbits
+        return self.orbits
 
     def get_period(self):
         return self.__periods

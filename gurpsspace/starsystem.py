@@ -32,7 +32,7 @@ class StarSystem:
         self.stars = sorted(self.stars, key=lambda star: star.get_mass(), reverse=True)
         self.stars = self.name_stars(self.stars)
         self.orbits = self.make_orbits()
-        self.make_min_max_separations()
+        self.minmax_separation = self.make_min_max_separations(self.orbits)
         self.make_forbidden_zones()
         self.create_planetsystem()
         self.make_periods()
@@ -49,7 +49,7 @@ class StarSystem:
         print("OpenCluster:\t{}".format(self.__opencluster))
         if len(self.stars) > 1:
             print("Stellar Orb:\t{}".format(self.orbits))
-            print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
+            print("StOrbMinMax:\t{}".format(self.minmax_separation))
             print(" Orbit Per.:\t{}".format(self.__periods))
         print("================\n")
         for i in range(len(self.stars)):
@@ -212,18 +212,27 @@ class StarSystem:
         else:
             return 4
 
-    def make_min_max_separations(self) -> None:
-        self.__minmaxorbits = []
-        for i in range(len(self.orbits)):
-            orbit, ecc = self.orbits[i]
+    def make_min_max_separations(self, orbits) -> list:
+        """
+        Calculate the minimal and maximal separations of multiple stars given
+        their basic orbital parameters
+
+        :param orbits: List of tuples (orbital_separation, eccentricity)
+        :type orbits: list
+        :return: List of tuples of the form (min, max) for each orbit entry
+        """
+        minmaxorbits = []
+        for i in range(len(orbits)):
+            orbit, ecc = orbits[i]
             min = (1 - ecc) * orbit
             max = (1 + ecc) * orbit
-            self.__minmaxorbits.append((min, max))
+            minmaxorbits.append((min, max))
+        return minmaxorbits
 
     def make_forbidden_zones(self) -> None:
         self.__forbiddenzones = []
-        for i in range(len(self.__minmaxorbits)):
-            min_, max_ = self.__minmaxorbits[i]
+        for i in range(len(self.minmax_separation)):
+            min_, max_ = self.minmax_separation[i]
             start = min_ / 3.
             end = max_ * 3.
             self.__forbiddenzones.append((start, end))

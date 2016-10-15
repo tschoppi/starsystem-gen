@@ -5,7 +5,10 @@ from gurpsspace import starsystem
 class TestStarsystem(unittest.TestCase):
 
     def setUp(self):
-        self.system = starsystem.StarSystem()
+        self.unisystem = starsystem.StarSystem(num_stars=1)
+        self.bisystem = starsystem.StarSystem(num_stars=2)
+        self.trisystem = starsystem.StarSystem(num_stars=3)
+        self.randomsystem = starsystem.StarSystem()
 
     def test_generate_starsystem_open_cluster_one_star(self):
         arguments = {
@@ -16,18 +19,18 @@ class TestStarsystem(unittest.TestCase):
         self.testsystem = starsystem.StarSystem(**arguments)
 
     def test_age_check(self):
-        self.assertRaises(ValueError, self.system.make_age, age=0)
-        self.assertRaises(ValueError, self.system.make_age, age=-2.4)
+        self.assertRaises(ValueError, self.randomsystem.make_age, age=0)
+        self.assertRaises(ValueError, self.randomsystem.make_age, age=-2.4)
 
     def test_age_generation(self):
-        self.assertTrue(self.system.make_age() > 0)
+        self.assertTrue(self.randomsystem.make_age() > 0)
 
     def test_random_age(self):
-        self.assertTrue(self.system.random_age() > 0)
+        self.assertTrue(self.randomsystem.random_age() > 0)
 
     def test_find_orbital_separation_index(self):
-        self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=2)
-        self.assertRaises(ValueError, self.system.find_orbital_separation_index, dice_roll=-2)
+        self.assertRaises(ValueError, self.randomsystem.find_orbital_separation_index, dice_roll=2)
+        self.assertRaises(ValueError, self.randomsystem.find_orbital_separation_index, dice_roll=-2)
 
     def test_descending_sort(self):
         arguments = {'num_stars': 2}
@@ -35,10 +38,21 @@ class TestStarsystem(unittest.TestCase):
         self.assertTrue(testsystem.stars[0].get_mass() >= testsystem.stars[1].get_mass())
 
     def test_orbit_generation(self):
-        unisystem = starsystem.StarSystem(num_stars=1)
-        bisystem = starsystem.StarSystem(num_stars=2)
-        trisystem = starsystem.StarSystem(num_stars=3)
-        self.assertTrue(len(unisystem.orbits) == 0)
-        self.assertTrue(len(bisystem.orbits) == 1)
-        self.assertTrue(len(trisystem.orbits) == 2)
-        self.assertTrue(trisystem.orbits[1][0] > trisystem.orbits[0][0])
+        self.assertTrue(len(self.unisystem.orbits) == 0)
+        self.assertTrue(len(self.bisystem.orbits) == 1)
+        self.assertTrue(len(self.trisystem.orbits) == 2)
+        self.assertTrue(self.trisystem.orbits[1][0] > self.trisystem.orbits[0][0])
+
+    def test_min_max_separations(self):
+        self.assertTrue(
+            len(self.unisystem.orbits) ==
+            len(self.unisystem.make_min_max_separations(self.unisystem.orbits))
+        )
+        self.assertTrue(
+            len(self.bisystem.orbits) ==
+            len(self.bisystem.make_min_max_separations(self.bisystem.orbits))
+        )
+
+        # Min and max separations can be equal for circular orbits
+        bi_min_max = self.bisystem.make_min_max_separations(self.bisystem.orbits)
+        self.assertTrue(bi_min_max[0][0] <= bi_min_max[0][1])

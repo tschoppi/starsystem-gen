@@ -33,7 +33,11 @@ class StarSystem:
         self.stars = self.name_stars(self.stars)
         self.orbits = self.make_orbits()
         self.minmax_separation = self.make_min_max_separations(self.orbits)
-        self.make_forbidden_zones()
+        self.forbidden_zones = self.calc_forbidden_zones(self.minmax_separation)
+        self.stars = self.propagate_forbidden_zones(
+            self.stars,
+            self.forbidden_zones
+        )
         self.create_planetsystem()
         self.make_periods()
         # self.print_info()
@@ -229,20 +233,41 @@ class StarSystem:
             minmaxorbits.append((min, max))
         return minmaxorbits
 
-    def make_forbidden_zones(self) -> None:
-        self.__forbiddenzones = []
-        for i in range(len(self.minmax_separation)):
-            min_, max_ = self.minmax_separation[i]
+    def calc_forbidden_zones(self, minmax_separation) -> list:
+        """
+        Calculate the forbidden zones given minimal and maximal separations
+
+        :param minmax_separation: List of tuples (min-, max-) orbital
+            separations
+        :type minmax_separation: list
+        :return: List tuples with the forbidden zone edges (inner, outer)
+        """
+        forbiddenzones = []
+        for i in range(len(minmax_separation)):
+            min_, max_ = minmax_separation[i]
             start = min_ / 3.
             end = max_ * 3.
-            self.__forbiddenzones.append((start, end))
+            forbiddenzones.append((start, end))
+        return forbiddenzones
 
-            # Tell the stars their forbidden zones
+    def propagate_forbidden_zones(self, stars, forbidden_zones) -> list:
+        """
+        Set the forbidden zones for the stars
+
+        :param stars: List of stars in the system
+        :param forbidden_zones: List of tuples with forbidden zone edges
+        :type stars: list
+        :type forbidden_zones: list
+        :return: List of stars with the forbidden zones set
+        """
+        for i in range(len(forbidden_zones)):
+            start, end = forbidden_zones[i]
             if i == 0:  # For the first two stars
-                self.stars[0].set_forbidden_zone(start, end)
-                self.stars[1].set_forbidden_zone(start, end)
+                stars[0].set_forbidden_zone(start, end)
+                stars[1].set_forbidden_zone(start, end)
             if i == 1:  # For the third star
-                self.stars[2].set_forbidden_zone(start, end)
+                stars[2].set_forbidden_zone(start, end)
+        return stars
 
     def create_planetsystem(self) -> None:
         """

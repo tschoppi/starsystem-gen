@@ -56,3 +56,15 @@ class TestStarsystem(unittest.TestCase):
         # Min and max separations can be equal for circular orbits
         bi_min_max = self.bisystem.make_min_max_separations(self.bisystem.orbits)
         self.assertTrue(bi_min_max[0][0] <= bi_min_max[0][1])
+
+    def test_calc_forbidden_zones(self):
+        bisystem_forbidden_zones = self.bisystem.calc_forbidden_zones(
+            self.bisystem.minmax_separation
+        )
+        self.assertTrue(
+            len(self.bisystem.minmax_separation) ==
+            len(bisystem_forbidden_zones)
+        )
+        self.assertTrue(
+            bisystem_forbidden_zones[0][0] < bisystem_forbidden_zones[0][1]
+        )

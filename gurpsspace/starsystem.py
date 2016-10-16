@@ -38,8 +38,8 @@ class StarSystem:
             self.stars,
             self.forbidden_zones
         )
-        self.create_planetsystem()
-        self.make_periods()
+        self.stars = self.create_planetsystem(self.stars)
+        self.periods = self.make_periods(self.stars, self.orbits)
         # self.print_info()
 
     def printinfo(self) -> None:
@@ -54,7 +54,7 @@ class StarSystem:
         if len(self.stars) > 1:
             print("Stellar Orb:\t{}".format(self.orbits))
             print("StOrbMinMax:\t{}".format(self.minmax_separation))
-            print(" Orbit Per.:\t{}".format(self.__periods))
+            print(" Orbit Per.:\t{}".format(self.periods))
         print("================\n")
         for i in range(len(self.stars)):
             self.stars[i].print_info()
@@ -269,27 +269,42 @@ class StarSystem:
                 stars[2].set_forbidden_zone(start, end)
         return stars
 
-    def create_planetsystem(self) -> None:
+    def create_planetsystem(self, stars) -> list:
         """
-        Causes all stars to generate a planetary system for themselves. These may be empty!
-        """
-        for star_ in self.stars:
-            star_.make_planetsystem()
+        Let each star generate their planet system. It may be empty!
 
-    def make_periods(self):
-        self.__periods = []
-        if len(self.stars) >= 2:
-            orbit, ecc = self.orbits[0]
-            m1 = self.stars[0].get_mass()
-            m2 = self.stars[1].get_mass()
+        :param stars: List of stars in the stellar system
+        :type stars: list
+        :return: List of stars that have planetary systems
+        """
+        for star_ in stars:
+            star_.make_planetsystem()
+        return stars
+
+    def make_periods(self, stars, orbits):
+        """
+        Calculate the orbital periods for the stars
+
+        :param stars: List of the stars
+        :param orbits: List of tuples for orbital separation and eccentricity
+        :type stars: list
+        :type orbits: list
+        :return: List of orbital periods in days
+        """
+        periods = []
+        if len(stars) >= 2:
+            orbit, ecc = orbits[0]
+            m1 = stars[0].get_mass()
+            m2 = stars[1].get_mass()
             m = m1 + m2
-            self.__periods.append((orbit ** 3 / m) ** 0.5)
-        if len(self.stars) == 3:
-            orbit, ecc = self.orbits[1]
-            m1 = self.stars[0].get_mass() + self.stars[1].get_mass()
-            m2 = self.stars[2].get_mass()
+            periods.append((orbit ** 3 / m) ** 0.5)
+        if len(stars) == 3:
+            orbit, ecc = orbits[1]
+            m1 = stars[0].get_mass() + stars[1].get_mass()
+            m2 = stars[2].get_mass()
             m = m1 + m2
-            self.__periods.append((orbit ** 3 / m) ** 0.5)
+            periods.append((orbit ** 3 / m) ** 0.5)
+        return periods
 
     def write_latex(self, filename='starsystem.tex') -> None:
         """
@@ -311,7 +326,7 @@ class StarSystem:
         return self.orbits
 
     def get_period(self):
-        return self.__periods
+        return self.periods
 
     def is_open_cluster(self) -> bool:
         return self.__opencluster

@@ -68,3 +68,10 @@ class TestStarsystem(unittest.TestCase):
         self.assertTrue(
             bisystem_forbidden_zones[0][0] < bisystem_forbidden_zones[0][1]
         )
+
+    def test_periods(self):
+        bisystem_periods = self.bisystem.make_periods(
+            self.bisystem.stars,
+            self.bisystem.orbits
+        )
+        self.assertTrue(len(bisystem_periods) == len(self.bisystem.orbits))

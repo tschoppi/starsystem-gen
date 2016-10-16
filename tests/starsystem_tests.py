@@ -39,19 +39,31 @@ class TestStarsystem(unittest.TestCase):
         self.assertTrue(self.randomsystem.random_age() > 0)
 
     def test_find_orbital_separation_index(self):
-        self.assertRaises(ValueError, self.randomsystem.find_orbital_separation_index, dice_roll=2)
-        self.assertRaises(ValueError, self.randomsystem.find_orbital_separation_index, dice_roll=-2)
+        self.assertRaises(
+            ValueError,
+            self.randomsystem.find_orbital_separation_index,
+            dice_roll=2
+        )
+        self.assertRaises(
+            ValueError,
+            self.randomsystem.find_orbital_separation_index,
+            dice_roll=-2
+        )
 
     def test_descending_sort(self):
         arguments = {'num_stars': 2}
         testsystem = starsystem.StarSystem(**arguments)
-        self.assertTrue(testsystem.stars[0].get_mass() >= testsystem.stars[1].get_mass())
+        self.assertTrue(
+            testsystem.stars[0].get_mass() >= testsystem.stars[1].get_mass()
+        )
 
     def test_orbit_generation(self):
         self.assertTrue(len(self.unisystem.orbits) == 0)
         self.assertTrue(len(self.bisystem.orbits) == 1)
         self.assertTrue(len(self.trisystem.orbits) == 2)
-        self.assertTrue(self.trisystem.orbits[1][0] > self.trisystem.orbits[0][0])
+        self.assertTrue(
+            self.trisystem.orbits[1][0] > self.trisystem.orbits[0][0]
+        )
 
     def test_min_max_separations(self):
         self.assertTrue(
@@ -64,7 +76,9 @@ class TestStarsystem(unittest.TestCase):
         )
 
         # Min and max separations can be equal for circular orbits
-        bi_min_max = self.bisystem.make_min_max_separations(self.bisystem.orbits)
+        bi_min_max = self.bisystem.make_min_max_separations(
+            self.bisystem.orbits
+        )
         self.assertTrue(bi_min_max[0][0] <= bi_min_max[0][1])
 
     def test_calc_forbidden_zones(self):

@@ -16,7 +16,9 @@ class StarSystem:
         age = kwargs.get('age', None)
         self.age = self.make_age(age)
         self.stars = self.generate_stars(self.num_stars)
-        self.stars = sorted(self.stars, key=lambda star: star.get_mass(), reverse=True)
+        self.stars = sorted(
+            self.stars, key=lambda star: star.get_mass(), reverse=True
+        )
         self.stars = self.name_stars(self.stars)
         self.orbits = self.make_orbits()
         self.minmax_separation = self.make_min_max_separations(self.orbits)
@@ -124,7 +126,9 @@ class StarSystem:
                 provage = self.random_age()
             return provage
         elif age <= 0:
-            raise ValueError("Starsystem age needs to be larger than zero billion years.")
+            raise ValueError(
+                "Starsystem age needs to be larger than zero billion years."
+            )
         else:
             return age
 
@@ -139,19 +143,41 @@ class StarSystem:
             # Extreme Population I: Age is set to 1 million years
             return 0.001
         elif dice_roll <= 6:
-            return 0.1 + self.roller.roll_dice(1, -1) * 0.3 + self.roller.roll_dice(1, -1) * 0.05
+            return (
+                0.1 + self.roller.roll_dice(1, -1) * 0.3 +
+                self.roller.roll_dice(1, -1) * 0.05
+            )
         elif dice_roll <= 10:
-            return 2.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                2.0 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         elif dice_roll <= 14:
-            return 5.6 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                5.6 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         elif dice_roll <= 17:
-            return 8.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                8.0 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         else:
-            return 10 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                10 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
 
     def name_stars(self, starlist) -> list:
         """
-        Assign a letter to each star according to its cardinality in the stellar system.
+        Assign a letter to each star
+
+        :param starlist: List of the stars to name
+        :type starlist: list
+        :return: List of renamed stars
+
+        The naming convention starts with the first (highest mass) star and the
+        first letter of the alphabet.
         """
         letters = ['A', 'B', 'C']
         for star_ in starlist:
@@ -215,8 +241,10 @@ class StarSystem:
 
     def find_orbital_separation_index(self, dice_roll) -> int:
         """
-        Return index for the orbital separation table
+        Return index for the orbital separation table for a given dice roll
 
+        :param dice_roll: Result of the dice roll
+        :type dice_roll: int
         :return: An int in the interval [1, 4]
         """
         if dice_roll < 3:
@@ -326,13 +354,15 @@ class StarSystem:
         """
         Write all information about the starsystem to a latex file.
 
-        :param filename: Name of file (with the .tex extension) to which the ouput is written
+        :param filename: Name of file (with the .tex extension) to which the
+            ouput is written
         :type filename: str
         """
         writer = LW(self, filename)
         writer.write()
 
     def get_age(self) -> int:
+        """Return star system age in billion years"""
         return self.age
 
     def get_orbits(self) -> list:
@@ -341,13 +371,20 @@ class StarSystem:
         """
         return self.orbits
 
-    def get_period(self):
+    def get_period(self) -> list:
+        """Return list of orbital periods"""
         return self.periods
 
     def is_open_cluster(self) -> bool:
+        """Return True if star system is located in an open cluster"""
         return self.opencluster
 
     def has_garden(self) -> bool:
+        """
+        Query all stars in the system for a Garden world
+
+        :return: True if at least one star has a Garden world
+        """
         ret = False
         for star_ in self.stars:
             ret |= star_.planetsystem.has_garden()

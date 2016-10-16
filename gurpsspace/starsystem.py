@@ -213,6 +213,9 @@ class StarSystem:
             orbsepentry.append(orbsep)
             orbits.append((orbit, eccentricity))
         if len(self.stars) == 3:
+            if osepindex == 4:
+                # Disallow two 'Distant' companions
+                return self.make_orbits()
             close_companion = True
             while close_companion:
                 dice = self.roller.roll_dice(3, 6)

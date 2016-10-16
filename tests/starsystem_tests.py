@@ -18,6 +18,16 @@ class TestStarsystem(unittest.TestCase):
         }
         self.testsystem = starsystem.StarSystem(**arguments)
 
+    def test_make_open_cluster_kwarg(self):
+        self.assertTrue(self.randomsystem.make_open_cluster(True))
+        self.assertFalse(self.randomsystem.make_open_cluster(False))
+
+    def test_make_number_of_stars_kwarg(self):
+        self.assertTrue(self.randomsystem.make_number_of_stars(1) == 1)
+        self.assertTrue(self.randomsystem.make_number_of_stars(2) == 2)
+        self.assertTrue(self.randomsystem.make_number_of_stars(3) == 3)
+        self.assertTrue(self.randomsystem.make_number_of_stars(4) != 4)
+
     def test_age_check(self):
         self.assertRaises(ValueError, self.randomsystem.make_age, age=0)
         self.assertRaises(ValueError, self.randomsystem.make_age, age=-2.4)

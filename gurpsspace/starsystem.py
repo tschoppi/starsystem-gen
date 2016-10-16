@@ -10,24 +10,11 @@ class StarSystem:
 
     def __init__(self, **kwargs):
         open_cluster = kwargs.get('open_cluster', None)
-
-        if open_cluster is not None:
-            self.__opencluster = open_cluster
-        else:
-            self.__opencluster = self.random_cluster()
-
+        self.opencluster = self.make_open_cluster(open_cluster)
         num_stars = kwargs.get('num_stars', None)
-        if num_stars is not None:
-            # The rules only support 1-3 stars per system, so it is checked whether the argument is valid.
-            if 0 < num_stars <= 3:
-                self.num_stars = num_stars
-            else:  # Otherwise it is replaced with a random valid number.
-                self.num_stars = self.random_star_number()
-        else:
-            self.num_stars = self.random_star_number()
-
+        self.num_stars = self.make_number_of_stars(num_stars)
         age = kwargs.get('age', None)
-        self.__age = self.make_age(age)
+        self.age = self.make_age(age)
         self.stars = self.generate_stars(self.num_stars)
         self.stars = sorted(self.stars, key=lambda star: star.get_mass(), reverse=True)
         self.stars = self.name_stars(self.stars)
@@ -40,17 +27,16 @@ class StarSystem:
         )
         self.stars = self.create_planetsystem(self.stars)
         self.periods = self.make_periods(self.stars, self.orbits)
-        # self.print_info()
 
-    def printinfo(self) -> None:
+    def print_info(self) -> None:
         """
         Outputs all information about the starsystem to console.
         """
         print("Star System Info")
         print("================")
-        print("        Age:\t{}".format(self.__age))
+        print("        Age:\t{}".format(self.age))
         print(" # of Stars:\t{}".format(len(self.stars)))
-        print("OpenCluster:\t{}".format(self.__opencluster))
+        print("OpenCluster:\t{}".format(self.opencluster))
         if len(self.stars) > 1:
             print("Stellar Orb:\t{}".format(self.orbits))
             print("StOrbMinMax:\t{}".format(self.minmax_separation))
@@ -58,6 +44,19 @@ class StarSystem:
         print("================\n")
         for i in range(len(self.stars)):
             self.stars[i].print_info()
+
+    def make_open_cluster(self, kwarg) -> bool:
+        """
+        Decide whether the star system is in an open cluster
+
+        :param kwarg: Keyword argument passed to the constructor
+        :type kwarg: bool or None
+        :return: True if the star system is in an open cluster, false otherwise
+        """
+        if kwarg is not None:
+            return kwarg
+        else:
+            return self.random_cluster()
 
     def random_cluster(self) -> bool:
         """
@@ -69,13 +68,30 @@ class StarSystem:
         #    - Roll of 10 or less
         return self.roller.roll_dice(3, 0) <= 10
 
+    def make_number_of_stars(self, kwarg) -> int:
+        """
+        Determine number of stars in the star system
+
+        :param kwarg: Keyword argument num_stars passed to constructor
+        :type kwarg: int or None
+        :return: Integer number of stars in the system
+
+        According to the rules only 1-3 stars can be in any stellar system. This
+        method does bounds checking and provides a random number of stars should
+        that fail.
+        """
+        if kwarg is not None and 1 <= kwarg <= 3:
+            return kwarg
+        else:
+            return self.random_star_number()
+
     def random_star_number(self) -> int:
         """
         Randomly determines the number of stars in the system.
 
         :return: The number of stars
         """
-        if self.__opencluster:
+        if self.opencluster:
             roll_mod = 3
         else:
             roll_mod = 0
@@ -98,13 +114,13 @@ class StarSystem:
         """
         temporary_stars = []
         for i in range(number_of_stars):
-            temporary_stars.append(star.Star(age=self.__age))
+            temporary_stars.append(star.Star(age=self.age))
         return temporary_stars
 
     def make_age(self, age=None) -> float:
         if age is None:
             provage = self.random_age()
-            while self.__opencluster and provage > 2:
+            while self.opencluster and provage > 2:
                 provage = self.random_age()
             return provage
         elif age <= 0:
@@ -135,7 +151,7 @@ class StarSystem:
 
     def name_stars(self, starlist) -> list:
         """
-        Assign a letter to each star according to it's cardinality in the stellar system.
+        Assign a letter to each star according to its cardinality in the stellar system.
         """
         letters = ['A', 'B', 'C']
         for star_ in starlist:
@@ -317,7 +333,7 @@ class StarSystem:
         writer.write()
 
     def get_age(self) -> int:
-        return self.__age
+        return self.age
 
     def get_orbits(self) -> list:
         """
@@ -329,7 +345,7 @@ class StarSystem:
         return self.periods
 
     def is_open_cluster(self) -> bool:
-        return self.__opencluster
+        return self.opencluster
 
     def has_garden(self) -> bool:
         ret = False

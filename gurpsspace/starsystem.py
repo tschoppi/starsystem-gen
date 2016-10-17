@@ -10,50 +10,55 @@ class StarSystem:
 
     def __init__(self, **kwargs):
         open_cluster = kwargs.get('open_cluster', None)
-
-        if open_cluster is not None:
-            self.__opencluster = open_cluster
-        else:
-            self.__opencluster = self.random_cluster()
-
+        self.opencluster = self.make_open_cluster(open_cluster)
         num_stars = kwargs.get('num_stars', None)
-        if num_stars is not None:
-            # The rules only support 1-3 stars per system, so it is checked whether the argument is valid.
-            if 0 < num_stars <= 3:
-                self.__numstars = num_stars
-            else:  # Otherwise it is replaced with a random valid number.
-                self.__numstars = self.random_star_number()
-        else:
-            self.__numstars = self.random_star_number()
-
+        self.num_stars = self.make_number_of_stars(num_stars)
         age = kwargs.get('age', None)
-        self.__age = self.make_age(age)
-        self.generate_stars()
-        self.sortstars()
-        self.name_stars()
-        self.make_orbits()
-        self.make_min_max_separations()
-        self.make_forbidden_zones()
-        self.create_planetsystem()
-        self.make_periods()
-        # self.print_info()
+        self.age = self.make_age(age)
+        self.stars = self.generate_stars(self.num_stars)
+        self.stars = sorted(
+            self.stars, key=lambda star: star.get_mass(), reverse=True
+        )
+        self.stars = self.name_stars(self.stars)
+        self.orbits = self.make_orbits()
+        self.minmax_separation = self.make_min_max_separations(self.orbits)
+        self.forbidden_zones = self.calc_forbidden_zones(self.minmax_separation)
+        self.stars = self.propagate_forbidden_zones(
+            self.stars,
+            self.forbidden_zones
+        )
+        self.stars = self.create_planetsystem(self.stars)
+        self.periods = self.make_periods(self.stars, self.orbits)
 
-    def printinfo(self) -> None:
+    def print_info(self) -> None:
         """
         Outputs all information about the starsystem to console.
         """
         print("Star System Info")
         print("================")
-        print("        Age:\t{}".format(self.__age))
-        print(" # of Stars:\t{}".format(self.__numstars))
-        print("OpenCluster:\t{}".format(self.__opencluster))
-        if self.__numstars > 1:
-            print("Stellar Orb:\t{}".format(self.__orbits))
-            print("StOrbMinMax:\t{}".format(self.__minmaxorbits))
-            print(" Orbit Per.:\t{}".format(self.__periods))
+        print("        Age:\t{}".format(self.age))
+        print(" # of Stars:\t{}".format(len(self.stars)))
+        print("OpenCluster:\t{}".format(self.opencluster))
+        if len(self.stars) > 1:
+            print("Stellar Orb:\t{}".format(self.orbits))
+            print("StOrbMinMax:\t{}".format(self.minmax_separation))
+            print(" Orbit Per.:\t{}".format(self.periods))
         print("================\n")
-        for i in range(self.__numstars):
+        for i in range(len(self.stars)):
             self.stars[i].print_info()
+
+    def make_open_cluster(self, kwarg) -> bool:
+        """
+        Decide whether the star system is in an open cluster
+
+        :param kwarg: Keyword argument passed to the constructor
+        :type kwarg: bool or None
+        :return: True if the star system is in an open cluster, false otherwise
+        """
+        if kwarg is not None:
+            return kwarg
+        else:
+            return self.random_cluster()
 
     def random_cluster(self) -> bool:
         """
@@ -65,13 +70,30 @@ class StarSystem:
         #    - Roll of 10 or less
         return self.roller.roll_dice(3, 0) <= 10
 
+    def make_number_of_stars(self, kwarg) -> int:
+        """
+        Determine number of stars in the star system
+
+        :param kwarg: Keyword argument num_stars passed to constructor
+        :type kwarg: int or None
+        :return: Integer number of stars in the system
+
+        According to the rules only 1-3 stars can be in any stellar system. This
+        method does bounds checking and provides a random number of stars should
+        that fail.
+        """
+        if kwarg is not None and 1 <= kwarg <= 3:
+            return kwarg
+        else:
+            return self.random_star_number()
+
     def random_star_number(self) -> int:
         """
         Randomly determines the number of stars in the system.
 
         :return: The number of stars
         """
-        if self.__opencluster:
+        if self.opencluster:
             roll_mod = 3
         else:
             roll_mod = 0
@@ -84,19 +106,29 @@ class StarSystem:
         else:
             return 2
 
-    def generate_stars(self) -> None:
-        self.stars = []
-        for i in range(self.__numstars):
-            self.stars.append(star.Star(age=self.__age))
+    def generate_stars(self, number_of_stars) -> list:
+        """
+        Initialize the correct number of stars
+
+        :param number_of_stars: The number of stars that need to be generated
+        :type number_of_stars: int
+        :return: A list with the stars
+        """
+        temporary_stars = []
+        for i in range(number_of_stars):
+            temporary_stars.append(star.Star(age=self.age))
+        return temporary_stars
 
     def make_age(self, age=None) -> float:
         if age is None:
             provage = self.random_age()
-            while self.__opencluster and provage > 2:
+            while self.opencluster and provage > 2:
                 provage = self.random_age()
             return provage
         elif age <= 0:
-            raise ValueError("Starsystem age needs to be larger than zero billion years.")
+            raise ValueError(
+                "Starsystem age needs to be larger than zero billion years."
+            )
         else:
             return age
 
@@ -111,54 +143,60 @@ class StarSystem:
             # Extreme Population I: Age is set to 1 million years
             return 0.001
         elif dice_roll <= 6:
-            return 0.1 + self.roller.roll_dice(1, -1) * 0.3 + self.roller.roll_dice(1, -1) * 0.05
+            return (
+                0.1 + self.roller.roll_dice(1, -1) * 0.3 +
+                self.roller.roll_dice(1, -1) * 0.05
+            )
         elif dice_roll <= 10:
-            return 2.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                2.0 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         elif dice_roll <= 14:
-            return 5.6 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                5.6 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         elif dice_roll <= 17:
-            return 8.0 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                8.0 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
         else:
-            return 10 + self.roller.roll_dice(1, -1) * 0.6 + self.roller.roll_dice(1, -1) * 0.1
+            return (
+                10 + self.roller.roll_dice(1, -1) * 0.6 +
+                self.roller.roll_dice(1, -1) * 0.1
+            )
 
-    def sortstars(self) -> None:
+    def name_stars(self, starlist) -> list:
         """
-        Sort the stars according to mass. Higher mass is placed first.
-        """
-        num = self.__numstars
-        newlist = []
-        for i in range(num):
-            highest = 0    # Index of the star with the highest mass, reset to 0
-            for j in range(len(self.stars)):
-                if self.stars[highest].get_mass() < self.stars[j].get_mass():
-                    highest = j
-            newlist.append(self.stars[highest])
-            del self.stars[highest]
+        Assign a letter to each star
 
-        self.stars = newlist
+        :param starlist: List of the stars to name
+        :type starlist: list
+        :return: List of renamed stars
 
-    def name_stars(self) -> None:
-        """
-        Assign a letter to each star according to it's cardinality in the stellar system.
+        The naming convention starts with the first (highest mass) star and the
+        first letter of the alphabet.
         """
         letters = ['A', 'B', 'C']
-        for star_ in self.stars:
-            star_.set_letter(letters[self.stars.index(star_)])
+        for star_ in starlist:
+            star_.set_letter(letters[starlist.index(star_)])
+        return starlist
 
     # TODO: Sub-companion star for distant second companion star
-    # TODO: Complete type-hinting, once the returns have been sorted out
-    def make_orbits(self):
+    def make_orbits(self) -> list:
         """
         Generate stellar orbits for multiple-star systems.
-        :return:
+
+        :return: A list of orbits, the entries are of the form
+            [orbital_separation, eccentricity]
         """
-        # FIXME: This looks like it shouldn't return anything, but it has two return statements!
-        self.__orbsepentry = []
-        self.__orbits = []
-        if self.__numstars == 1:
-            # Don't do anything for just one star
-            return None
-        if self.__numstars >= 2:
+        orbsepentry = []
+        orbits = []
+        if len(self.stars) == 1:
+            return orbits
+        if len(self.stars) >= 2:
             dice = self.roller.roll_dice(3, 0)
             osepindex = self.find_orbital_separation_index(dice)
             orbsep = OrbSepTable[osepindex]
@@ -172,34 +210,44 @@ class StarSystem:
                 eccroll = 18
             eccentricity = StOEccTable[eccroll]
 
-            self.__orbsepentry.append(orbsep)
-            self.__orbits.append((orbit, eccentricity))
-        if self.__numstars == 3:
-            dice = self.roller.roll_dice(3, 6)
-            osepindex = self.find_orbital_separation_index(dice)
-            orbsep = OrbSepTable[osepindex]
-            orbit = self.roller.roll_dice(2, 0) * orbsep[1]
-
-            eccmod = orbsep[2]
-            eccroll = self.roller.roll_dice(3, eccmod)
-            if eccroll < 3:
-                eccroll = 3
-            if eccroll > 18:
-                eccroll = 18
-            eccentricity = StOEccTable[eccroll]
-
-            self.__orbsepentry.append(orbsep)
-            self.__orbits.append((orbit, eccentricity))
-
-            # Recursively contine until second companion is significantly
-            # further away than the first
-            if self.__orbsepentry[0][1] >= self.__orbsepentry[1][1]:
+            orbsepentry.append(orbsep)
+            orbits.append((orbit, eccentricity))
+        if len(self.stars) == 3:
+            if osepindex == 4:
+                # Disallow two 'Distant' companions
                 return self.make_orbits()
+            close_companion = True
+            while close_companion:
+                dice = self.roller.roll_dice(3, 6)
+                osepindex = self.find_orbital_separation_index(dice)
+                orbsep = OrbSepTable[osepindex]
+                orbit = self.roller.roll_dice(2, 0) * orbsep[1]
+
+                # The second companion star has to be further away than the
+                # first companion star. Both the orbital modifier and orbit
+                # values need to differ
+                if orbsepentry[0][1] > orbsep[1] or orbits[0][0] >= orbit:
+                    continue
+                else:
+                    close_companion = False
+
+                eccmod = orbsep[2]
+                eccroll = self.roller.roll_dice(3, eccmod)
+                if eccroll < 3:
+                    eccroll = 3
+                if eccroll > 18:
+                    eccroll = 18
+                eccentricity = StOEccTable[eccroll]
+
+                orbits.append((orbit, eccentricity))
+        return orbits
 
     def find_orbital_separation_index(self, dice_roll) -> int:
         """
-        Return index for the orbital separation table
+        Return index for the orbital separation table for a given dice roll
 
+        :param dice_roll: Result of the dice roll
+        :type dice_roll: int
         :return: An int in the interval [1, 4]
         """
         if dice_roll < 3:
@@ -215,77 +263,131 @@ class StarSystem:
         else:
             return 4
 
-    def make_min_max_separations(self) -> None:
-        self.__minmaxorbits = []
-        for i in range(len(self.__orbits)):
-            orbit, ecc = self.__orbits[i]
+    def make_min_max_separations(self, orbits) -> list:
+        """
+        Calculate the minimal and maximal separations of multiple stars given
+        their basic orbital parameters
+
+        :param orbits: List of tuples (orbital_separation, eccentricity)
+        :type orbits: list
+        :return: List of tuples of the form (min, max) for each orbit entry
+        """
+        minmaxorbits = []
+        for i in range(len(orbits)):
+            orbit, ecc = orbits[i]
             min = (1 - ecc) * orbit
             max = (1 + ecc) * orbit
-            self.__minmaxorbits.append((min, max))
+            minmaxorbits.append((min, max))
+        return minmaxorbits
 
-    def make_forbidden_zones(self) -> None:
-        self.__forbiddenzones = []
-        for i in range(len(self.__minmaxorbits)):
-            min_, max_ = self.__minmaxorbits[i]
+    def calc_forbidden_zones(self, minmax_separation) -> list:
+        """
+        Calculate the forbidden zones given minimal and maximal separations
+
+        :param minmax_separation: List of tuples (min-, max-) orbital
+            separations
+        :type minmax_separation: list
+        :return: List tuples with the forbidden zone edges (inner, outer)
+        """
+        forbiddenzones = []
+        for i in range(len(minmax_separation)):
+            min_, max_ = minmax_separation[i]
             start = min_ / 3.
             end = max_ * 3.
-            self.__forbiddenzones.append((start, end))
+            forbiddenzones.append((start, end))
+        return forbiddenzones
 
-            # Tell the stars their forbidden zones
+    def propagate_forbidden_zones(self, stars, forbidden_zones) -> list:
+        """
+        Set the forbidden zones for the stars
+
+        :param stars: List of stars in the system
+        :param forbidden_zones: List of tuples with forbidden zone edges
+        :type stars: list
+        :type forbidden_zones: list
+        :return: List of stars with the forbidden zones set
+        """
+        for i in range(len(forbidden_zones)):
+            start, end = forbidden_zones[i]
             if i == 0:  # For the first two stars
-                self.stars[0].set_forbidden_zone(start, end)
-                self.stars[1].set_forbidden_zone(start, end)
+                stars[0].set_forbidden_zone(start, end)
+                stars[1].set_forbidden_zone(start, end)
             if i == 1:  # For the third star
-                self.stars[2].set_forbidden_zone(start, end)
+                stars[2].set_forbidden_zone(start, end)
+        return stars
 
-    def create_planetsystem(self) -> None:
+    def create_planetsystem(self, stars) -> list:
         """
-        Causes all stars to generate a planetary system for themselves. These may be empty!
+        Let each star generate their planet system. It may be empty!
+
+        :param stars: List of stars in the stellar system
+        :type stars: list
+        :return: List of stars that have planetary systems
         """
-        for star_ in self.stars:
+        for star_ in stars:
             star_.make_planetsystem()
+        return stars
 
-    def make_periods(self):
-        self.__periods = []
-        if self.__numstars >= 2:
-            orbit, ecc = self.__orbits[0]
-            m1 = self.stars[0].get_mass()
-            m2 = self.stars[1].get_mass()
+    def make_periods(self, stars, orbits):
+        """
+        Calculate the orbital periods for the stars
+
+        :param stars: List of the stars
+        :param orbits: List of tuples for orbital separation and eccentricity
+        :type stars: list
+        :type orbits: list
+        :return: List of orbital periods in days
+        """
+        periods = []
+        if len(stars) >= 2:
+            orbit, ecc = orbits[0]
+            m1 = stars[0].get_mass()
+            m2 = stars[1].get_mass()
             m = m1 + m2
-            self.__periods.append((orbit ** 3 / m) ** 0.5)
-        if self.__numstars == 3:
-            orbit, ecc = self.__orbits[1]
-            m1 = self.stars[0].get_mass() + self.stars[1].get_mass()
-            m2 = self.stars[2].get_mass()
+            periods.append((orbit ** 3 / m) ** 0.5)
+        if len(stars) == 3:
+            orbit, ecc = orbits[1]
+            m1 = stars[0].get_mass() + stars[1].get_mass()
+            m2 = stars[2].get_mass()
             m = m1 + m2
-            self.__periods.append((orbit ** 3 / m) ** 0.5)
+            periods.append((orbit ** 3 / m) ** 0.5)
+        return periods
 
     def write_latex(self, filename='starsystem.tex') -> None:
         """
         Write all information about the starsystem to a latex file.
 
-        :param filename: Name of file (with the .tex extension) to which the ouput is written
+        :param filename: Name of file (with the .tex extension) to which the
+            ouput is written
         :type filename: str
         """
         writer = LW(self, filename)
         writer.write()
 
     def get_age(self) -> int:
-        return self.__age
+        """Return star system age in billion years"""
+        return self.age
 
-    def get_orbits(self):
+    def get_orbits(self) -> list:
         """
-        Return tuple (orbital separation, eccentricity).
+        Return list of tuples of the form (orbital separation, eccentricity).
         """
-        return self.__orbits
+        return self.orbits
 
-    def get_period(self):
-        return self.__periods
+    def get_period(self) -> list:
+        """Return list of orbital periods"""
+        return self.periods
 
     def is_open_cluster(self) -> bool:
-        return self.__opencluster
+        """Return True if star system is located in an open cluster"""
+        return self.opencluster
 
     def has_garden(self) -> bool:
+        """
+        Query all stars in the system for a Garden world
+
+        :return: True if at least one star has a Garden world
+        """
         ret = False
         for star_ in self.stars:
             ret |= star_.planetsystem.has_garden()

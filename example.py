@@ -17,6 +17,6 @@ while garden is not True:
     mysys = starsys.StarSystem(**args)
     garden = mysys.has_garden()
 
-mysys.printinfo()
+mysys.print_info()
 print('Total number of cycles: {}'.format(cycle_num))
 mysys.write_latex()

@@ -65,7 +65,7 @@
                 {% endif %}
                 <td>{{star.get_sequence()}}</td>
                 <td>{{star.get_mass()|round(2)}}</td>
-                <td>{{star.get_temp()}} K</td>
+                <td>{{star.get_temp()|round(2)}} K</td>
                 <td>{{star.get_luminosity()|round(4)}}</td>
                 <td>{{(star.get_radius() * 214.93) | round(2)}}</td>
                 <td>{{star.get_orbit_limits()[0]|round(2)}} AU</td>
@@ -78,10 +78,7 @@
                 {% endif %}
                 {% if star.planetsystem.get_orbitcontents()|count > 0 %}
                 <td>
-                    <form id="planet" action="planetsystem">
-                    <input type="number" style="display: none" name="star_id" value={{loop.index0}} />
-                    <input type="submit" id="planet-details" value="View orbiting objects" formtarget="_blank"/>
-                    </form>
+                    <a href="/planetsystem?star_id={{loop.index0}}">View orbiting objecs</a>
                 </td>
                 {% else %}
                 <td>No Planetary System</td>

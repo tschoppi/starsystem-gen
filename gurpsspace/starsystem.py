@@ -364,6 +364,15 @@ class StarSystem:
         writer = LW(self, filename)
         writer.write()
 
+    def make_latex(self):
+        """
+        Create a string containing all the information about the starsystem in LaTeX form.
+        :return: str
+        """
+
+        writer = LW(self, "")
+        return writer.make_latex()
+
     def get_age(self) -> int:
         """Return star system age in billion years"""
         return self.age

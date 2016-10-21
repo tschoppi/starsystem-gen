@@ -5,11 +5,15 @@ import sys
 
 import operator
 
+import pypandoc
+
 from gurpsspace import starsystem as starsys
 from namegenerator import namegenerator
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('webgui/templates'))
+
+from cherrypy.lib.static import serve_file
 
 
 class WebServer(object):
@@ -139,6 +143,19 @@ class WebServer(object):
 
         tmpl = env.get_template('moons.html')
         return tmpl.render(moons=moons, planet_name=planet.get_name())
+
+    @cherrypy.expose
+    def pdf(self):
+        try:
+            starsystem = cherrypy.session['starsystem']
+        except KeyError:
+            raise cherrypy.HTTPError(404)
+        print("Creating PDF!")
+        starsystem.write_latex()
+        pypandoc.convert_file("starsystem.tex", 'pdf', outputfile="starsystem.pdf", format="latex")
+        abs_path = os.path.abspath("starsystem.pdf")
+        
+        return serve_file(abs_path, "application/x-download", "attachment")
 
     def translate_row(self, planet, row):
         """

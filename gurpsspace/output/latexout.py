@@ -4,6 +4,10 @@ Module for saving all the information about a StarSystem to a LaTeX file for
 processing towards a nicely formatted PDF file.
 """
 
+import pypandoc
+import typing
+import os
+
 # from ..starsystem import StarSystem
 from ..tables import AtmCompAbbr
 
@@ -12,6 +16,12 @@ class LatexWriter:
     def __init__(self, starsystem, filename='starsystem.tex'):
         self.starsystem = starsystem
         self.filename = filename
+
+    def make_pdf(self) -> str:
+        self.write()
+        pdf_name = os.path.splitext(self.filename)[0] + ".pdf"
+        pypandoc.convert_file(self.filename, 'pdf', outputfile=pdf_name, format="latex")
+        return os.path.abspath(pdf_name)
 
     def write(self):
         # Open the file

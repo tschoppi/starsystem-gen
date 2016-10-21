@@ -150,12 +150,9 @@ class WebServer(object):
             starsystem = cherrypy.session['starsystem']
         except KeyError:
             raise cherrypy.HTTPError(404)
-        print("Creating PDF!")
-        starsystem.write_latex()
-        pypandoc.convert_file("starsystem.tex", 'pdf', outputfile="starsystem.pdf", format="latex")
-        abs_path = os.path.abspath("starsystem.pdf")
-        
-        return serve_file(abs_path, "application/x-download", "attachment")
+
+        pdf_path = starsystem.make_pdf()
+        return serve_file(pdf_path, "application/x-download", "attachment")
 
     def translate_row(self, planet, row):
         """

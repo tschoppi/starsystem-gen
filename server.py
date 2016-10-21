@@ -7,11 +7,10 @@ import operator
 
 from gurpsspace import starsystem as starsys
 from namegenerator import namegenerator
+from cherrypy.lib.static import serve_file
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('webgui/templates'))
-
-from cherrypy.lib.static import serve_file
 
 
 class WebServer(object):

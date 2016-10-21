@@ -29,6 +29,15 @@ class LatexWriter:
         if not retcode == 0:
             os.unlink(pdf_name)
             raise ValueError('Error {} executing command: {}'.format(retcode, ' '.join(cmd)))
+        # PDFLaTeX has to be run twice to properly generate the ToC
+        cmd = ['pdflatex', '-interaction', 'nonstopmode', self.filename]
+        proc = subprocess.Popen(cmd)
+        proc.communicate()
+
+        retcode = proc.returncode
+        if not retcode == 0:
+            os.unlink(pdf_name)
+            raise ValueError('Error {} executing command: {}'.format(retcode, ' '.join(cmd)))
 
         os.unlink(base_name + '.log')
         os.unlink(base_name + '.aux')

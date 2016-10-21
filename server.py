@@ -5,8 +5,6 @@ import sys
 
 import operator
 
-import pypandoc
-
 from gurpsspace import starsystem as starsys
 from namegenerator import namegenerator
 

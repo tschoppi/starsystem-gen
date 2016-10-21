@@ -4,8 +4,7 @@ Module for saving all the information about a StarSystem to a LaTeX file for
 processing towards a nicely formatted PDF file.
 """
 
-import pypandoc
-import typing
+import subprocess
 import os
 
 # from ..starsystem import StarSystem
@@ -19,8 +18,23 @@ class LatexWriter:
 
     def make_pdf(self) -> str:
         self.write()
-        pdf_name = os.path.splitext(self.filename)[0] + ".pdf"
-        pypandoc.convert_file(self.filename, 'pdf', outputfile=pdf_name, format="latex")
+        base_name = os.path.splitext(self.filename)[0]
+        pdf_name = base_name + ".pdf"
+
+        cmd = ['pdflatex', '-interaction', 'nonstopmode', self.filename]
+        proc = subprocess.Popen(cmd)
+        proc.communicate()
+
+        retcode = proc.returncode
+        if not retcode == 0:
+            os.unlink(pdf_name)
+            raise ValueError('Error {} executing command: {}'.format(retcode, ' '.join(cmd)))
+
+        os.unlink(base_name + '.log')
+        os.unlink(base_name + '.aux')
+        os.unlink(base_name + '.toc')
+        os.unlink(base_name + '.out')
+
         return os.path.abspath(pdf_name)
 
     def write(self):

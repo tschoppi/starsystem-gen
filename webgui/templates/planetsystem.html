@@ -57,10 +57,7 @@
             <td>
                 {% if astro_body.num_moons() != '' %}
                     {% if astro_body.num_moons() > 0 %}
-                        <form action="satellites">
-                        <input type="number" style="display: none" name="planet_id" value={{key}} />
-                        <input type="submit" id="planet-details" value={{astro_body.num_moons()|round(2)}} formtarget="_blank"/>
-                        </form>
+                        <a href="satellites?planet_id={{key}}">{{astro_body.num_moons()|round(2)}}</a>
                     {% else %}
                         {{astro_body.num_moons()|round(2)}}
                     {% endif %}

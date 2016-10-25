@@ -3,6 +3,7 @@
 var day_in_year = 1;
 var sweet_spot_scale = 1;
 var default_zoom = 1;
+var time_factor = 1;
 
 function animate_solar_system(toDraw, star_letter, context, canvas, centerX, centerY) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,7 +28,7 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
         context.beginPath();
         context.fillText("1 year!", 23, 33);
     }
-    day_in_year = (day_in_year % 365) + 1 // Start counting at 1, up to 365.
+    day_in_year = (day_in_year % 365) + 1/time_factor // Start counting at 1, up to 365.
 
     // Reset to defaults
     context.fillStyle = 'black';
@@ -38,22 +39,57 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
             // We store the rotation belonging to a given astro_body in a cookie
             document.cookie = i + star_letter + "=" + Math.floor((Math.random() * 360) + 1);
         }
-
+		
         // Getting the rotation and the axes
         var rotationValue = parseInt(getCookie(i + star_letter), 10);
-        var semi_major = toDraw[i].max * sweet_spot_scale;
-        var semi_minor = toDraw[i].min * sweet_spot_scale;
+        var aphelion = toDraw[i].max * sweet_spot_scale;  
+        var perihelion = toDraw[i].min * sweet_spot_scale;  
 
-        // Draw the ellipse
+/*         // Draw the ellipse -- this code does not represent planetary orbits -- to be removed
         context.beginPath();
-        context.ellipse(centerX, centerY, semi_major, semi_minor, rotationValue, 0, Math.PI * 2);
+        context.ellipse(centerX, centerY, aphelion, perihelion, rotationValue, 0, Math.PI * 2);
+		context.strokeStyle="red";
         context.stroke();
-        context.closePath();
+        context.closePath(); */
+		
+		
+        // Draw correct kepler ellipse
+		var a = (aphelion + perihelion)/2;
+		var e = (aphelion - perihelion) / (aphelion + perihelion);
+		var xi = a*(Math.cos(0)-e);
+		var yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(0);
+		// rotation of frame
+ 		var x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+		var y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+ 		context.beginPath();
+		context.moveTo(x,y);
+		for (var j=1; j <361;j++){
+			xi = a*(Math.cos(j/180*Math.PI)-e);
+			yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(j/180*Math.PI);
+			x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+			y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+			context.lineTo(x,y);
+		}
+		context.strokeStyle="green";
+        context.stroke();
+        context.closePath();   
 
         // We use the general, parameterized ellipse equations to find a point on the eclipse, again rotated.
-        toDraw[i].x = centerX + (semi_major * Math.cos(toDraw[i].position) * Math.cos(rotationValue) - semi_minor * Math.sin(toDraw[i].position) * Math.sin(rotationValue));
-        toDraw[i].y = centerY + (semi_major * Math.cos(toDraw[i].position) * Math.sin(rotationValue) + semi_minor * Math.sin(toDraw[i].position) * Math.cos(rotationValue));
-
+        //toDraw[i].x = centerX + (aphelion * Math.cos(toDraw[i].position) * Math.cos(rotationValue) - perihelion * Math.sin(toDraw[i].position) * Math.sin(rotationValue));
+        //toDraw[i].y = centerY + (aphelion * Math.cos(toDraw[i].position) * Math.sin(rotationValue) + perihelion * Math.sin(toDraw[i].position) * Math.cos(rotationValue));
+		// toDraw[i].position is the "mean anomaly"
+		// solve kepler equation in an iterative newton approach
+		var E = toDraw[i].position + e * Math.sin(toDraw[i].position)
+		var DeltaE = 1;
+		while (Math.abs(DeltaE)>1e-6) {
+			DeltaE = (E-e*Math.sin(E) - toDraw[i].position) / (1-e*Math.cos(E));
+			E = E-DeltaE;
+		}
+		xi = a*(Math.cos(E)-e);
+		yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(E);
+		toDraw[i].x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+		toDraw[i].y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+		
         // Offset the label to the different quadrants
         var left_right = toDraw[i].x > centerX ? 1 : -2;
         var up_down = toDraw[i].y > centerY ? 1 : -1.5;
@@ -89,8 +125,8 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
             }
         }
         // Move orbital body
-        if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity){
-            toDraw[i].position += toDraw[i].velocity;
+        if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity/time_factor){
+            toDraw[i].position += toDraw[i].velocity/time_factor;
         } else {
             toDraw[i].position = 0;
         }

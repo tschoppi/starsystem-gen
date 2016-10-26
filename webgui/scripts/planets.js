@@ -3,6 +3,7 @@
 var day_in_year = 1;
 var sweet_spot_scale = 1;
 var default_zoom = 1;
+var time_factor = 1;
 
 function animate_solar_system(toDraw, star_letter, context, canvas, centerX, centerY) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,7 +28,7 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
         context.beginPath();
         context.fillText("1 year!", 23, 33);
     }
-    day_in_year = (day_in_year % 365) + 1 // Start counting at 1, up to 365.
+    day_in_year = (day_in_year % 365) + 1/time_factor // Start counting at 1, up to 365.
 
     // Reset to defaults
     context.fillStyle = 'black';
@@ -38,22 +39,46 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
             // We store the rotation belonging to a given astro_body in a cookie
             document.cookie = i + star_letter + "=" + Math.floor((Math.random() * 360) + 1);
         }
-
+		
         // Getting the rotation and the axes
         var rotationValue = parseInt(getCookie(i + star_letter), 10);
-        var semi_major = toDraw[i].max * sweet_spot_scale;
-        var semi_minor = toDraw[i].min * sweet_spot_scale;
+        var aphelion = toDraw[i].max * sweet_spot_scale;  
+        var perihelion = toDraw[i].min * sweet_spot_scale;  
 
-        // Draw the ellipse
-        context.beginPath();
-        context.ellipse(centerX, centerY, semi_major, semi_minor, rotationValue, 0, Math.PI * 2);
+        // draw kepler ellipse
+		var semi_major = (aphelion + perihelion)/2;
+		var eccentricity = (aphelion - perihelion) / (aphelion + perihelion);
+		var xi = semi_major*(Math.cos(0)-eccentricity);
+		var yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(0);
+		// rotation of frame
+ 		var x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+		var y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+ 		context.beginPath();
+		context.moveTo(x,y);
+		for (var j=1; j <361;j++){
+			xi = semi_major*(Math.cos(j/180*Math.PI)-eccentricity);
+			yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(j/180*Math.PI);
+			x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+			y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+			context.lineTo(x,y);
+		}
         context.stroke();
-        context.closePath();
+        context.closePath();   
 
-        // We use the general, parameterized ellipse equations to find a point on the eclipse, again rotated.
-        toDraw[i].x = centerX + (semi_major * Math.cos(toDraw[i].position) * Math.cos(rotationValue) - semi_minor * Math.sin(toDraw[i].position) * Math.sin(rotationValue));
-        toDraw[i].y = centerY + (semi_major * Math.cos(toDraw[i].position) * Math.sin(rotationValue) + semi_minor * Math.sin(toDraw[i].position) * Math.cos(rotationValue));
-
+		// draw planet on orbit ellipse
+		// toDraw[i].position is the "mean anomaly"
+		// solve kepler equation in an iterative newton approach
+		var Eccentric_anomaly = toDraw[i].position + eccentricity * Math.sin(toDraw[i].position)
+		var Delta_Eccentric_anomaly = 1;
+		while (Math.abs(Delta_Eccentric_anomaly)>1e-6) {
+			Delta_Eccentric_anomaly = (Eccentric_anomaly-eccentricity*Math.sin(Eccentric_anomaly) - toDraw[i].position) / (1-eccentricity*Math.cos(Eccentric_anomaly));
+			Eccentric_anomaly = Eccentric_anomaly-Delta_Eccentric_anomaly;
+		}
+		xi = semi_major*(Math.cos(Eccentric_anomaly)-eccentricity);
+		yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(Eccentric_anomaly);
+		toDraw[i].x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
+		toDraw[i].y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
+		
         // Offset the label to the different quadrants
         var left_right = toDraw[i].x > centerX ? 1 : -2;
         var up_down = toDraw[i].y > centerY ? 1 : -1.5;
@@ -89,8 +114,8 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
             }
         }
         // Move orbital body
-        if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity){
-            toDraw[i].position += toDraw[i].velocity;
+        if (toDraw[i].position < 2 * Math.PI - toDraw[i].velocity/time_factor){
+            toDraw[i].position += toDraw[i].velocity/time_factor;
         } else {
             toDraw[i].position = 0;
         }

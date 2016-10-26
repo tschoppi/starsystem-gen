@@ -45,48 +45,37 @@ function animate_solar_system(toDraw, star_letter, context, canvas, centerX, cen
         var aphelion = toDraw[i].max * sweet_spot_scale;  
         var perihelion = toDraw[i].min * sweet_spot_scale;  
 
-/*         // Draw the ellipse -- this code does not represent planetary orbits -- to be removed
-        context.beginPath();
-        context.ellipse(centerX, centerY, aphelion, perihelion, rotationValue, 0, Math.PI * 2);
-		context.strokeStyle="red";
-        context.stroke();
-        context.closePath(); */
-		
-		
-        // Draw correct kepler ellipse
-		var a = (aphelion + perihelion)/2;
-		var e = (aphelion - perihelion) / (aphelion + perihelion);
-		var xi = a*(Math.cos(0)-e);
-		var yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(0);
+        // draw kepler ellipse
+		var semi_major = (aphelion + perihelion)/2;
+		var eccentricity = (aphelion - perihelion) / (aphelion + perihelion);
+		var xi = semi_major*(Math.cos(0)-eccentricity);
+		var yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(0);
 		// rotation of frame
  		var x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
 		var y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
  		context.beginPath();
 		context.moveTo(x,y);
 		for (var j=1; j <361;j++){
-			xi = a*(Math.cos(j/180*Math.PI)-e);
-			yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(j/180*Math.PI);
+			xi = semi_major*(Math.cos(j/180*Math.PI)-eccentricity);
+			yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(j/180*Math.PI);
 			x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
 			y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
 			context.lineTo(x,y);
 		}
-		context.strokeStyle="green";
         context.stroke();
         context.closePath();   
 
-        // We use the general, parameterized ellipse equations to find a point on the eclipse, again rotated.
-        //toDraw[i].x = centerX + (aphelion * Math.cos(toDraw[i].position) * Math.cos(rotationValue) - perihelion * Math.sin(toDraw[i].position) * Math.sin(rotationValue));
-        //toDraw[i].y = centerY + (aphelion * Math.cos(toDraw[i].position) * Math.sin(rotationValue) + perihelion * Math.sin(toDraw[i].position) * Math.cos(rotationValue));
+		// draw planet on orbit ellipse
 		// toDraw[i].position is the "mean anomaly"
 		// solve kepler equation in an iterative newton approach
-		var E = toDraw[i].position + e * Math.sin(toDraw[i].position)
-		var DeltaE = 1;
-		while (Math.abs(DeltaE)>1e-6) {
-			DeltaE = (E-e*Math.sin(E) - toDraw[i].position) / (1-e*Math.cos(E));
-			E = E-DeltaE;
+		var Eccentric_anomaly = toDraw[i].position + eccentricity * Math.sin(toDraw[i].position)
+		var Delta_Eccentric_anomaly = 1;
+		while (Math.abs(Delta_Eccentric_anomaly)>1e-6) {
+			Delta_Eccentric_anomaly = (Eccentric_anomaly-eccentricity*Math.sin(Eccentric_anomaly) - toDraw[i].position) / (1-eccentricity*Math.cos(Eccentric_anomaly));
+			Eccentric_anomaly = Eccentric_anomaly-Delta_Eccentric_anomaly;
 		}
-		xi = a*(Math.cos(E)-e);
-		yi = a*Math.sqrt(1-Math.pow(e,2))*Math.sin(E);
+		xi = semi_major*(Math.cos(Eccentric_anomaly)-eccentricity);
+		yi = semi_major*Math.sqrt(1-Math.pow(eccentricity,2))*Math.sin(Eccentric_anomaly);
 		toDraw[i].x = centerX + xi*Math.cos(rotationValue) - yi*Math.sin(rotationValue);
 		toDraw[i].y = centerY + yi*Math.cos(rotationValue) + xi*Math.sin(rotationValue); 
 		

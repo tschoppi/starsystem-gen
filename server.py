@@ -69,6 +69,22 @@ class WebServer(object):
         else:
             mysys = starsys.StarSystem(**arguments)
 
+        for star in mysys.stars:
+            for key, v in star.planetsystem.get_orbitcontents().items():
+                if namegen is not None:
+                    simple_name = v.get_name().replace("-", "")
+                    if cherrypy.session.get('name_of_' + simple_name) is None:
+                        name = namegen.get_random_name()
+                        star.planetsystem.get_orbitcontents()[key].set_name(name)
+                        # For some reason, using simple_name here leads to storing stuff improperly and
+                        # generating new names every time. No idea why.
+                        cherrypy.session['name_of_' + v.get_name().replace("-", "")] = name
+                    else:
+                        name = cherrypy.session.get('name_of_' + simple_name)
+                        star.planetsystem.get_orbitcontents()[key].set_name(name)
+
+        cherrypy.session.save()
+
         tmpl = env.get_template('overview.html')
         cherrypy.session['starsystem'] = mysys
         cherrypy.response.cookie['names'] = {}

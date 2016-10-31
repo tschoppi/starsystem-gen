@@ -100,8 +100,8 @@ class OrbitContent:
     def get_size(self):
         return self.size
 
-    def num_moons(self):
-        return ''
+    def num_moons(self) -> int:
+        return 0
 
-    def num_moonlets(self):
-        return ''
+    def num_moonlets(self) -> int:
+        return 0

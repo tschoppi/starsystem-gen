@@ -7,6 +7,7 @@ import operator
 
 from gurpsspace import starsystem as starsys
 from namegenerator import namegenerator
+from starsystem_encoder import StarsystemEncoder
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('webgui/templates'))
@@ -139,6 +140,46 @@ class WebServer(object):
 
         tmpl = env.get_template('moons.html')
         return tmpl.render(moons=moons, planet_name=planet.get_name())
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out(handler=StarsystemEncoder().default)
+    def generate(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1, seed=None):
+
+        input_seed = None if seed == '' or None else seed  # Correctly interpret "no input"
+        self.set_seed(input_seed)  # reseed the PRNG, so that there is a unique seed every time
+        r.seed(self.random_seed)
+
+        if num_stars == "":
+            num_stars = None
+        elif int(num_stars) < 1 or int(num_stars) > 3:
+            num_stars = None
+        else:
+            num_stars = int(num_stars)
+
+        if naming != "":  # A naming scheme has been selected that is not the simple "A-1", "B-1" scheme.
+            namegen = namegenerator.NameGenerator(int(depth), self.random_seed)
+            namegen.read_file(naming)
+            namegen.use_chain = use_chain
+
+        arguments = {
+            'open_cluster': open_cluster == "True",
+            'num_stars': num_stars,
+            'age': age
+        }
+
+        # Generate star systems until one is made that contains a Garden world if it's required.
+        if must_have_garden == "True":
+            garden = False
+            while garden is not True:
+                mysys = starsys.StarSystem(**arguments)
+                garden = mysys.has_garden()
+        else:
+            mysys = starsys.StarSystem(**arguments)
+
+        # Save the seed for JSONification
+        mysys.seed = self.random_seed
+
+        return mysys
 
     def translate_row(self, planet, row):
         """

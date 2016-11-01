@@ -150,5 +150,4 @@ class StarsystemEncoder(JSONEncoder):
             dictified["rotational_period"] = moon.get_rotation()
             jsonable.append(dictified)
 
-
         return jsonable

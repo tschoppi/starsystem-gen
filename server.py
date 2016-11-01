@@ -143,7 +143,7 @@ class WebServer(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=StarsystemEncoder().default)
-    def generate(self, must_have_garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1, seed=None):
+    def generate(self, garden="False", open_cluster=None, num_stars=0, age=None, naming="", use_chain=False, depth=1, seed=None):
 
         input_seed = None if seed == '' or None else seed  # Correctly interpret "no input"
         self.set_seed(input_seed)  # reseed the PRNG, so that there is a unique seed every time
@@ -168,7 +168,7 @@ class WebServer(object):
         }
 
         # Generate star systems until one is made that contains a Garden world if it's required.
-        if must_have_garden == "True":
+        if garden == "True":
             garden = False
             while garden is not True:
                 mysys = starsys.StarSystem(**arguments)
@@ -251,6 +251,10 @@ class WebServer(object):
         else:
             return 'Not implemented yet'
 
+
+def cors():
+    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+
 if __name__ == '__main__':
 
     # Configure CherryPy with a Python dictionary for Python 3.5 compatibility.
@@ -264,7 +268,8 @@ if __name__ == '__main__':
             'tools.sessions.timeout': 60,
             'tools.staticdir.on': True,
             'tools.staticdir.dir': "webgui/static",
-            'tools.staticdir.root': os.path.abspath(os.getcwd())
+            'tools.staticdir.root': os.path.abspath(os.getcwd()),
+            'tools.CORS.on': True
         },
         '/favicon': {
             'tools.staticfile.on': True,
@@ -275,4 +280,5 @@ if __name__ == '__main__':
             'tools.staticdir.dir': "webgui/scripts"
         }
     }
+    cherrypy.tools.CORS = cherrypy.Tool('before_handler', cors)
     cherrypy.quickstart(WebServer(), '/', conf)

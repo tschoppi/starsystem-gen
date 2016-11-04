@@ -68,6 +68,22 @@ class WebServer(object):
         else:
             mysys = starsys.StarSystem(**arguments)
 
+        for star in mysys.stars:
+            for key, v in star.planetsystem.get_orbitcontents().items():
+                if namegen is not None:
+                    simple_name = v.get_name().replace("-", "")
+                    if cherrypy.session.get('name_of_' + simple_name) is None:
+                        name = namegen.get_random_name()
+                        star.planetsystem.get_orbitcontents()[key].set_name(name)
+                        # For some reason, using simple_name here leads to storing stuff improperly and
+                        # generating new names every time. No idea why.
+                        cherrypy.session['name_of_' + v.get_name().replace("-", "")] = name
+                    else:
+                        name = cherrypy.session.get('name_of_' + simple_name)
+                        star.planetsystem.get_orbitcontents()[key].set_name(name)
+
+        cherrypy.session.save()
+
         tmpl = env.get_template('overview.html')
         cherrypy.session['starsystem'] = mysys
         cherrypy.response.cookie['names'] = {}
@@ -83,34 +99,20 @@ class WebServer(object):
         else:
             star_id = int(star_id)
 
-        namegen = cherrypy.session.get('namegen')
-
         tmpl = env.get_template('planetsystem.html')
         env.globals['translate_row'] = self.translate_row
 
         t_count = 0
         a_count = 0
         g_count = 0
-        for key, v in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
+        for key, _ in starsystem.stars[star_id].planetsystem.get_orbitcontents().items():
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
                     t_count += 1
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
                     a_count += 1
                 if starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].type() == 'Gas Giant':
                     g_count += 1
-                if namegen is not None:
-                    simple_name = v.get_name().replace("-", "")
-                    if cherrypy.session.get('name_of_' + simple_name) is None:
-                        name = namegen.get_random_name()
-                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
-                        # For some reason, using simple_name here leads to storing stuff improperly and
-                        # generating new names every time. No idea why.
-                        cherrypy.session['name_of_' + v.get_name().replace("-", "")] = name
-                    else:
-                        name = cherrypy.session.get('name_of_' + simple_name)
-                        starsystem.stars[star_id].planetsystem.get_orbitcontents()[key].set_name(name)
 
-        cherrypy.session.save()
         cherrypy.session['planetsystem'] = starsystem.stars[star_id].planetsystem
         return tmpl.render(planetsystem=starsystem.stars[star_id].planetsystem, terrestrial_count=t_count, asteroid_count=a_count, gas_giant_count=g_count)
 
@@ -139,6 +141,30 @@ class WebServer(object):
 
         tmpl = env.get_template('moons.html')
         return tmpl.render(moons=moons, planet_name=planet.get_name())
+
+    @cherrypy.expose
+    def printable(self):
+        try:
+            starsystem = cherrypy.session['starsystem']
+        except KeyError:
+            raise cherrypy.HTTPError(404)
+
+        t_count = 0
+        a_count = 0
+        g_count = 0
+        for star in starsystem.stars:
+            for key, _ in star.planetsystem.get_orbitcontents().items():
+                if star.planetsystem.get_orbitcontents()[key].type() == 'Terrestrial':
+                    t_count += 1
+                if star.planetsystem.get_orbitcontents()[key].type() == 'Ast. Belt':
+                    a_count += 1
+                if star.planetsystem.get_orbitcontents()[key].type() == 'Gas Giant':
+                    g_count += 1
+
+        tmpl = env.get_template('printable.html')
+        env.globals['translate_row'] = self.translate_row
+
+        return tmpl.render(starsystem=starsystem, seed=self.random_seed, terrestrial_count=t_count, asteroid_count=a_count, gas_giant_count=g_count)
 
     def translate_row(self, planet, row):
         """

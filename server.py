@@ -241,8 +241,8 @@ if __name__ == '__main__':
     # Configure CherryPy with a Python dictionary for Python 3.5 compatibility.
     conf = {
         'global': {
-            'server.socket_host': '0.0.0.0',
-            'server.socket_port': 8000
+            'server.socket_host': '127.0.0.1',
+            'server.socket_port': 8080
         },
         '/': {
             'tools.sessions.on': True,

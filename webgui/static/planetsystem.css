@@ -1,0 +1,39 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, auto);
+    grid-gap: 10px 50px;
+    align-items: center;
+    justify-items: start;
+}
+
+.title-container {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+    justify-self: center;
+}
+
+.diagram-container {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#objects-overview {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#belts-list {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+}
+
+#planets-list {
+    grid-column: 1 / span 2;
+    grid-row: 4;
+}
+
+#gas-giants-list{
+    grid-column: 1 / span 2;
+    grid-row: 5;
+}

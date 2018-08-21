@@ -22,6 +22,7 @@ class Star:
         self.__innerlimit, self.__outerlimit = self.compute_orbit_limits()
         self.__snowline = self.compute_snow_line()
         self.__letter = 'A'
+        self.__star_type = self.get_star_type()
         self.planetsystem = None
 
     def __repr__(self):
@@ -208,3 +209,12 @@ class Star:
 
     def get_letter(self):
         return self.__letter
+
+    def get_star_type(self) -> str:
+        """
+        Get the star spectral type by the star temperature
+        :return: Spectral Index
+        """
+        sp_index = min(range(len(StEvoTable['temp'])),
+                       key=lambda i: abs(StEvoTable['temp'][i] - self.get_temperature()))
+        return StEvoTable['type'][sp_index]

@@ -41,3 +41,8 @@ class TestStar(unittest.TestCase):
 
         self.mystar.set_letter('B')
         self.assertEqual(self.mystar.get_letter(), 'B')
+
+    def test_get_spectral_type(self):
+        sp_index = min(range(len(StEvoTable['temp'])),
+                       key=lambda i: abs(StEvoTable['temp'][i] - self.get_temperature()))
+        self.assertTrue(StEvoTable['type'][sp_index])

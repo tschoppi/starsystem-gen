@@ -1,5 +1,6 @@
 import unittest
 from gurpsspace import star
+from gurpsspace.tables import StEvoTable
 
 
 class TestStar(unittest.TestCase):
@@ -44,5 +45,5 @@ class TestStar(unittest.TestCase):
 
     def test_get_spectral_type(self):
         sp_index = min(range(len(StEvoTable['temp'])),
-                       key=lambda i: abs(StEvoTable['temp'][i] - self.get_temperature()))
+                       key=lambda i: abs(StEvoTable['temp'][i] - self.mystar.get_temp()))
         self.assertTrue(StEvoTable['type'][sp_index])

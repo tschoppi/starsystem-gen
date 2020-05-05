@@ -216,5 +216,5 @@ class Star:
         :return: Spectral Index
         """
         sp_index = min(range(len(StEvoTable['temp'])),
-                       key=lambda i: abs(StEvoTable['temp'][i] - self.get_temperature()))
+                       key=lambda i: abs(StEvoTable['temp'][i] - self.get_temp()))
         return StEvoTable['type'][sp_index]

@@ -1,7 +1,11 @@
 [[source]]
-url = "https://pypi.org/"
+url = "https://pypi.org/simple"
+name = "pypi"
 verify_ssl = true
 
 [packages]
 cherrypy = "*"
 jinja2 = "*"
+
+[requires]
+python_version = "3"

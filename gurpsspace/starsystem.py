@@ -364,6 +364,15 @@ class StarSystem:
         writer = LW(self, filename)
         writer.write()
 
+    def make_pdf(self, filename='starsystem.tex'):
+        """
+        Create a PDF document with all the information about the starsystem.
+        :return: Path to the PDF.
+        """
+
+        writer = LW(self, filename)
+        return writer.make_pdf()
+
     def get_age(self) -> int:
         """Return star system age in billion years"""
         return self.age
